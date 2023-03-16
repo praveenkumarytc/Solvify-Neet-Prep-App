@@ -7,7 +7,7 @@ import 'package:shield_neet/Utils/dimensions.dart';
 import 'package:shield_neet/Utils/images.dart';
 import 'package:shield_neet/home/Screens/Account/BookMarked%20Questions/bookmarked_questions.dart';
 import 'package:shield_neet/home/Screens/Account/Subject%20Wise/subject_wise.dart';
-import 'package:shield_neet/push_to.dart';
+import 'package:shield_neet/helper/push_to.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -35,6 +35,34 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      /*   floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // add admin access logic here
+        },
+        backgroundColor: Colors.deepPurpleAccent,
+        elevation: 8.0,
+        tooltip: 'Admin Access',
+        heroTag: 'admin-access-button',
+        child: Stack(
+          children: const [
+            Positioned(
+              top: 10.0,
+              left: 10.0,
+              child: Icon(
+                Icons.lock,
+                size: 28,
+                color: Colors.deepPurple,
+              ),
+            ),
+            Icon(
+              Icons.admin_panel_settings,
+              size: 36,
+              color: Colors.white,
+            ),
+          ],
+        ),
+      ),
+    */
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

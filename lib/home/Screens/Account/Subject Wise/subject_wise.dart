@@ -3,7 +3,7 @@ import 'package:shield_neet/Utils/dimensions.dart';
 import 'package:shield_neet/Utils/images.dart';
 import 'package:shield_neet/components/solvify_appbar.dart';
 import 'package:shield_neet/home/Screens/Account/Subject%20Wise/chapters_screen.dart';
-import 'package:shield_neet/push_to.dart';
+import 'package:shield_neet/helper/push_to.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class SubjectWiseQuestScreen extends StatelessWidget {

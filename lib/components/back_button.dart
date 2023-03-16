@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:shield_neet/push_to.dart';
+import 'package:shield_neet/helper/push_to.dart';
 
 class GoBackButton extends StatelessWidget {
   const GoBackButton({

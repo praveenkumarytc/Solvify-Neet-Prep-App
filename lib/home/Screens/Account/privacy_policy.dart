@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shield_neet/components/solvify_appbar.dart';
 
 class PrivacyPolicyPage extends StatelessWidget {
   const PrivacyPolicyPage({Key? key}) : super(key: key);
@@ -6,8 +7,9 @@ class PrivacyPolicyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Privacy Policy'),
+      appBar: const PreferredSize(
+        preferredSize: Size.fromHeight(50),
+        child: SolvifyAppbar(title: 'Support'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

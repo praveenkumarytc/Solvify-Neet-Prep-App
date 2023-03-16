@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
+import 'package:shield_neet/Admin%20App/admin_page.dart';
 import 'package:shield_neet/Utils/color_resources.dart';
 import 'package:shield_neet/Utils/dimensions.dart';
 import 'package:shield_neet/Utils/images.dart';
-import 'package:shield_neet/home/Screens/Account/edit_profile.dart';
 import 'package:shield_neet/home/Screens/Account/feedback.dart';
 import 'package:shield_neet/home/Screens/Account/privacy_policy.dart';
 import 'package:shield_neet/home/Screens/Account/support_page.dart';
@@ -232,7 +232,7 @@ class ProfileWidget extends StatelessWidget {
                   onPressed: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const EditProfilePage(),
+                        builder: (context) => AdminPage(),
                       )),
                   style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white30,
@@ -240,7 +240,7 @@ class ProfileWidget extends StatelessWidget {
                       // foregroundColor: ColorResources.WHITE,
                       elevation: 0),
                   child: const Text(
-                    'Edit Profile',
+                    'Admin Login',
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 11,

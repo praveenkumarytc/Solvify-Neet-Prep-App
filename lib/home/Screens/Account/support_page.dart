@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shield_neet/components/solvify_appbar.dart';
 
 class SupportPage extends StatelessWidget {
   const SupportPage({Key? key}) : super(key: key);
@@ -6,8 +7,9 @@ class SupportPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Support'),
+      appBar: const PreferredSize(
+        preferredSize: Size.fromHeight(50),
+        child: SolvifyAppbar(title: 'Support'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

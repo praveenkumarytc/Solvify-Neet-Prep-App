@@ -43,6 +43,7 @@ dependencies:
   liquid_swipe: ^2.1.1
   velocity_x: ^3.6.0
   flutter_switch: ^0.3.2
+  fluttertoast: ^8.2.1
 
 dev_dependencies:
   flutter_test:
