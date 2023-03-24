@@ -24,9 +24,17 @@ class _SplashPageState extends State<SplashPage> {
   routes() {
     Timer(const Duration(seconds: 3), () {
       if (Provider.of<AuthProvider>(context, listen: false).isLoggedIn()) {
-        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const DashBoard()), (route) => false);
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const DashBoard()),
+          (route) => false,
+        );
       } else {
-        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const OnBoarding()), (route) => false);
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const OnBoarding()),
+          (route) => false,
+        );
       }
     });
   }
