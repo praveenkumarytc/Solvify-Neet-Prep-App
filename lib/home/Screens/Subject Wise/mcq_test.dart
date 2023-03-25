@@ -10,6 +10,7 @@ import 'package:shield_neet/Utils/color_resources.dart';
 import 'package:shield_neet/custom%20%20widget/zoomable_image.dart';
 import 'package:shield_neet/helper/check_text_is_url.dart';
 import 'package:shield_neet/helper/push_to.dart';
+import 'package:shield_neet/home/Screens/Subject%20Wise/chapters_screen.dart';
 import 'package:shield_neet/home/Screens/Subject%20Wise/mcq_model.dart';
 import 'package:shield_neet/home/Screens/result/result_screen.dart';
 import 'package:shield_neet/providers/user_provider.dart';
@@ -54,7 +55,8 @@ class _McqTestScreenState extends State<McqTestScreen> {
 
   final PageController controller = PageController(initialPage: 0);
   int currentPage = 0;
-
+  bool isAttempt = false;
+  bool solutionVisible = false;
   void nextPage() {
     if (currentPage < mcqList.length - 1) {
       setState(() {
@@ -62,10 +64,11 @@ class _McqTestScreenState extends State<McqTestScreen> {
       });
       //to add option response
       performanceData.add(mcqIs);
-      log(myPerformace.toJson().toString());
-      perFormanceModelList.add(myPerformace);
-
-      print(performanceData);
+      // log(myPerformace.toJson().toString());
+      // perFormanceModelList.add(myPerformace);
+      solutionVisible = false;
+      isAttempt = false;
+      // print(performanceData);
       controller.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.ease,
@@ -77,13 +80,15 @@ class _McqTestScreenState extends State<McqTestScreen> {
     if (currentPage < mcqList.length - 1) {
       setState(() {
         currentPage++;
+        solutionVisible = false;
+        isAttempt = false;
       });
-      //to add option response
-      // mcqIs = 'skipped';
+      // //to add option response
+      // // mcqIs = 'skipped';
       performanceData.add(mcqIs);
-      // myPerformace = PerformanceModel(question: 'initialized', isCorrect: 'skipped', explaination: 'initialized');
-      perFormanceModelList.add(myPerformace);
-      log(myPerformace.toJson().toString());
+      // // myPerformace = PerformanceModel(question: 'initialized', isCorrect: 'skipped', explaination: 'initialized');
+      // perFormanceModelList.add(myPerformace);
+      // log(myPerformace.toJson().toString());
       controller.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.ease,
@@ -95,6 +100,8 @@ class _McqTestScreenState extends State<McqTestScreen> {
     if (currentPage > 0) {
       setState(() {
         currentPage--;
+        solutionVisible = false;
+        isAttempt = false;
       });
 
       //to add option response
@@ -169,7 +176,9 @@ class _McqTestScreenState extends State<McqTestScreen> {
                               //to add option response
                               performanceData.add(mcqIs);
                               perFormanceModelList.add(myPerformace);
-                              log(myPerformace.toJson().toString());
+                              // log(myPerformace.toJson().toString());
+                              solutionVisible = false;
+                              isAttempt = false;
 
                               Navigator.pushAndRemoveUntil(
                                   context,
@@ -227,15 +236,14 @@ class _McqTestScreenState extends State<McqTestScreen> {
                             width: MediaQuery.of(context).size.width * 0.9,
                             height: MediaQuery.of(context).size.height - 150,
                             decoration: BoxDecoration(
-                                color: ColorResources.getWhite(context),
-                                borderRadius: const BorderRadius.all(
-                                  Radius.circular(20),
-                                )),
+                              color: ColorResources.getWhite(context),
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(20),
+                              ),
+                            ),
                             child: PageView.builder(
                               controller: controller,
                               onPageChanged: (value) {
-                                // mcqIs = 'skipped';
-                                // myPerformace = PerformanceModel(question: 'initialized', isCorrect: 'skipped', explaination: 'initialized');
                                 (int index) {
                                   setState(() {
                                     currentPage = index;
@@ -244,113 +252,191 @@ class _McqTestScreenState extends State<McqTestScreen> {
                               },
                               itemCount: mcqList.length,
                               physics: const NeverScrollableScrollPhysics(),
-                              itemBuilder: (context, index) => Column(
-                                children: [
-                                  Container(
-                                    alignment: Alignment.center,
-                                    padding: const EdgeInsets.all(10),
-                                    child: Column(
-                                      children: [
-                                        Center(
-                                          child: Text(
-                                            'Question ${index + 1}/${mcqList.length}',
-                                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: ColorResources.PRIMARY_MATERIAL),
+                              itemBuilder: (context, index) => ScrollConfiguration(
+                                behavior: NoGlowScroll(),
+                                child: ListView(
+                                  children: [
+                                    Container(
+                                      alignment: Alignment.center,
+                                      padding: const EdgeInsets.all(10),
+                                      child: Column(
+                                        children: [
+                                          Center(
+                                            child: Text(
+                                              'Question ${index + 1}/${mcqList.length}',
+                                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: ColorResources.PRIMARY_MATERIAL),
+                                            ),
                                           ),
-                                        ),
-                                        10.heightBox,
-                                        checkForImage(mcqList[index].question)
-                                            ? GestureDetector(
-                                                onTap: () => pushTo(context, ZoomableImage(image: NetworkImage(mcqList[index].question))),
-                                                child: Container(
-                                                  height: 150,
-                                                  padding: const EdgeInsets.all(8),
-                                                  child: Image(
-                                                    image: NetworkImage(mcqList[index].question),
-                                                    fit: BoxFit.cover,
-                                                    loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                                                      if (loadingProgress == null) {
-                                                        // Image is fully loaded, return GestureDetector
-                                                        return GestureDetector(
-                                                          onTap: () => pushTo(context, ZoomableImage(image: NetworkImage(mcqList[index].question))),
-                                                          child: child,
-                                                        );
-                                                      } else {
-                                                        // Image is still loading, return placeholder
-                                                        return const ImageError(error: 'Image not available');
-                                                      }
-                                                    },
-                                                    errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-                                                      // Handle image loading error
-                                                      return const ImageError(error: 'Error loading image');
-                                                    },
-                                                  ),
-                                                ),
-                                              )
-                                            : Text(
-                                                mcqList[index].question,
-                                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                                                textAlign: TextAlign.center,
-                                              ),
-                                        (mcqList[index].question.length < 120 ? 80 : 20).heightBox,
-                                        ...List.generate(
-                                          mcqList[index].options.length,
-                                          (i) => GestureDetector(
-                                            onTap: () {
-                                              selectedOption = mcqList[index].options[i].optionDetail;
-                                              mcqIs = mcqList[index].options[i].isCorrect.toString();
-
-                                              myPerformace = PerformanceModel(
-                                                question: mcqList[index].question,
-                                                isCorrect: mcqIs,
-                                                explaination: selectedOption!,
-                                              );
-                                              log(myPerformace.toJson().toString());
-                                              setState(() {});
-                                            },
-                                            child: Container(
-                                              width: double.infinity,
-                                              margin: const EdgeInsets.only(top: 15),
-                                              padding: const EdgeInsets.all(8),
-                                              decoration: BoxDecoration(
-                                                border: Border.all(width: 3, color: Colors.blueGrey.shade100),
-                                                borderRadius: const BorderRadius.all(
-                                                  Radius.circular(10),
-                                                ),
-                                              ),
-                                              child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Flexible(
-                                                    flex: 3,
-                                                    child: Text(
-                                                      mcqList[index].options[i].optionDetail,
-                                                      style: const TextStyle(fontWeight: FontWeight.w400),
-                                                    ),
-                                                  ),
-                                                  // Text(mcqList[index].options[i].isCorrect.toString()),
-                                                  SizedBox(
-                                                    height: 30,
-                                                    child: Radio(
-                                                      value: mcqList[index].options[i].optionDetail,
-                                                      groupValue: selectedOption,
-                                                      onChanged: (value) {
-                                                        setState(() {
-                                                          mcqIs = mcqList[index].options[i].isCorrect.toString();
-                                                          print(mcqIs);
-                                                          selectedOption = mcqList[index].options[i].optionDetail;
-                                                        });
+                                          10.heightBox,
+                                          checkForImage(mcqList[index].question)
+                                              ? GestureDetector(
+                                                  onTap: () => pushTo(context, ZoomableImage(image: NetworkImage(mcqList[index].question))),
+                                                  child: Container(
+                                                    height: 150,
+                                                    padding: const EdgeInsets.all(8),
+                                                    child: Image(
+                                                      image: NetworkImage(mcqList[index].question),
+                                                      fit: BoxFit.cover,
+                                                      loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                                                        if (loadingProgress == null) {
+                                                          // Image is fully loaded, return GestureDetector
+                                                          return GestureDetector(
+                                                            onTap: () => pushTo(context, ZoomableImage(image: NetworkImage(mcqList[index].question))),
+                                                            child: child,
+                                                          );
+                                                        } else {
+                                                          // Image is still loading, return placeholder
+                                                          return const ImageError(error: 'Image not available');
+                                                        }
+                                                      },
+                                                      errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                                                        // Handle image loading error
+                                                        return const ImageError(error: 'Error loading image');
                                                       },
                                                     ),
-                                                  )
-                                                ],
+                                                  ),
+                                                )
+                                              : Text(
+                                                  mcqList[index].question,
+                                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                          (mcqList[index].question.length < 120 ? 80 : 20).heightBox,
+                                          ...List.generate(
+                                            mcqList[index].options.length,
+                                            (i) => Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    setState(() {
+                                                      isAttempt = true;
+                                                      mcqIs = mcqList[index].options[i].isCorrect.toString();
+                                                      print(mcqIs);
+                                                      selectedOption = mcqList[index].options[i].optionDetail;
+                                                    });
+                                                  },
+                                                  child: Container(
+                                                    width: double.infinity,
+                                                    margin: const EdgeInsets.only(top: 15),
+                                                    padding: const EdgeInsets.all(8),
+                                                    decoration: BoxDecoration(
+                                                      border: Border.all(
+                                                          width: 1.5,
+                                                          color: isAttempt
+                                                              ? mcqList[index].options[i].isCorrect
+                                                                  ? Colors.green
+                                                                  : Colors.red
+                                                              : Colors.grey.shade100),
+                                                      borderRadius: const BorderRadius.all(
+                                                        Radius.circular(10),
+                                                      ),
+                                                    ),
+                                                    child: Row(
+                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                      children: [
+                                                        Flexible(
+                                                          flex: 3,
+                                                          child: Text(
+                                                            mcqList[index].options[i].optionDetail,
+                                                            style: const TextStyle(fontWeight: FontWeight.w400),
+                                                          ),
+                                                        ),
+                                                        // Text(mcqList[index].options[i].isCorrect.toString()),
+                                                        SizedBox(
+                                                          height: 30,
+                                                          child: Radio(
+                                                            activeColor: ColorResources.COLOR_BLUE,
+                                                            value: mcqList[index].options[i].optionDetail,
+                                                            groupValue: selectedOption,
+                                                            onChanged: (value) {
+                                                              setState(() {
+                                                                isAttempt = true;
+                                                                mcqIs = mcqList[index].options[i].isCorrect.toString();
+                                                                print(mcqIs);
+                                                                selectedOption = mcqList[index].options[i].optionDetail;
+                                                              });
+                                                            },
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          20.heightBox,
+                                          // Row(
+                                          //   mainAxisAlignment: MainAxisAlignment.start,
+                                          //   children: const [
+                                          //     Text(
+                                          //       'Explanation:',
+                                          //       style: TextStyle(color: Color.fromARGB(255, 0, 136, 247), fontSize: 16, fontWeight: FontWeight.w500),
+                                          //     ),
+                                          //   ],
+                                          // ),
+                                          Visibility(
+                                            visible: isAttempt,
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                setState(() {
+                                                  solutionVisible = !solutionVisible;
+                                                });
+                                              },
+                                              child: Chip(
+                                                label: Text(solutionVisible ? 'Hide Solution' : 'View Solution'),
+                                                backgroundColor: solutionVisible ? Colors.blue : Colors.grey.shade100,
+                                                avatar: Icon(
+                                                  solutionVisible ? Icons.visibility : Icons.visibility_off,
+                                                  color: Colors.white,
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        )
-                                      ],
+
+                                          Visibility(
+                                            visible: solutionVisible,
+                                            child: checkForImage(mcqList[index].solutionImage)
+                                                ? GestureDetector(
+                                                    onTap: () => pushTo(context, ZoomableImage(image: NetworkImage(mcqList[index].solutionImage))),
+                                                    child: Container(
+                                                      height: 150,
+                                                      padding: const EdgeInsets.all(8),
+                                                      child: Image(
+                                                        image: NetworkImage(mcqList[index].solutionImage),
+                                                        fit: BoxFit.cover,
+                                                        loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                                                          if (loadingProgress == null) {
+                                                            // Image is fully loaded, return GestureDetector
+                                                            return GestureDetector(
+                                                              onTap: () => pushTo(context, ZoomableImage(image: NetworkImage(mcqList[index].solutionImage))),
+                                                              child: child,
+                                                            );
+                                                          } else {
+                                                            // Image is still loading, return placeholder
+                                                            return const ImageError(error: 'Image not available');
+                                                          }
+                                                        },
+                                                        errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                                                          // Handle image loading error
+                                                          return const ImageError(error: 'Error loading image');
+                                                        },
+                                                      ),
+                                                    ),
+                                                  )
+                                                : Text(
+                                                    mcqList[index].solutionImage,
+                                                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                                                    textAlign: TextAlign.start,
+                                                  ),
+                                          )
+                                        ],
+                                      ),
                                     ),
-                                  )
-                                ],
+                                    30.heightBox
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -369,16 +455,17 @@ class ImageError extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-        height: 50,
-        child: Center(
-          child: Text(
-            error,
-            style: const TextStyle(
-              color: Colors.grey,
-              fontSize: 12,
-            ),
+      height: 50,
+      child: Center(
+        child: Text(
+          error,
+          style: const TextStyle(
+            color: Colors.grey,
+            fontSize: 12,
           ),
-        ));
+        ),
+      ),
+    );
   }
 }
 

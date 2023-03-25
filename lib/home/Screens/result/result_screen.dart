@@ -84,6 +84,7 @@ class _ResultScreenState extends State<ResultScreen> {
       },
       child: Scaffold(
         body: Container(
+          padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
@@ -96,112 +97,116 @@ class _ResultScreenState extends State<ResultScreen> {
           ),
           child: ScrollConfiguration(
             behavior: NoGlowScroll(),
-            child: ListView(
-              padding: const EdgeInsets.all(15),
-              children: [
-                RepaintBoundary(
-                  key: _globalKey,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
+            child: RepaintBoundary(
+              key: _globalKey,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const DecorativeContainer(),
+                    50.heightBox,
+                    const Padding(
+                      padding: EdgeInsets.only(left: 10),
+                      child: Text(
+                        'Your today\'s result are here:',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
                     ),
-                    margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    20.heightBox,
+                    Row(
                       children: [
-                        const DecorativeContainer(),
-                        50.heightBox,
-                        const Padding(
-                          padding: EdgeInsets.only(left: 10),
-                          child: Text(
-                            'Your today\'s result are here:',
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.check, color: Colors.green),
+                              const SizedBox(height: 8),
+                              const Text(
+                                'Correct',
+                                style: TextStyle(color: Colors.black),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '${correctAnswers.length}/${widget.performanceData.length}',
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                            ],
                           ),
                         ),
-                        20.heightBox,
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(Icons.check, color: Colors.green),
-                                  const SizedBox(height: 8),
-                                  const Text(
-                                    'Correct',
-                                    style: TextStyle(color: Colors.black),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    '${correctAnswers.length}/${widget.performanceData.length}',
-                                    style: const TextStyle(color: Colors.black),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 5,
-                              height: 65,
-                              child: VerticalDivider(
-                                thickness: 1.5,
-                              ),
-                            ),
-                            Expanded(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(Icons.close, color: Colors.red),
-                                  const SizedBox(height: 8),
-                                  const Text(
-                                    'Wrong',
-                                    style: TextStyle(color: Colors.black),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    '${wrongAnswer.length}/${widget.performanceData.length}',
-                                    style: const TextStyle(color: Colors.black),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 5,
-                              height: 65,
-                              child: VerticalDivider(
-                                thickness: 1.5,
-                              ),
-                            ),
-                            Expanded(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(Icons.help_outline, color: Colors.grey),
-                                  const SizedBox(height: 8),
-                                  const Text(
-                                    'Skipped',
-                                    style: TextStyle(color: Colors.black),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    '${skippedAnswers.length}/${widget.performanceData.length}',
-                                    style: const TextStyle(color: Colors.black),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                        const SizedBox(
+                          width: 5,
+                          height: 65,
+                          child: VerticalDivider(
+                            thickness: 1.5,
+                          ),
                         ),
-                        50.heightBox,
-                        ShareButton(
-                          onSharePressed: _onSharePressed,
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.close, color: Colors.red),
+                              const SizedBox(height: 8),
+                              const Text(
+                                'Wrong',
+                                style: TextStyle(color: Colors.black),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '${wrongAnswer.length}/${widget.performanceData.length}',
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                            ],
+                          ),
                         ),
-                        50.heightBox,
+                        const SizedBox(
+                          width: 5,
+                          height: 65,
+                          child: VerticalDivider(
+                            thickness: 1.5,
+                          ),
+                        ),
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.help_outline, color: Colors.grey),
+                              const SizedBox(height: 8),
+                              const Text(
+                                'Skipped',
+                                style: TextStyle(color: Colors.black),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '${skippedAnswers.length}/${widget.performanceData.length}',
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
-                  ),
+                    50.heightBox,
+                    ShareButton(
+                      onSharePressed: _onSharePressed,
+                    ),
+                    50.heightBox,
+                  ],
                 ),
-                /*      onlyWrongAttempts.isEmpty
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/*      onlyWrongAttempts.isEmpty
                     ? const SizedBox.shrink()
                     : Container(
                         margin: const EdgeInsets.symmetric(horizontal: 10),
@@ -262,14 +267,6 @@ class _ResultScreenState extends State<ResultScreen> {
                       )
              
              */
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 class WrongAttempts extends StatelessWidget {
   const WrongAttempts({Key? key, required this.question, required this.explaination}) : super(key: key);
