@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.praveen.shield.shield_neet">
+    package="com.solvify.neet_prep_app">
    <application
         android:label="Solvify Neet Prep App"
         android:name="${applicationName}"

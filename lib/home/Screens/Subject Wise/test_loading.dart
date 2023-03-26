@@ -1,6 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:shield_neet/Utils/color_resources.dart';
 import 'package:shield_neet/home/Screens/Subject%20Wise/mcq_test.dart';
 
 class LoadingScreen extends StatefulWidget {
@@ -45,7 +46,7 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: ColorResources.getWhite(context),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

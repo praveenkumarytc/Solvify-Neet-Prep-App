@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shield_neet/Utils/app_constants.dart';
 import 'package:shield_neet/Utils/color_resources.dart';
+import 'package:shield_neet/helper/push_to.dart';
 import 'package:shield_neet/home/Screens/Subject%20Wise/mcq_model.dart';
+import 'package:shield_neet/home/Screens/result/result_screen.dart';
 import 'package:shield_neet/providers/auth_providers.dart';
 import 'package:shield_neet/providers/user_provider.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -21,6 +23,7 @@ class _McqTestScreenState extends State<McqTestScreen> {
   String? selectedOption;
   dynamic data;
   List<McqModel> mcqList = [];
+  List<dynamic> performanceData = [];
 
   Future<dynamic> getData() async {
     final QuerySnapshot<Object?> snapshot = await FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(widget.subjectName).collection(FirestoreCollections.chapters).doc(widget.chapterId).collection(FirestoreCollections.mcq).get();
@@ -95,24 +98,34 @@ class _McqTestScreenState extends State<McqTestScreen> {
               ),
               onPressed: previousPage,
             ),
-            TextButton(
-              onPressed: nextPage,
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.black,
-                textStyle: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              child: const Text('Skip'),
-            ),
-            IconButton(
-              icon: Icon(
-                Icons.arrow_forward_ios,
-                color: currentPage < mcqList.length - 1 ? ColorResources.PRIMARY_MATERIAL : Colors.grey,
-              ),
-              onPressed: nextPage,
-            ),
+            currentPage < mcqList.length - 1
+                ? TextButton(
+                    onPressed: nextPage,
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.black,
+                      textStyle: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    child: const Text('Skip'),
+                  )
+                : const SizedBox.shrink(),
+            currentPage < mcqList.length - 1
+                ? IconButton(
+                    icon: Icon(
+                      Icons.arrow_forward_ios,
+                      color: currentPage < mcqList.length - 1 ? ColorResources.PRIMARY_MATERIAL : Colors.grey,
+                    ),
+                    onPressed: nextPage,
+                  )
+                : ElevatedButton(
+                    onPressed: () => pushTo(context, ResultScreen()),
+                    child: const Text(
+                      'Submit',
+                      style: TextStyle(fontWeight: FontWeight.bold, color: ColorResources.WHITE),
+                    ),
+                  ),
           ],
         ),
       ),

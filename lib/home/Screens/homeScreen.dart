@@ -87,16 +87,16 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            HelloDoctorsCard(),
-            ElevatedButton(
-              onPressed: () async {
-                Uint8List imageBytes = await captureWidgetAsImage(globalKey);
-                final bytes = base64Encode(imageBytes);
-                print(bytes);
-                // Do something with the imageBytes
-              },
-              child: Text('Capture Image'),
-            ),
+            const HelloDoctorsCard(),
+            // ElevatedButton(
+            //   onPressed: () async {
+            //     // Uint8List imageBytes = await captureWidgetAsImage(globalKey);
+            //     // final bytes = base64Encode(imageBytes);
+            //     // print(bytes);
+            //     // Do something with the imageBytes
+            //   },
+            //   child: Text('Capture Image'),
+            // ),
             QuestionButtons(
               onTap: () => pushTo(context, const SubjectWiseQuestScreen()),
               title: 'Subject Wise Questions',
