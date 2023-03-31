@@ -8,7 +8,7 @@ import 'package:shield_neet/providers/admin_provider.dart';
 import 'package:shield_neet/providers/auth_providers.dart';
 import 'package:shield_neet/splash_page.dart';
 
-bool isDark = false;
+bool isDark = true;
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
