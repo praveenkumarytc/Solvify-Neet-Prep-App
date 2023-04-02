@@ -1,14 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
+import 'package:provider/provider.dart';
 import 'package:shield_neet/Admin%20App/admin_page.dart';
 import 'package:shield_neet/Utils/color_resources.dart';
 import 'package:shield_neet/Utils/dimensions.dart';
 import 'package:shield_neet/Utils/images.dart';
+import 'package:shield_neet/helper/log_out_dialog.dart';
 import 'package:shield_neet/home/Screens/Account/feedback.dart';
 import 'package:shield_neet/home/Screens/Account/privacy_policy.dart';
 import 'package:shield_neet/home/Screens/Account/support_page.dart';
 import 'package:shield_neet/main.dart';
+import 'package:shield_neet/providers/auth_providers.dart';
+import 'package:shield_neet/splash_page.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -39,12 +43,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var userData = Provider.of<AuthProvider>(context, listen: false);
     return Scaffold(
       body: SingleChildScrollView(
         // padding: const EdgeInsets.all(10),
         child: Column(
           children: [
-            const ProfileWidget(),
+            ProfileWidget(name: userData.fullName ?? " ", email: userData.email ?? " "),
             Dimensions.PADDING_SIZE_EXTRA_LARGE.heightBox,
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 18),
@@ -132,7 +137,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
               icon: Icons.settings,
             ),
             AccountCards(
-              onTap: () {},
+              onTap: () async {
+                showGeneralDialog(
+                  context: context,
+                  pageBuilder: (context, animation, secondaryAnimation) => AppInfoDialog(onLogOut: () async {
+                    await Provider.of<AuthProvider>(context, listen: false).logOut().then((value) {
+                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const SplashPage()), (route) => false);
+                    });
+                  }),
+                );
+              },
               title: 'Sign Out',
               isIcon: false,
               icon: Icons.logout,
@@ -192,9 +206,8 @@ class AccountCards extends StatelessWidget {
 }
 
 class ProfileWidget extends StatelessWidget {
-  const ProfileWidget({
-    super.key,
-  });
+  const ProfileWidget({super.key, required this.name, required this.email});
+  final String name, email;
 
   @override
   Widget build(BuildContext context) {
@@ -252,18 +265,18 @@ class ProfileWidget extends StatelessWidget {
             30.heightBox,
             Center(
               child: Column(
-                children: const [
-                  CircleAvatar(
+                children: [
+                  const CircleAvatar(
                     radius: 35,
                     backgroundImage: AssetImage(Images.doctor_profile),
                   ),
                   Text(
-                    'Praveen Kumar',
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 17),
+                    name,
+                    style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 17),
                   ),
                   Text(
-                    'praveenkumaeytc@gmail.com',
-                    style: TextStyle(fontWeight: FontWeight.normal, color: Colors.white, fontSize: 11),
+                    email,
+                    style: const TextStyle(fontWeight: FontWeight.normal, color: Colors.white, fontSize: 11),
                   ),
                 ],
               ),

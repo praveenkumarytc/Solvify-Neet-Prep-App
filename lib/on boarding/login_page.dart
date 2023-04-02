@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shield_neet/Utils/color_resources.dart';
 import 'package:shield_neet/Utils/dimensions.dart';
 import 'package:shield_neet/Utils/textstyle.dart';
 import 'package:shield_neet/components/animated_button.dart';
+import 'package:shield_neet/helper/flutter_toast.dart';
 import 'package:shield_neet/home/dashboard.dart';
+import 'package:shield_neet/providers/auth_providers.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class LoginPage extends StatefulWidget {
@@ -21,8 +24,8 @@ class _LoginPageState extends State<LoginPage> {
   bool isRegister = false;
   String? name;
   String? phone;
-  String? email;
-  String? password;
+  String email = '';
+  String password = '';
 
   // bool _loading = false;
 
@@ -64,6 +67,7 @@ class _LoginPageState extends State<LoginPage> {
           margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           child: TextFormField(
             keyboardType: TextInputType.name,
+            textCapitalization: TextCapitalization.words,
             decoration: InputDecoration(
               hintText: 'Full Name',
               hintStyle: TextStyle(fontWeight: FontWeight.normal, color: Colors.grey.shade500, fontSize: 14),
@@ -95,6 +99,8 @@ class _LoginPageState extends State<LoginPage> {
           margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           child: TextFormField(
             keyboardType: TextInputType.number,
+            maxLength: 10,
+            buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
             decoration: InputDecoration(
               hintText: 'Mobile No.',
               hintStyle: TextStyle(fontWeight: FontWeight.normal, color: Colors.grey.shade500, fontSize: 14),
@@ -191,18 +197,21 @@ class _LoginPageState extends State<LoginPage> {
         ),
         Dimensions.PADDING_SIZE_DEFAULT.heightBox,
         AnimatedButton(
-          onTap: () {
-            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const DashBoard()), (route) => false);
+          onTap: () async {
+            // print('$name $phone $password $email');
+            await Provider.of<AuthProvider>(context, listen: false).signUp(context, name, email, password, phone).then((value) {});
           },
-          child: Container(
-            width: double.infinity,
-            margin: const EdgeInsets.all(8),
-            height: 55,
-            decoration: const BoxDecoration(color: ColorResources.PRIMARY_MATERIAL, borderRadius: BorderRadius.all(Radius.circular(10))),
-            child: const Center(
-              child: Text('Register', style: whiteButtonText),
-            ),
-          ),
+          child: Provider.of<AuthProvider>(context, listen: false).isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.all(8),
+                  height: 55,
+                  decoration: const BoxDecoration(color: ColorResources.PRIMARY_MATERIAL, borderRadius: BorderRadius.all(Radius.circular(10))),
+                  child: const Center(
+                    child: Text('Register', style: whiteButtonText),
+                  ),
+                ),
         ),
         SizedBox(
           height: MediaQuery.of(context).size.height * 0.1,
@@ -226,7 +235,7 @@ class _LoginPageState extends State<LoginPage> {
                     width: MediaQuery.of(context).size.width * 0.4,
                     decoration: BoxDecoration(color: isRegister ? Colors.white30 : Colors.white, borderRadius: const BorderRadius.all(Radius.circular(10))),
                     child: const Center(
-                      child: Text('Sign Un', style: blackButtonText),
+                      child: Text('Sign In', style: blackButtonText),
                     ),
                   ),
                 ),
@@ -348,8 +357,14 @@ class _LoginPageState extends State<LoginPage> {
         ),
         Dimensions.PADDING_SIZE_DEFAULT.heightBox,
         AnimatedButton(
-          onTap: () {
-            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const DashBoard()), (route) => false);
+          onTap: () async {
+            if (email.isEmpty) {
+              showToast(message: "Enter email", isError: true);
+            } else if (password.isEmpty) {
+              showToast(message: "Enter password", isError: true);
+            } else {
+              await Provider.of<AuthProvider>(context, listen: false).signIn(context, email, password);
+            }
           },
           child: Container(
             width: double.infinity,

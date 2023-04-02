@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "41578345362",
+    "project_id": "solvify-neet-prep-app",
+    "storage_bucket": "solvify-neet-prep-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:41578345362:android:89e60464ed99e00dd6074b",
+        "android_client_info": {
+          "package_name": "com.praveen.shield.shield_neet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "41578345362-9blpc95too1mkol361qulcoe7j8dr49p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAuuEdX9Q9ulcWpgqe9ZScM3SaqaVOJB2A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "41578345362-9blpc95too1mkol361qulcoe7j8dr49p.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
