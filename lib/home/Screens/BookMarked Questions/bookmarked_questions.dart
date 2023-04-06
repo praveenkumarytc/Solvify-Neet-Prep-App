@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shield_neet/components/solvify_appbar.dart';
-import 'package:shield_neet/home/Screens/Account/Subject%20Wise/chapters_screen.dart';
+import 'package:shield_neet/home/Screens/Subject%20Wise/chapters_screen.dart';
 
 class BookMarkedQuestScreen extends StatelessWidget {
   const BookMarkedQuestScreen({super.key});

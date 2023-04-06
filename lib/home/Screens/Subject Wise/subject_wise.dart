@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:shield_neet/Utils/app_constants.dart';
 import 'package:shield_neet/Utils/dimensions.dart';
 import 'package:shield_neet/Utils/images.dart';
 import 'package:shield_neet/components/solvify_appbar.dart';
-import 'package:shield_neet/home/Screens/Account/Subject%20Wise/chapters_screen.dart';
+import 'package:shield_neet/home/Screens/Subject%20Wise/chapters_screen.dart';
 import 'package:shield_neet/helper/push_to.dart';
 import 'package:velocity_x/velocity_x.dart';
 
@@ -20,23 +21,23 @@ class SubjectWiseQuestScreen extends StatelessWidget {
           children: [
             SubjecstsCard(
               imagePath: Images.pendulum,
-              subjectName: 'Physics',
+              subjectName: FirestoreCollections.physics,
               iconPath: Images.prism,
-              onTap: () => pushTo(context, const ChapterScreen(subjectName: 'Physics')),
+              onTap: () => pushTo(context, const ChapterScreen(subjectName: FirestoreCollections.physics)),
             ),
             Dimensions.PADDING_SIZE_SMALL.heightBox,
             SubjecstsCard(
               imagePath: Images.laboratory,
-              subjectName: 'Chemistry',
+              subjectName: FirestoreCollections.chemistry,
               iconPath: Images.chemistry,
-              onTap: () => pushTo(context, const ChapterScreen(subjectName: 'Chemistry')),
+              onTap: () => pushTo(context, const ChapterScreen(subjectName: FirestoreCollections.chemistry)),
             ),
             Dimensions.PADDING_SIZE_SMALL.heightBox,
             SubjecstsCard(
               imagePath: Images.biology,
               iconPath: Images.evolution,
-              subjectName: 'Biology',
-              onTap: () => pushTo(context, const ChapterScreen(subjectName: 'Biology')),
+              subjectName: FirestoreCollections.biology,
+              onTap: () => pushTo(context, const ChapterScreen(subjectName: FirestoreCollections.biology)),
             ),
           ],
         ),

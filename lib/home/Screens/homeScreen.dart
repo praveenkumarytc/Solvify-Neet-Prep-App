@@ -5,8 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:shield_neet/Utils/color_resources.dart';
 import 'package:shield_neet/Utils/dimensions.dart';
 import 'package:shield_neet/Utils/images.dart';
-import 'package:shield_neet/home/Screens/Account/BookMarked%20Questions/bookmarked_questions.dart';
-import 'package:shield_neet/home/Screens/Account/Subject%20Wise/subject_wise.dart';
+import 'package:shield_neet/home/Screens/BookMarked%20Questions/bookmarked_questions.dart';
+import 'package:shield_neet/home/Screens/Subject%20Wise/subject_wise.dart';
 import 'package:shield_neet/helper/push_to.dart';
 import 'package:velocity_x/velocity_x.dart';
 

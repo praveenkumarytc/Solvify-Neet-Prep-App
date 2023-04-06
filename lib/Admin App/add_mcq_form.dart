@@ -5,7 +5,6 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:shield_neet/Utils/color_resources.dart';
@@ -238,7 +237,7 @@ class _AddMcqPageState extends State<AddMcqPage> {
                   30.heightBox,
                   SubmitButton(
                     onTap: () async {
-                      List<Map<String, dynamic>> _options = [
+                      List<Map<String, dynamic>> options = [
                         {
                           "is_correct": isoption1Correct,
                           "opt_no": 1,
@@ -261,8 +260,8 @@ class _AddMcqPageState extends State<AddMcqPage> {
                         }
                       ];
                       try {
-                        print(_options);
-                        await Provider.of<AdminProvider>(context, listen: false).addMcq(widget.subjectname, widget.chapterId, questionController.text.trim(), _options, base64).then((value) {
+                        print(options);
+                        await Provider.of<AdminProvider>(context, listen: false).addMcq(widget.subjectname, widget.chapterId, questionController.text.trim(), options, base64).then((value) {
                           showToast(message: 'mcq added successfully');
                           Navigator.pop(context);
                         });

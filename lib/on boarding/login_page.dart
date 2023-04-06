@@ -5,7 +5,6 @@ import 'package:shield_neet/Utils/dimensions.dart';
 import 'package:shield_neet/Utils/textstyle.dart';
 import 'package:shield_neet/components/animated_button.dart';
 import 'package:shield_neet/helper/flutter_toast.dart';
-import 'package:shield_neet/home/dashboard.dart';
 import 'package:shield_neet/providers/auth_providers.dart';
 import 'package:velocity_x/velocity_x.dart';
 
