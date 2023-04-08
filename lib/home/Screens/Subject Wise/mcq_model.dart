@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class McqModel {
   McqModel({
     required this.question,

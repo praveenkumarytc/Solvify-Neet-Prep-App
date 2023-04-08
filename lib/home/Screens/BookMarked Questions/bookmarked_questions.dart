@@ -1,6 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shield_neet/Utils/app_constants.dart';
 import 'package:shield_neet/components/solvify_appbar.dart';
 import 'package:shield_neet/home/Screens/Subject%20Wise/chapters_screen.dart';
+import 'package:shield_neet/providers/auth_providers.dart';
 
 class BookMarkedQuestScreen extends StatelessWidget {
   const BookMarkedQuestScreen({super.key});
@@ -14,12 +18,22 @@ class BookMarkedQuestScreen extends StatelessWidget {
       ),
       body: ScrollConfiguration(
         behavior: NoGlowScroll(),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            children: List.generate(
-                15,
-                (index) => ListTile(
+        child: StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance.collection(FirestoreCollections.users).doc(Provider.of<AuthProvider>(context, listen: false).uid).collection(FirestoreCollections.bookMarkedMcq).snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return const Text('Error occured');
+              } else if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Text('Loading...');
+              } else if (!snapshot.hasData) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              return SingleChildScrollView(
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  children: List.generate(
+                    15,
+                    (index) => ListTile(
                       dense: true,
                       visualDensity: VisualDensity.adaptivePlatformDensity,
                       leading: Text(
@@ -32,9 +46,11 @@ class BookMarkedQuestScreen extends StatelessWidget {
                         maxLines: 2,
                       ),
                       subtitle: const Text('Physics'),
-                    )),
-          ),
-        ),
+                    ),
+                  ),
+                ),
+              );
+            }),
       ),
     );
   }

@@ -2,13 +2,17 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shield_neet/Utils/app_constants.dart';
 import 'package:shield_neet/Utils/color_resources.dart';
 import 'package:shield_neet/Utils/dimensions.dart';
 import 'package:shield_neet/Utils/images.dart';
 import 'package:shield_neet/home/Screens/BookMarked%20Questions/bookmarked_questions.dart';
-import 'package:shield_neet/home/Screens/Subject%20Wise/subject_wise.dart';
+
 import 'package:shield_neet/helper/push_to.dart';
+import 'package:shield_neet/home/Screens/Subject%20Wise/subject_wise.dart';
 import 'package:velocity_x/velocity_x.dart';
+
+import 'Subject Wise/chapters_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -77,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Dimensions.PADDING_SIZE_DEFAULT.heightBox,
             QuestionButtons(
-              onTap: () => pushTo(context, const BookMarkedQuestScreen()),
+              onTap: () => pushTo(context, const ChapterScreen(subjectName: FirestoreCollections.yearWise)),
               title: 'Previous Year Papers',
               color1: const Color(0xFFE5B2CA),
               color2: const Color(0xFF7028E4),

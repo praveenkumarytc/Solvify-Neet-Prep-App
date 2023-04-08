@@ -36,4 +36,13 @@ class AdminProvider extends ChangeNotifier {
       FirestoreCollections.image: image
     });
   }
+
+  Future<void> addBookMark(uid, question, List<Map<String, dynamic>> options, image) async {
+    final CollectionReference bookMarkCollection = FirebaseFirestore.instance.collection(FirestoreCollections.users).doc(uid).collection(FirestoreCollections.bookMarkedMcq);
+    return await bookMarkCollection.doc().set({
+      FirestoreCollections.options: options,
+      FirestoreCollections.question: question,
+      FirestoreCollections.image: image
+    });
+  }
 }

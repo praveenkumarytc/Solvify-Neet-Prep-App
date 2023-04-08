@@ -20,4 +20,7 @@ class FirestoreCollections {
   static const String options = "options";
   static const String optionDetail = "option_detail";
   static const String image = "solution_image";
+  static const String yearWise = "YearWise";
+  static const String years = "years";
+  static const String bookMarkedMcq = "bookMarkedMcq";
 }

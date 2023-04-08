@@ -6,12 +6,13 @@ class AddChapterDialog extends StatelessWidget {
   final TextEditingController chapterNameController;
   final TextEditingController chapterNumberController;
   final VoidCallback onTap;
-
+  final bool isYear;
   const AddChapterDialog({
     Key? key,
     required this.chapterNameController,
     required this.chapterNumberController,
     required this.onTap,
+    required this.isYear,
   }) : super(key: key);
 
   @override
@@ -26,9 +27,9 @@ class AddChapterDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
-              'Add Chapter',
-              style: TextStyle(
+            Text(
+              isYear ? 'Add Year' : 'Add Chapter',
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
@@ -43,16 +44,16 @@ class AddChapterDialog extends StatelessWidget {
               ],
               keyboardType: TextInputType.number,
               maxLength: 2,
-              decoration: const InputDecoration(
-                hintText: 'Chapter Number',
+              decoration: InputDecoration(
+                hintText: isYear ? 'Serial No' : 'Chapter Number',
               ),
             ),
             const SizedBox(height: 10),
             TextField(
               controller: chapterNameController,
               textCapitalization: TextCapitalization.words,
-              decoration: const InputDecoration(
-                hintText: 'Chapter Name',
+              decoration: InputDecoration(
+                hintText: isYear ? 'YYYY' : 'Chapter Name',
               ),
             ),
             const SizedBox(height: 20),

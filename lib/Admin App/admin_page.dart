@@ -12,6 +12,7 @@ class AdminPage extends StatelessWidget {
     FirestoreCollections.physics,
     FirestoreCollections.chemistry,
     FirestoreCollections.biology,
+    FirestoreCollections.yearWise,
   ];
 
   @override
@@ -41,7 +42,7 @@ class AdminPage extends StatelessWidget {
                 itemCount: _subjectNames.length,
                 itemBuilder: (context, index) {
                   final subject = _subjectNames[index];
-                  IconData iconData = Icons.abc;
+                  IconData iconData = Icons.calendar_month_outlined;
                   switch (index) {
                     case 0:
                       iconData = Icons.track_changes;

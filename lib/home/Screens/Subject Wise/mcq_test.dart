@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:shield_neet/Admin%20App/add_mcq_screen.dart';
+import 'package:provider/provider.dart';
 import 'package:shield_neet/Utils/app_constants.dart';
 import 'package:shield_neet/Utils/color_resources.dart';
 import 'package:shield_neet/home/Screens/Subject%20Wise/mcq_model.dart';
+import 'package:shield_neet/providers/auth_providers.dart';
+import 'package:shield_neet/providers/user_provider.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class McqTestScreen extends StatefulWidget {
@@ -123,7 +125,33 @@ class _McqTestScreenState extends State<McqTestScreen> {
               width: double.infinity,
             ),
             TopBgContainer(
-              onBookMarkTap: () {},
+              onBookMarkTap: () async {
+                var uid = Provider.of<AuthProvider>(context, listen: false).uid;
+
+                List<Map<String, dynamic>> optionsData = [
+                  {
+                    "is_correct": mcqList[currentPage].options[0].isCorrect,
+                    "opt_no": mcqList[currentPage].options[0].optNo,
+                    "option_detail": mcqList[currentPage].options[0].optionDetail,
+                  },
+                  {
+                    "is_correct": mcqList[currentPage].options[1].isCorrect,
+                    "opt_no": mcqList[currentPage].options[1].optNo,
+                    "option_detail": mcqList[currentPage].options[1].optionDetail,
+                  },
+                  {
+                    "is_correct": mcqList[currentPage].options[2].isCorrect,
+                    "opt_no": mcqList[currentPage].options[2].optNo,
+                    "option_detail": mcqList[currentPage].options[2].optionDetail,
+                  },
+                  {
+                    "is_correct": mcqList[currentPage].options[3].isCorrect,
+                    "opt_no": mcqList[currentPage].options[3].optNo,
+                    "option_detail": mcqList[currentPage].options[3].optionDetail,
+                  }
+                ];
+                await Provider.of<UserProvider>(context, listen: false).addBookMark(uid, mcqList[0].question, optionsData, mcqList[0].solutionImage);
+              },
             ),
             Positioned(
               top: 110,
@@ -162,7 +190,7 @@ class _McqTestScreenState extends State<McqTestScreen> {
                             ),
                             10.heightBox,
                             Text(
-                              question,
+                              mcqList[index].question,
                               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                               textAlign: TextAlign.center,
                             ),

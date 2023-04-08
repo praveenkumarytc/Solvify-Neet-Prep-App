@@ -26,9 +26,10 @@ class AddChapterScreen extends StatelessWidget {
       builder: (_) => AddChapterDialog(
         chapterNameController: chapterNameController,
         chapterNumberController: chapterNumberController,
+        isYear: subjectName == FirestoreCollections.yearWise,
         onTap: () async {
           if (chapterNumberController.text.isEmpty || chapterNameController.text.isEmpty) {
-            showToast(message: 'Please enter a chapter number and name', isError: true);
+            showToast(message: 'Please enter a valid data', isError: true);
           } else {
             try {
               await Provider.of<AdminProvider>(context, listen: false).addChapters(subjectName, chapterNameController.text.trim(), chapterNumberController.text.trim()).then((value) {
@@ -58,7 +59,7 @@ class AddChapterScreen extends StatelessWidget {
           children: [
             AddChapterCard(
               onTap: () => _showAddChapterDialog(context),
-              title: 'Add a chapter',
+              title: subjectName == FirestoreCollections.yearWise ? "Add a year" : 'Add a chapter',
             ),
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.7,
@@ -93,7 +94,7 @@ class AddChapterScreen extends StatelessWidget {
                           pageBuilder: (context, animation, secondaryAnimation) => AppInfoDialog(onLogOut: () async {
                             await Provider.of<AdminProvider>(context, listen: false).deleteChapter(subjectName, data.id).then((value) {
                               Navigator.pop(context);
-                              showToast(message: 'chapter deleted');
+                              showToast(message: 'deleted Successfully');
                             });
                           }),
                         );
@@ -106,6 +107,7 @@ class AddChapterScreen extends StatelessWidget {
                           builder: (_) => AddChapterDialog(
                             chapterNameController: chapterNameController,
                             chapterNumberController: chapterNumberController,
+                            isYear: subjectName == FirestoreCollections.yearWise,
                             onTap: () async {
                               if (chapterNumberController.text.isEmpty || chapterNameController.text.isEmpty) {
                                 showToast(message: 'Please enter a chapter number and name', isError: true);

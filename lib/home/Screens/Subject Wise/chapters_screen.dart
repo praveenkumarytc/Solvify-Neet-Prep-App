@@ -5,7 +5,6 @@ import 'package:shield_neet/Utils/app_constants.dart';
 import 'package:shield_neet/Utils/color_resources.dart';
 import 'package:shield_neet/components/solvify_appbar.dart';
 import 'package:shield_neet/helper/push_to.dart';
-import 'package:shield_neet/home/Screens/Subject%20Wise/mcq_test.dart';
 import 'package:shield_neet/home/Screens/Subject%20Wise/test_loading.dart';
 
 class ChapterScreen extends StatefulWidget {
@@ -53,10 +52,10 @@ class _ChapterScreenState extends State<ChapterScreen> {
                             ));
                       },
                       leading: Text(
-                        data[FirestoreCollections.chapterNumber].toString(),
+                        "${data[FirestoreCollections.chapterNumber].toString()}.",
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 20,
+                          fontSize: 15,
                         ),
                       ),
                       title: Text(

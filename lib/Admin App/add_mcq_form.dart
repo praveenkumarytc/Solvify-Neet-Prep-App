@@ -37,21 +37,24 @@ class _AddMcqPageState extends State<AddMcqPage> {
   File? fileImage;
   String? base64;
   bool isoption1Correct = false, isoption2Correct = false, isoption3Correct = false, isoption4Correct = false;
+
   _getImageFrom({required ImageSource source}) async {
     final pickedImage = await _picker.pickImage(source: source);
     if (pickedImage != null) {
       var image = File(pickedImage.path.toString());
       final sizeInKbBefore = image.lengthSync() / 1024;
       print('Before Compress $sizeInKbBefore kb');
-      var compressedImage = await AppHelper.compress(image: image);
-      final sizeInKbAfter = compressedImage.lengthSync() / 1024;
-      print('After Compress $sizeInKbAfter kb');
-      var croppedImage = await AppHelper.cropImage(compressedImage);
+      var croppedImage = await AppHelper.cropImage(image);
       if (croppedImage == null) {
         return;
       }
+      final sizeInKbBeforeCompression = croppedImage.lengthSync() / 1024;
+      print('Before Compressing the cropped image $sizeInKbBeforeCompression kb');
+      var compressedImage = await AppHelper.compress(image: croppedImage);
+      final sizeInKbAfterCompression = compressedImage.lengthSync() / 1024;
+      print('After Compress $sizeInKbAfterCompression kb');
       setState(() {
-        fileImage = croppedImage;
+        fileImage = compressedImage;
         base64 = base64Encode(fileImage!.readAsBytesSync());
         print(base64);
       });
