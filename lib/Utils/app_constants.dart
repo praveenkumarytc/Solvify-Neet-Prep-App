@@ -4,6 +4,7 @@ class AppConstans {
   static const String email = "email";
   static const String password = "password";
   static const String uid = "uid";
+  static const String appTheme = "app_theme";
 }
 
 class FirestoreCollections {

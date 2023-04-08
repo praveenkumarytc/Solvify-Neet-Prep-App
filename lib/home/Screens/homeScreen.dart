@@ -1,5 +1,8 @@
 // ignore_for_file: file_names
 
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shield_neet/Utils/app_constants.dart';
@@ -11,6 +14,8 @@ import 'package:shield_neet/home/Screens/BookMarked%20Questions/bookmarked_quest
 import 'package:shield_neet/helper/push_to.dart';
 import 'package:shield_neet/home/Screens/Subject%20Wise/subject_wise.dart';
 import 'package:velocity_x/velocity_x.dart';
+import 'dart:ui' as ui;
+import 'package:flutter/rendering.dart';
 
 import 'Subject Wise/chapters_screen.dart';
 
@@ -22,10 +27,21 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // String greets = 'Hello \nFuture Doctors!';
+  GlobalKey globalKey = GlobalKey();
+  Future<Uint8List> captureWidgetAsImage(GlobalKey key) async {
+    try {
+      RenderRepaintBoundary boundary = key.currentContext!.findRenderObject() as RenderRepaintBoundary;
+      ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+      ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      return byteData!.buffer.asUint8List();
+    } catch (e) {
+      print(e);
+      return Uint8List(0);
+    }
+  }
+
   @override
   void initState() {
-    // Determine the background color
     Color backgroundColor = Colors.white; // Replace with your background color
 
     // Set the status bar text color to light if the background color is dark, and to dark if the background color is light
@@ -71,7 +87,16 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const HelloDoctorsCard(),
+            HelloDoctorsCard(),
+            ElevatedButton(
+              onPressed: () async {
+                Uint8List imageBytes = await captureWidgetAsImage(globalKey);
+                final bytes = base64Encode(imageBytes);
+                print(bytes);
+                // Do something with the imageBytes
+              },
+              child: Text('Capture Image'),
+            ),
             QuestionButtons(
               onTap: () => pushTo(context, const SubjectWiseQuestScreen()),
               title: 'Subject Wise Questions',
@@ -80,6 +105,16 @@ class _HomeScreenState extends State<HomeScreen> {
               imageIcon: Images.bookshelf,
             ),
             Dimensions.PADDING_SIZE_DEFAULT.heightBox,
+            RepaintBoundary(
+                key: globalKey,
+                child: Container(
+                  height: 100,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                  ),
+                  child: Text("eroihf9he9f 8"),
+                )),
             QuestionButtons(
               onTap: () => pushTo(context, const ChapterScreen(subjectName: FirestoreCollections.yearWise)),
               title: 'Previous Year Papers',
@@ -112,9 +147,9 @@ class HelloDoctorsCard extends StatelessWidget {
     return ClipPath(
       clipper: MyHomePageClipper(),
       child: Container(
-        decoration: const BoxDecoration(
-          color: ColorResources.COLOR_BLUE,
-          image: DecorationImage(
+        decoration: BoxDecoration(
+          color: ColorResources.primaryBlue(context),
+          image: const DecorationImage(
             image: AssetImage(Images.doctor_bg),
             scale: 2,
             alignment: Alignment.bottomRight,
@@ -129,12 +164,12 @@ class HelloDoctorsCard extends StatelessWidget {
           children: const [
             Text(
               'Hello!',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w400),
+              style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w400),
               textAlign: TextAlign.start,
             ),
             Text(
               'Future Doctor',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+              style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.w600),
               textAlign: TextAlign.start,
             ),
           ],
@@ -193,16 +228,9 @@ class MyHomePageClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     Path path = Path();
-    // path.moveTo(0, 99);
-    path.lineTo(0, size.height / 1.5);
-    path.cubicTo(
-      size.width / 7,
-      1.2 * size.height,
-      4 * size.width / 4,
-      size.height * 0.6,
-      size.width,
-      size.height * 0.9,
-    );
+    path.lineTo(0, size.height * 0.8);
+    path.quadraticBezierTo(size.width * 0.25, size.height * 0.9, size.width * 0.5, size.height * 0.8);
+    path.quadraticBezierTo(size.width * 0.75, size.height * 0.7, size.width, size.height * 0.8);
     path.lineTo(size.width, 0);
     return path;
   }

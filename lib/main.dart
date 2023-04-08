@@ -9,7 +9,6 @@ import 'package:shield_neet/providers/auth_providers.dart';
 import 'package:shield_neet/providers/user_provider.dart';
 import 'package:shield_neet/splash_page.dart';
 
-bool isDark = true;
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -31,18 +30,27 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Solvify - Neet prep app',
-      // darkTheme: ThemeData.dark(),
-      theme: ThemeData(
-        fontFamily: 'Poppins',
-        primarySwatch: ColorResources.PRIMARY_MATERIAL,
-        textSelectionTheme: const TextSelectionThemeData(
-          cursorColor: ColorResources.PRIMARY_MATERIAL,
+    return Consumer<UserProvider>(builder: (context, snapshot, child) {
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Solvify - Neet prep app',
+        themeMode: snapshot.isDarkMode! ? ThemeMode.dark : ThemeMode.light,
+        theme: ThemeData(
+          fontFamily: 'Poppins',
+          primarySwatch: ColorResources.PRIMARY_MATERIAL,
+          textSelectionTheme: const TextSelectionThemeData(
+            cursorColor: ColorResources.PRIMARY_MATERIAL,
+          ),
         ),
-      ),
-      home: const SplashPage(),
-    );
+        darkTheme: ThemeData(
+          brightness: Brightness.dark,
+          primarySwatch: ColorResources.PRIMARY_MATERIAL,
+          textSelectionTheme: const TextSelectionThemeData(
+            cursorColor: ColorResources.PRIMARY_MATERIAL,
+          ),
+        ),
+        home: const SplashPage(),
+      );
+    });
   }
 }

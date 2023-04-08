@@ -33,7 +33,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
                 const SizedBox(height: 20),
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: ColorResources.getWhite(context),
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(

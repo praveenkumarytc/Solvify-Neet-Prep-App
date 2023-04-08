@@ -72,7 +72,7 @@ class _McqTestScreenState extends State<McqTestScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: ColorResources.getWhite(context),
       bottomNavigationBar: Container(
         height: 60,
         decoration: BoxDecoration(
@@ -159,9 +159,9 @@ class _McqTestScreenState extends State<McqTestScreen> {
               child: Container(
                 width: MediaQuery.of(context).size.width * 0.9,
                 height: MediaQuery.of(context).size.height - 150,
-                decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.all(
+                decoration: BoxDecoration(
+                    color: ColorResources.getWhite(context),
+                    borderRadius: const BorderRadius.all(
                       Radius.circular(20),
                     )),
                 child: PageView.builder(
@@ -267,9 +267,9 @@ class TopBgContainer extends StatelessWidget {
     return Container(
       height: 250,
       width: double.infinity,
-      decoration: const BoxDecoration(
-        color: ColorResources.RECHARGE_blue,
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        color: ColorResources.getBlue(context),
+        borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(20),
           bottomRight: Radius.circular(20),
         ),

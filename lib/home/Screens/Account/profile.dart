@@ -10,8 +10,8 @@ import 'package:shield_neet/helper/log_out_dialog.dart';
 import 'package:shield_neet/home/Screens/Account/feedback.dart';
 import 'package:shield_neet/home/Screens/Account/privacy_policy.dart';
 import 'package:shield_neet/home/Screens/Account/support_page.dart';
-import 'package:shield_neet/main.dart';
 import 'package:shield_neet/providers/auth_providers.dart';
+import 'package:shield_neet/providers/user_provider.dart';
 import 'package:shield_neet/splash_page.dart';
 import 'package:velocity_x/velocity_x.dart';
 
@@ -23,24 +23,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  // @override
-  // void initState() {
-  //   @override
-  //   void initState() {
-  //     // Determine the background color
-  //     Color backgroundColor = Colors.white; // Replace with your background color
-
-  //     // Set the status bar text color to light if the background color is dark, and to dark if the background color is light
-  //     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-  //       statusBarColor: Color(0xff608BF7),
-  //       statusBarIconBrightness: ThemeData.estimateBrightnessForColor(backgroundColor),
-  //     ));
-  //     super.initState();
-  //   }
-
-  //   super.initState();
-  // }
-
   @override
   Widget build(BuildContext context) {
     var userData = Provider.of<AuthProvider>(context, listen: false);
@@ -59,27 +41,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 tileColor: const Color(0xff608BF7).withOpacity(.08),
                 leading: Icon(
-                  isDark ? Icons.nightlight : Icons.lightbulb,
+                  Provider.of<UserProvider>(context, listen: false).isDarkMode! ? Icons.nightlight : Icons.lightbulb,
                   color: const Color(0xff608BF7).withOpacity(.7),
                 ),
-                title: const Text(
+                title: Text(
                   'Theme',
                   style: TextStyle(
-                    color: Colors.black54,
+                    color: ColorResources.getBlack54(context),
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                trailing: SizedBox(
-                  width: 80,
-                  child: FlutterSwitch(
+                trailing: Consumer<UserProvider>(builder: (context, snapshot, child) {
+                  return SizedBox(
+                    width: 80,
+                    child: FlutterSwitch(
                       activeText: '' /* '🌙'*/,
                       inactiveText: '' /*"🌕" */,
                       activeTextColor: Colors.white,
                       activeTextFontWeight: FontWeight.normal,
                       inactiveToggleColor: Colors.white,
                       inactiveColor: ColorResources.PRIMARY_MATERIAL.withOpacity(.55),
-                      activeColor: ColorResources.COLOR_BLUE.withOpacity(.55),
+                      activeColor: ColorResources.primaryBlue(context),
                       inactiveSwitchBorder: Border.all(color: ColorResources.PRIMARY_MATERIAL.withOpacity(.35)),
                       width: 60,
                       height: 35.0,
@@ -92,12 +75,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Icons.lightbulb,
                         color: ColorResources.COLOR_BLUE,
                       ),
-                      value: isDark,
+                      value: snapshot.isDarkMode!,
                       onToggle: (value) {
-                        isDark = value;
-                        setState(() {});
-                      }),
-                ),
+                        snapshot.toggleAppTheme();
+                        // setState(() {});
+                      },
+                    ),
+                  );
+                }),
               ),
             ),
             AccountCards(
@@ -188,8 +173,8 @@ class AccountCards extends StatelessWidget {
         ),
         title: Text(
           title,
-          style: const TextStyle(
-            color: Colors.black54,
+          style: TextStyle(
+            color: ColorResources.getBlack54(context),
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
@@ -215,9 +200,9 @@ class ProfileWidget extends StatelessWidget {
       height: 300,
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      decoration: const BoxDecoration(
-        color: Color(0xff608BF7),
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        color: ColorResources.primaryBlue(context),
+        borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(
             20,
           ),
