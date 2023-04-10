@@ -105,16 +105,6 @@ class _HomeScreenState extends State<HomeScreen> {
               imageIcon: Images.bookshelf,
             ),
             Dimensions.PADDING_SIZE_DEFAULT.heightBox,
-            RepaintBoundary(
-                key: globalKey,
-                child: Container(
-                  height: 100,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.red,
-                  ),
-                  child: Text("eroihf9he9f 8"),
-                )),
             QuestionButtons(
               onTap: () => pushTo(context, const ChapterScreen(subjectName: FirestoreCollections.yearWise)),
               title: 'Previous Year Papers',
