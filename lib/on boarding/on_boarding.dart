@@ -4,8 +4,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:liquid_swipe/liquid_swipe.dart';
+import 'package:shield_neet/Utils/images.dart';
 import 'package:shield_neet/on%20boarding/login_page.dart';
 import 'package:shield_neet/helper/push_to.dart';
+import 'package:velocity_x/velocity_x.dart';
 
 class OnBoarding extends StatefulWidget {
   static const style = TextStyle(
@@ -42,68 +44,74 @@ class _OnBoarding extends State<OnBoarding> {
           Padding(
             padding: const EdgeInsets.only(right: 20),
             child: Image.asset(
-              'assets/images/1.png',
+              Images.statthescope,
               fit: BoxFit.cover,
             ),
           ),
           Column(
             children: const [
               Text(
-                "Hello Everyone!",
+                "Welcome",
                 style: OnBoarding.style,
               ),
               Text(
-                "Let's ",
+                "Future Doctor!",
                 style: OnBoarding.style,
               ),
-              Text(
-                "Explore the Space",
-                style: OnBoarding.style,
-              ),
+              // Text(
+              //   "Explore the Space",
+              //   style: OnBoarding.style,
+              // ),
             ],
           ),
         ],
       ),
     ),
     Container(
-      color: const Color(0xFF232323),
+      color: Colors.white,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           Image.asset(
-            'assets/images/2.jpg',
+            Images.booksGif,
             fit: BoxFit.cover,
           ),
           Column(
             children: const [
-              Text(
-                "Get to",
-                style: OnBoarding.style,
-              ),
-              Text(
-                "Know our",
-                style: OnBoarding.style,
-              ),
-              Text(
-                "Solar System",
-                style: OnBoarding.style,
-              ),
+              Text("Our aim",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 30,
+                    fontWeight: FontWeight.w600,
+                  )),
+              Text("is to",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 30,
+                    fontWeight: FontWeight.w600,
+                  )),
+              Text("crack NEET",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 30,
+                    fontWeight: FontWeight.w600,
+                  )),
             ],
           ),
         ],
       ),
     ),
     Container(
-      color: const Color(0xFF460BA1),
+      color: Colors.grey.shade100,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           Image.asset(
-            'assets/images/3.jpg',
+            Images.enjoyJourney,
             fit: BoxFit.cover,
           ),
           const Padding(
@@ -111,84 +119,27 @@ class _OnBoarding extends State<OnBoarding> {
           ),
           Column(
             children: const [
-              Text(
-                "Ejoy",
-                style: OnBoarding.style,
-              ),
-              Text(
-                "the",
-                style: OnBoarding.style,
-              ),
-              Text(
-                "Journey!",
-                style: OnBoarding.style,
-              ),
-            ],
-          ),
-        ],
-      ),
-    ),
-    Container(
-      color: Colors.deepOrange.shade700,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(left: 100),
-            child: Image.asset(
-              'assets/images/4.png',
-              fit: BoxFit.cover,
-            ),
-          ),
-          Column(
-            children: const [
-              Text(
-                "Be",
-                style: OnBoarding.style,
-              ),
-              Text(
-                "Like",
-                style: OnBoarding.style,
-              ),
-              Text(
-                "Astronaut",
-                style: OnBoarding.style,
-              ),
-            ],
-          ),
-        ],
-      ),
-    ),
-    Container(
-      color: Colors.black,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(right: 130),
-            child: Image.asset(
-              'assets/images/5.png',
-              fit: BoxFit.cover,
-            ),
-          ),
-          Column(
-            children: const [
-              Text(
-                "Feel",
-                style: OnBoarding.style,
-              ),
-              Text(
-                "the",
-                style: OnBoarding.style,
-              ),
-              Text(
-                "Moon",
-                style: OnBoarding.style,
-              ),
+              Text("Enjoy",
+                  style: TextStyle(
+                    color: Colors.deepPurple,
+                    fontSize: 30,
+                    fontWeight: FontWeight.w600,
+                  )),
+              Text("the",
+                  style: TextStyle(
+                    color: Colors.deepPurple,
+                    fontSize: 30,
+                    fontWeight: FontWeight.w600,
+                  )),
+              Text("Journey!",
+                  style: TextStyle(
+                    color: Colors.deepPurple,
+                    fontSize: 30,
+                    fontWeight: FontWeight.w600,
+                  )),
+              SizedBox(
+                height: 50,
+              )
             ],
           ),
         ],
@@ -255,7 +206,7 @@ class _OnBoarding extends State<OnBoarding> {
                         onPressed: () {
                           pushTo(context, const LoginPage());
                         },
-                        child: const Text("Get Started", style: TextStyle(color: Colors.white)),
+                        child: const Text("Get Started", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
                       ),
                     ),
                   )
@@ -270,7 +221,7 @@ class _OnBoarding extends State<OnBoarding> {
                           );
                           // liquidController.animateToPage(page: pages.length - 1, duration: 700);
                         },
-                        child: const Text("Skip to End", style: TextStyle(color: Colors.white)),
+                        child: const Text("Skip to End", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
                       ),
                     ),
                   ),
@@ -282,7 +233,7 @@ class _OnBoarding extends State<OnBoarding> {
                   onPressed: () {
                     liquidController.jumpToPage(page: liquidController.currentPage + 1 > pages.length - 1 ? 0 : liquidController.currentPage + 1);
                   },
-                  child: const Text("Next", style: TextStyle(color: Colors.white)),
+                  child: const Text("Next", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
                 ),
               ),
             )

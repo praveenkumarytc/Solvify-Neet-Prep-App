@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
@@ -23,6 +24,23 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  List<dynamic> _admins = [];
+
+  Future<dynamic> getData() async {
+    final CollectionReference adminCollection = FirebaseFirestore.instance.collection('Admins');
+    final userDoc = await adminCollection.doc('admins').get();
+    final adminsList = userDoc.get("emails");
+    setState(() {
+      _admins = adminsList;
+    });
+  }
+
+  @override
+  void initState() {
+    getData();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     var userData = Provider.of<AuthProvider>(context, listen: false);
@@ -31,7 +49,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
         // padding: const EdgeInsets.all(10),
         child: Column(
           children: [
-            ProfileWidget(name: userData.fullName ?? " ", email: userData.email ?? " "),
+            ProfileWidget(
+                name: userData.fullName ?? " ",
+                email: userData.email ?? " ",
+                widget: _admins.contains(userData.email)
+                    ? ElevatedButton(
+                        onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AdminPage(),
+                            )),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white30,
+
+                            // foregroundColor: ColorResources.WHITE,
+                            elevation: 0),
+                        child: const Text(
+                          'Admin Login',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 11,
+                          ),
+                        ),
+                      )
+                    : const SizedBox.shrink()),
             Dimensions.PADDING_SIZE_EXTRA_LARGE.heightBox,
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 18),
@@ -191,9 +232,9 @@ class AccountCards extends StatelessWidget {
 }
 
 class ProfileWidget extends StatelessWidget {
-  const ProfileWidget({super.key, required this.name, required this.email});
+  const ProfileWidget({super.key, required this.name, required this.email, required this.widget});
   final String name, email;
-
+  final Widget widget;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -226,25 +267,7 @@ class ProfileWidget extends StatelessWidget {
                     fontSize: 18,
                   ),
                 ),
-                ElevatedButton(
-                  onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AdminPage(),
-                      )),
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white30,
-
-                      // foregroundColor: ColorResources.WHITE,
-                      elevation: 0),
-                  child: const Text(
-                    'Admin Login',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 11,
-                    ),
-                  ),
-                )
+                widget
               ],
             ),
             30.heightBox,

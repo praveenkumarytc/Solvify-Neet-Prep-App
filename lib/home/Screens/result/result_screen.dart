@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -8,12 +10,20 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shield_neet/Utils/color_resources.dart';
 import 'package:shield_neet/Utils/images.dart';
+import 'package:shield_neet/home/dashboard.dart';
 import 'package:velocity_x/velocity_x.dart';
 
-class ResultScreen extends StatelessWidget {
-  ResultScreen({super.key});
+class ResultScreen extends StatefulWidget {
+  const ResultScreen({super.key, required this.performanceData});
+  final List<String> performanceData;
 
-  GlobalKey _globalKey = GlobalKey();
+  @override
+  State<ResultScreen> createState() => _ResultScreenState();
+}
+
+class _ResultScreenState extends State<ResultScreen> {
+  final GlobalKey _globalKey = GlobalKey();
+
   Future<void> _onSharePressed() async {
     RenderRepaintBoundary boundary = _globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
     ui.Image image = await boundary.toImage(pixelRatio: 2.0);
@@ -24,109 +34,138 @@ class ResultScreen extends StatelessWidget {
     final file = await File('${directory.path}/image.png').create();
 
     await file.writeAsBytes(pngBytes);
-    String message = 'I just scored 5 out of 10 on the mock test! Check it out:\n\nhttps://play.google.com/store/apps/details?id=com.solvify.neet_prep_app';
+    String message = 'I just scored ${correctAnswers.length} out of ${widget.performanceData.length} on the mock test! Check it out:\n\nhttps://play.google.com/store/apps/details?id=com.solvify.neet_prep_app';
 
     Share.shareFiles([
       file.path
-    ], text: message, subject: 'Image sharing', sharePositionOrigin: Rect.fromLTWH(0, 0, 10, 10));
+    ], text: message, subject: 'Image sharing', sharePositionOrigin: const Rect.fromLTWH(0, 0, 10, 10));
+  }
+
+  var correctAnswers = [];
+  var wrongAnswer = [];
+  var skippedAnswers = [];
+
+  _filldata() {
+    for (var element in widget.performanceData) {
+      if (element.contains('true')) {
+        correctAnswers.add(element);
+      } else if (element.contains('false')) {
+        wrongAnswer.add(element);
+      } else {
+        skippedAnswers.add(element);
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _filldata();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              ColorResources.COLOR_BLUE.withOpacity(.5),
-              Colors.pink.withOpacity(.5)
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+    return WillPopScope(
+      onWillPop: () async {
+        // Navigate back to the Dashboard screen and block the back button
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const DashBoard()));
+        return false;
+      },
+      child: Scaffold(
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                ColorResources.COLOR_BLUE.withOpacity(.5),
+                Colors.pink.withOpacity(.5)
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
           ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(15),
-          child: RepaintBoundary(
-            key: _globalKey,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const DecorativeContainer(),
-                  50.heightBox,
-                  const Padding(
-                    padding: EdgeInsets.only(left: 10),
-                    child: Text(
-                      'Your today\'s result are here:',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          child: Padding(
+            padding: const EdgeInsets.all(15),
+            child: RepaintBoundary(
+              key: _globalKey,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const DecorativeContainer(),
+                    50.heightBox,
+                    const Padding(
+                      padding: EdgeInsets.only(left: 10),
+                      child: Text(
+                        'Your today\'s result are here:',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
                     ),
-                  ),
-                  20.heightBox,
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Icon(Icons.check, color: Colors.green),
-                            SizedBox(height: 8),
-                            Text('Correct'),
-                            SizedBox(height: 4),
-                            Text('2/5'),
-                          ],
+                    20.heightBox,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.check, color: Colors.green),
+                              const SizedBox(height: 8),
+                              const Text('Correct'),
+                              const SizedBox(height: 4),
+                              Text('${correctAnswers.length}/${widget.performanceData.length}'),
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(
-                        width: 5,
-                        height: 65,
-                        child: VerticalDivider(
-                          thickness: 1.5,
+                        const SizedBox(
+                          width: 5,
+                          height: 65,
+                          child: VerticalDivider(
+                            thickness: 1.5,
+                          ),
                         ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Icon(Icons.close, color: Colors.red),
-                            SizedBox(height: 8),
-                            Text('Wrong'),
-                            SizedBox(height: 4),
-                            Text('1/5'),
-                          ],
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.close, color: Colors.red),
+                              const SizedBox(height: 8),
+                              const Text('Wrong'),
+                              const SizedBox(height: 4),
+                              Text('${wrongAnswer.length}/${widget.performanceData.length}'),
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(
-                        width: 5,
-                        height: 65,
-                        child: VerticalDivider(
-                          thickness: 1.5,
+                        const SizedBox(
+                          width: 5,
+                          height: 65,
+                          child: VerticalDivider(
+                            thickness: 1.5,
+                          ),
                         ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Icon(Icons.help_outline, color: Colors.grey),
-                            SizedBox(height: 8),
-                            Text('Skipped'),
-                            SizedBox(height: 4),
-                            Text('2/5'),
-                          ],
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.help_outline, color: Colors.grey),
+                              const SizedBox(height: 8),
+                              const Text('Skipped'),
+                              const SizedBox(height: 4),
+                              Text('${skippedAnswers.length}/${widget.performanceData.length}'),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  50.heightBox,
-                  ShareButton(
-                    onSharePressed: _onSharePressed,
-                  ),
-                ],
+                      ],
+                    ),
+                    50.heightBox,
+                    ShareButton(
+                      onSharePressed: _onSharePressed,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -199,7 +238,7 @@ class DecorativeContainer extends StatelessWidget {
             top: 10,
             child: IconButton(
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const DashBoard()), (route) => false);
               },
               icon: const Icon(Icons.arrow_back),
             ),

@@ -1,12 +1,12 @@
+// ignore_for_file: avoid_print
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shield_neet/Utils/app_constants.dart';
 import 'package:shield_neet/Utils/color_resources.dart';
-import 'package:shield_neet/helper/push_to.dart';
 import 'package:shield_neet/home/Screens/Subject%20Wise/mcq_model.dart';
 import 'package:shield_neet/home/Screens/result/result_screen.dart';
-import 'package:shield_neet/providers/auth_providers.dart';
 import 'package:shield_neet/providers/user_provider.dart';
 import 'package:velocity_x/velocity_x.dart';
 
@@ -19,11 +19,11 @@ class McqTestScreen extends StatefulWidget {
 }
 
 class _McqTestScreenState extends State<McqTestScreen> {
-  String question = 'What is the captital of of India an Us and also tell the captoital of autraliys';
   String? selectedOption;
   dynamic data;
   List<McqModel> mcqList = [];
-  List<dynamic> performanceData = [];
+  List<String> performanceData = [];
+  String mcqIs = 'skipped';
 
   Future<dynamic> getData() async {
     final QuerySnapshot<Object?> snapshot = await FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(widget.subjectName).collection(FirestoreCollections.chapters).doc(widget.chapterId).collection(FirestoreCollections.mcq).get();
@@ -47,6 +47,23 @@ class _McqTestScreenState extends State<McqTestScreen> {
       setState(() {
         currentPage++;
       });
+      //to add option response
+      performanceData.add(mcqIs);
+      print(performanceData);
+      controller.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.ease,
+      );
+    }
+  }
+
+  void skipPage() {
+    if (currentPage < mcqList.length - 1) {
+      setState(() {
+        currentPage++;
+      });
+      //to add option response
+      performanceData.add(mcqIs);
       controller.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.ease,
@@ -59,6 +76,10 @@ class _McqTestScreenState extends State<McqTestScreen> {
       setState(() {
         currentPage--;
       });
+
+      //to add option response
+      performanceData.removeLast();
+
       controller.previousPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.ease,
@@ -74,207 +95,216 @@ class _McqTestScreenState extends State<McqTestScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: ColorResources.getWhite(context),
-      bottomNavigationBar: Container(
-        height: 60,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              blurRadius: 2,
-              offset: const Offset(0, -3),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            IconButton(
-              icon: Icon(
-                Icons.arrow_back_ios,
-                color: currentPage > 0 ? ColorResources.PRIMARY_MATERIAL : Colors.grey,
-              ),
-              onPressed: previousPage,
-            ),
-            currentPage < mcqList.length - 1
-                ? TextButton(
-                    onPressed: nextPage,
-                    style: TextButton.styleFrom(
-                      foregroundColor: Colors.black,
-                      textStyle: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    child: const Text('Skip'),
-                  )
-                : const SizedBox.shrink(),
-            currentPage < mcqList.length - 1
-                ? IconButton(
-                    icon: Icon(
-                      Icons.arrow_forward_ios,
-                      color: currentPage < mcqList.length - 1 ? ColorResources.PRIMARY_MATERIAL : Colors.grey,
-                    ),
-                    onPressed: nextPage,
-                  )
-                : ElevatedButton(
-                    onPressed: () => pushTo(context, ResultScreen()),
-                    child: const Text(
-                      'Submit',
-                      style: TextStyle(fontWeight: FontWeight.bold, color: ColorResources.WHITE),
-                    ),
-                  ),
-          ],
-        ),
-      ),
-      body: SingleChildScrollView(
-        physics: const NeverScrollableScrollPhysics(),
-        child: Stack(
-          children: [
-            SizedBox(
-              height: MediaQuery.of(context).size.height,
-              width: double.infinity,
-            ),
-            TopBgContainer(
-              onBookMarkTap: () async {
-                var uid = Provider.of<AuthProvider>(context, listen: false).uid;
-
-                List<Map<String, dynamic>> optionsData = [
-                  {
-                    "is_correct": mcqList[currentPage].options[0].isCorrect,
-                    "opt_no": mcqList[currentPage].options[0].optNo,
-                    "option_detail": mcqList[currentPage].options[0].optionDetail,
-                  },
-                  {
-                    "is_correct": mcqList[currentPage].options[1].isCorrect,
-                    "opt_no": mcqList[currentPage].options[1].optNo,
-                    "option_detail": mcqList[currentPage].options[1].optionDetail,
-                  },
-                  {
-                    "is_correct": mcqList[currentPage].options[2].isCorrect,
-                    "opt_no": mcqList[currentPage].options[2].optNo,
-                    "option_detail": mcqList[currentPage].options[2].optionDetail,
-                  },
-                  {
-                    "is_correct": mcqList[currentPage].options[3].isCorrect,
-                    "opt_no": mcqList[currentPage].options[3].optNo,
-                    "option_detail": mcqList[currentPage].options[3].optionDetail,
-                  }
-                ];
-                await Provider.of<UserProvider>(context, listen: false).addBookMark(uid, mcqList[0].question, optionsData, mcqList[0].solutionImage);
-              },
-            ),
-            Positioned(
-              top: 110,
-              left: MediaQuery.of(context).size.width * 0.05,
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.9,
-                height: MediaQuery.of(context).size.height - 150,
+    return Consumer<UserProvider>(builder: (context, details, child) {
+      return Scaffold(
+        backgroundColor: ColorResources.getWhite(context),
+        bottomNavigationBar: mcqList.isEmpty
+            ? const SizedBox.shrink()
+            : Container(
+                height: 60,
                 decoration: BoxDecoration(
-                    color: ColorResources.getWhite(context),
-                    borderRadius: const BorderRadius.all(
-                      Radius.circular(20),
-                    )),
-                child: PageView.builder(
-                  controller: controller,
-                  onPageChanged: (value) {
-                    (int index) {
-                      setState(() {
-                        currentPage = index;
-                      });
-                    };
-                  },
-                  itemCount: mcqList.length,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) => Column(
-                    children: [
-                      Container(
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.all(10),
-                        child: Column(
-                          children: [
-                            Center(
-                              child: Text(
-                                'Question ${index + 1}/${mcqList.length}',
-                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: ColorResources.PRIMARY_MATERIAL),
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.2),
+                      blurRadius: 2,
+                      offset: const Offset(0, -3),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                        Icons.arrow_back_ios,
+                        color: currentPage > 0 ? ColorResources.PRIMARY_MATERIAL : Colors.grey,
+                      ),
+                      onPressed: previousPage,
+                    ),
+                    currentPage < mcqList.length - 1
+                        ? TextButton(
+                            onPressed: nextPage,
+                            style: TextButton.styleFrom(
+                              foregroundColor: Colors.black,
+                              textStyle: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                            10.heightBox,
-                            Text(
-                              mcqList[index].question,
-                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                              textAlign: TextAlign.center,
+                            child: const Text('Skip'),
+                          )
+                        : const SizedBox.shrink(),
+                    currentPage < mcqList.length - 1
+                        ? IconButton(
+                            icon: Icon(
+                              Icons.arrow_forward_ios,
+                              color: currentPage < mcqList.length - 1 ? ColorResources.PRIMARY_MATERIAL : Colors.grey,
                             ),
-                            (question.length < 120 ? 80 : 20).heightBox,
-                            ...List.generate(
-                              mcqList[index].options.length,
-                              (i) => GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    setState(() {
-                                      selectedOption = mcqList[index].options[i].optionDetail;
-                                    });
-                                  });
-                                },
-                                child: Container(
-                                  width: double.infinity,
-                                  margin: const EdgeInsets.only(top: 15),
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    border: Border.all(width: 3, color: Colors.blueGrey.shade100),
-                                    borderRadius: const BorderRadius.all(
-                                      Radius.circular(10),
+                            onPressed: nextPage,
+                          )
+                        : ElevatedButton(
+                            onPressed: () {
+                              //to add option response
+                              performanceData.add(mcqIs);
+                              Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ResultScreen(
+                                      performanceData: performanceData,
                                     ),
                                   ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Flexible(
-                                        flex: 3,
-                                        child: Text(
-                                          mcqList[index].options[i].optionDetail,
-                                          style: const TextStyle(fontWeight: FontWeight.w400),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 30,
-                                        child: Radio(
-                                          value: mcqList[index].options[i].optionDetail,
-                                          groupValue: selectedOption,
-                                          onChanged: (value) {
-                                            setState(() {
-                                              setState(() {
-                                                selectedOption = mcqList[index].options[i].optionDetail;
-                                              });
-                                            });
-                                          },
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
+                                  (route) => false);
+                            },
+                            child: const Text(
+                              'Submit',
+                              style: TextStyle(fontWeight: FontWeight.bold, color: ColorResources.WHITE),
+                            ),
+                          ),
+                  ],
                 ),
               ),
-            )
-          ],
-        ),
-      ),
-    );
+        body: mcqList.isEmpty
+            ? const Center(
+                child: SizedBox(
+                child: Text('Questions are not availbale for this chapter'),
+              ))
+            : SingleChildScrollView(
+                physics: const NeverScrollableScrollPhysics(),
+                child: Stack(
+                  children: [
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height,
+                      width: double.infinity,
+                    ),
+                    TopBgContainer(
+                      icon: details.isBookmarked(mcqList[currentPage].question) ? Icons.bookmark_added : Icons.bookmark_add_outlined,
+                      onBookMarkTap: () async {
+                        if (details.isBookmarked(mcqList[currentPage].question)) {
+                          details.removeBookMark(mcqList[currentPage].question);
+
+                          // print('removed ${details.bookmarkedQuestions[0].question}');
+                        } else {
+                          Provider.of<UserProvider>(context, listen: false).addBookMark(mcqList[currentPage]);
+                        }
+                      },
+                    ),
+                    Positioned(
+                      top: 110,
+                      left: MediaQuery.of(context).size.width * 0.05,
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.9,
+                        height: MediaQuery.of(context).size.height - 150,
+                        decoration: BoxDecoration(
+                            color: ColorResources.getWhite(context),
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(20),
+                            )),
+                        child: PageView.builder(
+                          controller: controller,
+                          onPageChanged: (value) {
+                            (int index) {
+                              setState(() {
+                                currentPage = index;
+                              });
+                            };
+                          },
+                          itemCount: mcqList.length,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, index) => Column(
+                            children: [
+                              Text(Provider.of<UserProvider>(context, listen: false).isBookmarked(mcqList[currentPage].question).toString()),
+                              Container(
+                                alignment: Alignment.center,
+                                padding: const EdgeInsets.all(10),
+                                child: Column(
+                                  children: [
+                                    Center(
+                                      child: Text(
+                                        'Question ${index + 1}/${mcqList.length}',
+                                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: ColorResources.PRIMARY_MATERIAL),
+                                      ),
+                                    ),
+                                    10.heightBox,
+                                    Text(
+                                      mcqList[index].question,
+                                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    (mcqList[index].question.length < 120 ? 80 : 20).heightBox,
+                                    ...List.generate(
+                                      mcqList[index].options.length,
+                                      (i) => GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            setState(() {
+                                              selectedOption = mcqList[index].options[i].optionDetail;
+                                              mcqIs = mcqList[index].options[i].isCorrect.toString();
+                                              print(mcqIs);
+                                            });
+                                          });
+                                        },
+                                        child: Container(
+                                          width: double.infinity,
+                                          margin: const EdgeInsets.only(top: 15),
+                                          padding: const EdgeInsets.all(8),
+                                          decoration: BoxDecoration(
+                                            border: Border.all(width: 3, color: Colors.blueGrey.shade100),
+                                            borderRadius: const BorderRadius.all(
+                                              Radius.circular(10),
+                                            ),
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Flexible(
+                                                flex: 3,
+                                                child: Text(
+                                                  mcqList[index].options[i].optionDetail,
+                                                  style: const TextStyle(fontWeight: FontWeight.w400),
+                                                ),
+                                              ),
+                                              // Text(mcqList[index].options[i].isCorrect.toString()),
+                                              SizedBox(
+                                                height: 30,
+                                                child: Radio(
+                                                  value: mcqList[index].options[i].optionDetail,
+                                                  groupValue: selectedOption,
+                                                  onChanged: (value) {
+                                                    setState(() {
+                                                      mcqIs = mcqList[index].options[i].isCorrect.toString();
+                                                      print(mcqIs);
+                                                      selectedOption = mcqList[index].options[i].optionDetail;
+                                                    });
+                                                  },
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+      );
+    });
   }
 }
 
 class TopBgContainer extends StatelessWidget {
-  const TopBgContainer({super.key, required this.onBookMarkTap});
+  const TopBgContainer({super.key, required this.onBookMarkTap, required this.icon});
   final Function() onBookMarkTap;
+
+  final IconData icon;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -302,8 +332,8 @@ class TopBgContainer extends StatelessWidget {
             ),
             IconButton(
               onPressed: onBookMarkTap,
-              icon: const Icon(
-                Icons.bookmark,
+              icon: Icon(
+                icon,
                 color: Colors.white,
               ),
             )

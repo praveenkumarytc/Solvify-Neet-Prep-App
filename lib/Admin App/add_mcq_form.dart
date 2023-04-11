@@ -33,6 +33,8 @@ class _AddMcqPageState extends State<AddMcqPage> {
   TextEditingController option2Controller = TextEditingController();
   TextEditingController option3Controller = TextEditingController();
   TextEditingController option4Controller = TextEditingController();
+  TextEditingController explainationController = TextEditingController();
+  bool isExplainationChoosed = true;
   final _picker = ImagePicker();
   File? fileImage;
   String? base64;
@@ -216,27 +218,96 @@ class _AddMcqPageState extends State<AddMcqPage> {
                       const SizedBox(height: 20),
                     ],
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      _openChangeImageBottomSheet();
-                      // Handle tapping the container to select an image from the gallery
-                    },
-                    child: fileImage != null
-                        ? Container(
-                            height: 350,
-                            width: 300,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black12, width: 1),
-                                borderRadius: const BorderRadius.all(Radius.circular(10)),
-                                color: Colors.grey,
-                                image: DecorationImage(
-                                  image: FileImage(fileImage!),
-                                  fit: BoxFit.cover,
-                                )),
-                          )
-                        : const PlaceholderContainer(),
+                  SizedBox(
+                    height: 40,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                isExplainationChoosed = true;
+                              });
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: isExplainationChoosed ? ColorResources.primaryBlue(context) : Colors.grey.shade300,
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(10),
+                                  bottomLeft: Radius.circular(10),
+                                ),
+                              ),
+                              child: Text(
+                                'Explanation',
+                                style: TextStyle(
+                                  color: Colors.grey[700],
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                isExplainationChoosed = false;
+                                explainationController.clear();
+                              });
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: !isExplainationChoosed ? ColorResources.primaryBlue(context) : Colors.grey.shade300,
+                                border: Border.all(
+                                  color: Colors.grey[300]!,
+                                ),
+                                borderRadius: const BorderRadius.only(
+                                  topRight: Radius.circular(10),
+                                  bottomRight: Radius.circular(10),
+                                ),
+                              ),
+                              child: Text(
+                                'Image',
+                                style: TextStyle(
+                                  color: Colors.grey[800],
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
+                  15.heightBox,
+                  isExplainationChoosed
+                      ? QuestionTextField(
+                          controller: explainationController,
+                          hintLabelText: 'Explaination',
+                        )
+                      : GestureDetector(
+                          onTap: () {
+                            _openChangeImageBottomSheet();
+                            // Handle tapping the container to select an image from the gallery
+                          },
+                          child: fileImage != null
+                              ? Container(
+                                  height: 350,
+                                  width: 300,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.black12, width: 1),
+                                      borderRadius: const BorderRadius.all(Radius.circular(10)),
+                                      color: Colors.grey,
+                                      image: DecorationImage(
+                                        image: FileImage(fileImage!),
+                                        fit: BoxFit.cover,
+                                      )),
+                                )
+                              : const PlaceholderContainer(),
+                        ),
                   30.heightBox,
                   SubmitButton(
                     onTap: () async {
@@ -262,14 +333,28 @@ class _AddMcqPageState extends State<AddMcqPage> {
                           "option_detail": option4Controller.text.trim()
                         }
                       ];
-                      try {
-                        print(options);
-                        await Provider.of<AdminProvider>(context, listen: false).addMcq(widget.subjectname, widget.chapterId, questionController.text.trim(), options, base64).then((value) {
-                          showToast(message: 'mcq added successfully');
-                          Navigator.pop(context);
-                        });
-                      } catch (e) {
-                        showToast(message: e.toString(), isError: true);
+
+                      if (option1Controller.text.isEmpty) {
+                        showToast(message: 'option 1 can not be empty', isError: true);
+                      } else if (option2Controller.text.isEmpty) {
+                        showToast(message: 'option 2 can not be empty', isError: true);
+                      } else if (option3Controller.text.isEmpty) {
+                        showToast(message: 'option 3 can not be empty', isError: true);
+                      } else if (option4Controller.text.isEmpty) {
+                        showToast(message: 'option 4 can not be empty', isError: true);
+                      } else {
+                        if (isExplainationChoosed) {
+                          base64 = explainationController.text;
+                        }
+                        try {
+                          print(options);
+                          await Provider.of<AdminProvider>(context, listen: false).addMcq(widget.subjectname, widget.chapterId, questionController.text.trim(), options, base64).then((value) {
+                            showToast(message: 'mcq added successfully');
+                            Navigator.pop(context);
+                          });
+                        } catch (e) {
+                          showToast(message: e.toString(), isError: true);
+                        }
                       }
                     },
                   )

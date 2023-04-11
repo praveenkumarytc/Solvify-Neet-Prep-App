@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shield_neet/Utils/color_resources.dart';
 import 'package:shield_neet/Utils/dimensions.dart';
+import 'package:shield_neet/Utils/images.dart';
 import 'package:shield_neet/Utils/textstyle.dart';
 import 'package:shield_neet/components/animated_button.dart';
 import 'package:shield_neet/helper/flutter_toast.dart';
@@ -212,9 +213,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
         ),
-        SizedBox(
-          height: MediaQuery.of(context).size.height * 0.1,
-        ),
+        20.heightBox,
         Container(
           width: double.infinity,
           margin: const EdgeInsets.all(10),
@@ -375,9 +374,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
         ),
-        SizedBox(
-          height: MediaQuery.of(context).size.height * 0.1,
-        ),
+        20.heightBox,
         Container(
           width: double.infinity,
           margin: const EdgeInsets.all(10),
@@ -540,23 +537,32 @@ class HelloDoctorsHeading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: const [
-        SizedBox(
-          height: 40,
-        ),
+      children: [
+        const SizedBox(height: 40),
         Center(
           child: Text(
             'Hello Future Doctor!',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+            style: TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
+              color: Colors.blue[800],
+            ),
           ),
         ),
-        SizedBox(
-          height: 10,
-        ),
+        const SizedBox(height: 20),
         Text(
-          'Practice and make your \ndream come true',
+          'Practice and make your dream come true',
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.grey),
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w500,
+            color: Colors.grey[600],
+          ),
+        ),
+        const SizedBox(height: 20),
+        Image.asset(
+          'assets/images/15027.png',
+          height: 100,
         ),
       ],
     );

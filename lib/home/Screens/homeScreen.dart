@@ -1,22 +1,16 @@
 // ignore_for_file: file_names
-
-import 'dart:convert';
-import 'dart:io';
-
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:shield_neet/Utils/app_constants.dart';
 import 'package:shield_neet/Utils/color_resources.dart';
 import 'package:shield_neet/Utils/dimensions.dart';
 import 'package:shield_neet/Utils/images.dart';
-import 'package:shield_neet/home/Screens/BookMarked%20Questions/bookmarked_questions.dart';
-
 import 'package:shield_neet/helper/push_to.dart';
+import 'package:shield_neet/home/Screens/BookMarked%20Questions/bookmarked_questions.dart';
 import 'package:shield_neet/home/Screens/Subject%20Wise/subject_wise.dart';
 import 'package:velocity_x/velocity_x.dart';
-import 'dart:ui' as ui;
-import 'package:flutter/rendering.dart';
-
 import 'Subject Wise/chapters_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -35,7 +29,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
       return byteData!.buffer.asUint8List();
     } catch (e) {
-      print(e);
       return Uint8List(0);
     }
   }

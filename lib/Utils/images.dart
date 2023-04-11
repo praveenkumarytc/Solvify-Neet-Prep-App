@@ -17,9 +17,9 @@ class Images {
   static const String prism = 'assets/images/prism.png';
   static const String chemistry = 'assets/images/chemistry.png';
   static const String evolution = 'assets/images/evolution.png';
-  // static const String googleLogo = 'assets/images/google_logo.png';
-  // static const String googleLogo = 'assets/images/google_logo.png';
-  // static const String googleLogo = 'assets/images/google_logo.png';
+  static const String enjoyJourney = 'assets/images/gif2.gif';
+  static const String booksGif = 'assets/images/gif1.gif';
+  static const String statthescope = 'assets/images/statthescope.png';
   // static const String googleLogo = 'assets/images/google_logo.png';
   // static const String googleLogo = 'assets/images/google_logo.png';
 }
