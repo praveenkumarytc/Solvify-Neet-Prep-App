@@ -1,12 +1,19 @@
 // ignore_for_file: library_private_types_in_public_api, non_constant_identifier_names
 
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shield_neet/Admin%20App/add_mcq_form.dart';
 import 'package:shield_neet/Utils/app_constants.dart';
 import 'package:shield_neet/Utils/color_resources.dart';
+import 'package:shield_neet/Utils/dimensions.dart';
 import 'package:shield_neet/components/solvify_appbar.dart';
+import 'package:shield_neet/helper/flutter_toast.dart';
+import 'package:shield_neet/helper/log_out_dialog.dart';
 import 'package:shield_neet/helper/push_to.dart';
+import 'package:shield_neet/providers/admin_provider.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 import 'add_chapters_screen.dart';
@@ -30,12 +37,13 @@ class AddMcqScreen extends StatelessWidget {
           children: [
             AddChapterCard(
               onTap: () => pushTo(
-                  context,
-                  AddMcqPage(
-                    chapterName: chapterName,
-                    chapterId: chapterId,
-                    subjectname: subjectName,
-                  )),
+                context,
+                AddMcqPage(
+                  chapterName: chapterName,
+                  chapterId: chapterId,
+                  subjectname: subjectName,
+                ),
+              ),
               title: 'Add a MCQ',
             ),
             20.heightBox,
@@ -62,6 +70,66 @@ class AddMcqScreen extends StatelessWidget {
                     return QuestionCard(
                       question: data[FirestoreCollections.question],
                       options: options,
+                      popupMenuButton: PopupMenuButton(
+                        itemBuilder: (context) => [
+                          const PopupMenuItem(
+                            value: 'edit',
+                            child: Text('Edit'),
+                          ),
+                          const PopupMenuItem(
+                            value: 'delete',
+                            child: Text('Delete'),
+                          ),
+                        ],
+                        onSelected: (value) async {
+                          if (value == 'edit') {
+                            // var querySnapshot = await FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(subjectName).collection(FirestoreCollections.chapters).doc(chapterId).collection(FirestoreCollections.mcq).get();
+
+                            // var documents = querySnapshot.docs;
+
+                            // List<Map<String, dynamic>> dataList = [];
+
+                            // for (var document in documents) {
+                            //   var data = document.data();
+                            //   var base64String = data[FirestoreCollections.image] as String;
+                            //   var decodedBytes = base64.decode(base64String);
+                            //   var decodedString = utf8.decode(decodedBytes);
+
+                            //   data[FirestoreCollections.image] = decodedString;
+
+                            //   dataList.add(data);
+                            // }
+
+                            pushTo(
+                              context,
+                              AddMcqPage(
+                                mcqId: data.id,
+                                chapterName: chapterName,
+                                chapterId: chapterId,
+                                subjectname: subjectName,
+                                isUpdate: true,
+                                question: data[FirestoreCollections.question],
+                                options: options,
+                                explanation: data[FirestoreCollections.image],
+                              ),
+                            );
+                          } else if (value == 'delete') {
+                            showGeneralDialog(
+                              context: context,
+                              pageBuilder: (context, animation, secondaryAnimation) => AppInfoDialog(
+                                onLogOut: () async {
+                                  await Provider.of<AdminProvider>(context, listen: false).deleteMcq(subjectName, chapterId, data.id).then(
+                                    (value) {
+                                      Navigator.pop(context);
+                                      showToast(message: 'deleted Successfully');
+                                    },
+                                  );
+                                },
+                              ),
+                            );
+                          }
+                        },
+                      ),
                     );
                   }).toList());
                 },
@@ -77,8 +145,8 @@ class AddMcqScreen extends StatelessWidget {
 class QuestionCard extends StatefulWidget {
   final String question;
   final List<OptionModel> options;
-
-  const QuestionCard({super.key, required this.question, required this.options});
+  final PopupMenuButton popupMenuButton;
+  const QuestionCard({super.key, required this.question, required this.options, required this.popupMenuButton});
 
   @override
   _QuestionCardState createState() => _QuestionCardState();
@@ -112,25 +180,7 @@ class _QuestionCardState extends State<QuestionCard> {
                 widget.question,
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
-              trailing: PopupMenuButton(
-                itemBuilder: (context) => [
-                  const PopupMenuItem(
-                    value: 'edit',
-                    child: Text('Edit'),
-                  ),
-                  const PopupMenuItem(
-                    value: 'delete',
-                    child: Text('Delete'),
-                  ),
-                ],
-                onSelected: (value) {
-                  if (value == 'edit') {
-                    // Handle edit action
-                  } else if (value == 'delete') {
-                    // Handle delete action
-                  }
-                },
-              ),
+              trailing: widget.popupMenuButton,
             ),
             if (_isExpanded) ...widget.options.map((option) => ListTile(title: Text(option.option_detail))).toList(),
           ],

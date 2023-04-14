@@ -28,9 +28,23 @@ class AdminProvider extends ChangeNotifier {
     return await medicineCollection.doc(chapterId).delete();
   }
 
+  Future<void> deleteMcq(subjectName, chapterId, mcqId) async {
+    final CollectionReference medicineCollection = FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(subjectName).collection(FirestoreCollections.chapters).doc(chapterId).collection(FirestoreCollections.mcq);
+    return await medicineCollection.doc(mcqId).delete();
+  }
+
   Future<void> addMcq(subjectName, chapterId, question, List<Map<String, dynamic>> options, image) async {
     final CollectionReference mcqCollection = FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(subjectName).collection(FirestoreCollections.chapters).doc(chapterId).collection(FirestoreCollections.mcq);
     return await mcqCollection.doc().set({
+      FirestoreCollections.options: options,
+      FirestoreCollections.question: question,
+      FirestoreCollections.image: image
+    });
+  }
+
+  Future<void> updateAddMcq(mcqId, subjectName, chapterId, question, List<Map<String, dynamic>> options, image) async {
+    final CollectionReference mcqCollection = FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(subjectName).collection(FirestoreCollections.chapters).doc(chapterId).collection(FirestoreCollections.mcq);
+    return await mcqCollection.doc(mcqId).set({
       FirestoreCollections.options: options,
       FirestoreCollections.question: question,
       FirestoreCollections.image: image

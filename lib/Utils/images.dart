@@ -20,6 +20,6 @@ class Images {
   static const String enjoyJourney = 'assets/images/gif2.gif';
   static const String booksGif = 'assets/images/gif1.gif';
   static const String statthescope = 'assets/images/statthescope.png';
-  // static const String googleLogo = 'assets/images/google_logo.png';
+  static const String ocrImage = 'assets/images/ocr.png';
   // static const String googleLogo = 'assets/images/google_logo.png';
 }

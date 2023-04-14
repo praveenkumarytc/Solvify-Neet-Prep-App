@@ -1,28 +1,36 @@
 // ignore_for_file: avoid_print
 
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:shield_neet/Admin%20App/add_mcq_screen.dart';
 import 'package:shield_neet/Utils/color_resources.dart';
-import 'package:shield_neet/components/placeholder_container.dart';
+import 'package:shield_neet/Utils/images.dart';
 import 'package:shield_neet/components/question_form_field.dart';
 import 'package:shield_neet/components/solvify_appbar.dart';
 import 'package:shield_neet/components/submit_button.dart';
 import 'package:shield_neet/helper/app_helper.dart';
 import 'package:shield_neet/helper/app_text_style.dart';
+import 'package:shield_neet/helper/base64_image_checker.dart';
 import 'package:shield_neet/helper/flutter_toast.dart';
+import 'package:shield_neet/helper/ocr_screen.dart';
 import 'package:shield_neet/providers/admin_provider.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class AddMcqPage extends StatefulWidget {
-  const AddMcqPage({super.key, required this.chapterName, required this.chapterId, required this.subjectname});
+  AddMcqPage({super.key, required this.chapterName, required this.chapterId, required this.subjectname, this.isUpdate = false, this.question, this.explanation, this.options, this.mcqId});
+  final bool isUpdate;
   final String chapterName;
   final String subjectname;
   final String chapterId;
+  String? question;
+  String? explanation;
+  List<OptionModel>? options;
+  dynamic mcqId;
+
   @override
   State<AddMcqPage> createState() => _AddMcqPageState();
 }
@@ -34,6 +42,7 @@ class _AddMcqPageState extends State<AddMcqPage> {
   TextEditingController option3Controller = TextEditingController();
   TextEditingController option4Controller = TextEditingController();
   TextEditingController explainationController = TextEditingController();
+  TextEditingController ocrTextCOntroller = TextEditingController();
   bool isExplainationChoosed = true;
   final _picker = ImagePicker();
   File? fileImage;
@@ -57,10 +66,70 @@ class _AddMcqPageState extends State<AddMcqPage> {
       print('After Compress $sizeInKbAfterCompression kb');
       setState(() {
         fileImage = compressedImage;
-        base64 = base64Encode(fileImage!.readAsBytesSync());
-        print(base64);
+        // Read the image file as bytes
+        List<int> imageBytes = fileImage!.readAsBytesSync();
+        print(imageBytes);
+        // Store the bytes in Firestore
       });
     }
+  }
+
+  _autoFillData() {
+    if (widget.isUpdate) {
+      questionController.text = widget.question!;
+      option1Controller.text = widget.options![0].option_detail;
+      option2Controller.text = widget.options![1].option_detail;
+      option3Controller.text = widget.options![2].option_detail;
+      option4Controller.text = widget.options![3].option_detail;
+      isoption1Correct = widget.options![0].is_correct;
+      isoption2Correct = widget.options![1].is_correct;
+      isoption3Correct = widget.options![2].is_correct;
+      isoption4Correct = widget.options![3].is_correct;
+      print(widget.explanation);
+      if (isBase64Image(widget.explanation!)) {
+        isExplainationChoosed = false;
+
+        base64 = widget.explanation;
+      } else {
+        isExplainationChoosed = true;
+        explainationController.text = widget.explanation!;
+      }
+    }
+  }
+
+  Future<void> extractQuestionAndOptions(String text) async {
+    // Define the regular expressions to match the question and options
+    final questionRegex = RegExp(r'^\s*([^\?]+)\?');
+    final optionRegex = RegExp(r'^\s*[A-D]\.\s*(.+)');
+
+    // Use the regular expressions to extract the question and options
+    final lines = text.split('\n');
+    String? question;
+    final options = <String?>[];
+    for (final line in lines) {
+      final questionMatch = questionRegex.firstMatch(line);
+      if (questionMatch != null) {
+        question = questionMatch.group(1)?.trim();
+      } else {
+        final optionMatch = optionRegex.firstMatch(line);
+        if (optionMatch != null) {
+          options.add(optionMatch.group(1)?.trim());
+        }
+      }
+    }
+
+    // Assign the question and options to the given text fields
+    questionController.text = question ?? '';
+    option1Controller.text = options.isNotEmpty ? options[0] ?? '' : '';
+    option2Controller.text = options.length > 1 ? options[1] ?? '' : '';
+    option3Controller.text = options.length > 2 ? options[2] ?? '' : '';
+    option4Controller.text = options.length > 3 ? options[3] ?? '' : '';
+  }
+
+  @override
+  void initState() {
+    _autoFillData();
+    super.initState();
   }
 
   @override
@@ -92,13 +161,58 @@ class _AddMcqPageState extends State<AddMcqPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Text(
-                    'Add a Question',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Add a Question',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      IconButton(
+                          onPressed: () async {
+                            ocrTextCOntroller.clear();
+                            await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const OcrScreen(),
+                                )).then((ocrText) {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  ocrTextCOntroller.text = ocrText; // Initialize ocrText with an empty string
+                                  return AlertDialog(
+                                    title: const Text('OCR Text'),
+                                    content: QuestionTextField(
+                                      controller: ocrTextCOntroller,
+                                      hintLabelText: 'Ocr text',
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context); // Close the dialog box
+                                        },
+                                        child: const Text('Cancel'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          extractQuestionAndOptions(ocrTextCOntroller.text);
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text('Save'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            });
+                          },
+                          icon: Image.asset(Images.ocrImage))
+                    ],
                   ),
+                  // Text(isBase64Image(widget.explanation!).toString()),
                   20.heightBox,
                   QuestionTextField(
                     controller: questionController,
@@ -218,7 +332,7 @@ class _AddMcqPageState extends State<AddMcqPage> {
                       const SizedBox(height: 20),
                     ],
                   ),
-                  SizedBox(
+                  /*    SizedBox(
                     height: 40,
                     child: Row(
                       children: [
@@ -280,34 +394,38 @@ class _AddMcqPageState extends State<AddMcqPage> {
                         ),
                       ],
                     ),
-                  ),
+                  ),*/
+
                   15.heightBox,
-                  isExplainationChoosed
-                      ? QuestionTextField(
-                          controller: explainationController,
-                          hintLabelText: 'Explaination',
-                        )
-                      : GestureDetector(
-                          onTap: () {
-                            _openChangeImageBottomSheet();
-                            // Handle tapping the container to select an image from the gallery
-                          },
-                          child: fileImage != null
-                              ? Container(
-                                  height: 350,
-                                  width: 300,
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.black12, width: 1),
-                                      borderRadius: const BorderRadius.all(Radius.circular(10)),
-                                      color: Colors.grey,
-                                      image: DecorationImage(
-                                        image: FileImage(fileImage!),
-                                        fit: BoxFit.cover,
-                                      )),
-                                )
-                              : const PlaceholderContainer(),
-                        ),
+                  // isExplainationChoosed
+                  //     ?
+                  QuestionTextField(
+                    controller: explainationController,
+                    hintLabelText: 'Explaination',
+                    maxLines: 6,
+                  ),
+                  10.heightBox,
+                  /*             : GestureDetector(
+                      onTap: () {
+                        _openChangeImageBottomSheet();
+                        // Handle tapping the container to select an image from the gallery
+                      },
+                      child: fileImage != null
+                          ? Container(
+                              height: 350,
+                              width: 300,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.black12, width: 1),
+                                  borderRadius: const BorderRadius.all(Radius.circular(10)),
+                                  color: Colors.grey,
+                                  image: DecorationImage(
+                                    image: FileImage(fileImage!),
+                                    fit: BoxFit.cover,
+                                  )),
+                            )
+                          : const PlaceholderContainer(),
+                    ),*/
                   30.heightBox,
                   SubmitButton(
                     onTap: () async {
@@ -318,17 +436,17 @@ class _AddMcqPageState extends State<AddMcqPage> {
                           "option_detail": option1Controller.text.trim()
                         },
                         {
-                          "is_correct": true,
+                          "is_correct": isoption2Correct,
                           "opt_no": 2,
                           "option_detail": option2Controller.text.trim()
                         },
                         {
-                          "is_correct": true,
+                          "is_correct": isoption3Correct,
                           "opt_no": 3,
                           "option_detail": option3Controller.text.trim()
                         },
                         {
-                          "is_correct": true,
+                          "is_correct": isoption4Correct,
                           "opt_no": 4,
                           "option_detail": option4Controller.text.trim()
                         }
@@ -342,16 +460,24 @@ class _AddMcqPageState extends State<AddMcqPage> {
                         showToast(message: 'option 3 can not be empty', isError: true);
                       } else if (option4Controller.text.isEmpty) {
                         showToast(message: 'option 4 can not be empty', isError: true);
+                      } else if (!isoption2Correct && !isoption2Correct && !isoption3Correct && !isoption4Correct) {
+                        showToast(message: 'at least one option must be checked be RIGHT', isError: true);
                       } else {
                         if (isExplainationChoosed) {
                           base64 = explainationController.text;
                         }
                         try {
-                          print(options);
-                          await Provider.of<AdminProvider>(context, listen: false).addMcq(widget.subjectname, widget.chapterId, questionController.text.trim(), options, base64).then((value) {
-                            showToast(message: 'mcq added successfully');
-                            Navigator.pop(context);
-                          });
+                          if (widget.isUpdate) {
+                            await Provider.of<AdminProvider>(context, listen: false).updateAddMcq(widget.mcqId, widget.subjectname, widget.chapterId, questionController.text.trim(), options, base64).then((value) {
+                              showToast(message: 'mcq added successfully');
+                              Navigator.pop(context);
+                            });
+                          } else {
+                            await Provider.of<AdminProvider>(context, listen: false).addMcq(widget.subjectname, widget.chapterId, questionController.text.trim(), options, base64).then((value) {
+                              showToast(message: 'mcq added successfully');
+                              Navigator.pop(context);
+                            });
+                          }
                         } catch (e) {
                           showToast(message: e.toString(), isError: true);
                         }

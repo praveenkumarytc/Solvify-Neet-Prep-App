@@ -1,4 +1,6 @@
 // ignore_for_file: constant_identifier_names
+import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 class Dimensions {
   static const double FONT_SIZE_EXTRA_SMALL = 10.0;
@@ -28,4 +30,8 @@ class Dimensions {
   static const double ICON_SIZE_LARGE = 32.0;
   static const double ICON_SIZE_EXTRA_LARGE = 40.0;
   static const double ICON_SIZE_EXTRA_MAX = 60.0;
+}
+
+double getDeviceHeight(BuildContext context) {
+  return MediaQuery.of(context).size.height;
 }
