@@ -5,9 +5,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:liquid_swipe/liquid_swipe.dart';
 import 'package:shield_neet/Utils/images.dart';
-import 'package:shield_neet/on%20boarding/login_page.dart';
 import 'package:shield_neet/helper/push_to.dart';
-import 'package:velocity_x/velocity_x.dart';
+import 'package:shield_neet/on%20boarding/login_page.dart';
 
 class OnBoarding extends StatefulWidget {
   static const style = TextStyle(

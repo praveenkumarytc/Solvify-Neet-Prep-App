@@ -21,5 +21,8 @@ class Images {
   static const String booksGif = 'assets/images/gif1.gif';
   static const String statthescope = 'assets/images/statthescope.png';
   static const String ocrImage = 'assets/images/ocr.png';
+  static const String APP_LOGO_WHITE_BG = 'assets/images/app_logo_white.png';
+  static const String APP_LOGO_TRANS_BG = 'assets/images/app_logo_trans.png';
+  static const String whatsapp_logo = 'assets/images/whatsapp_logo.png';
   // static const String googleLogo = 'assets/images/google_logo.png';
 }

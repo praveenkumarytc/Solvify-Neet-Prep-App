@@ -57,6 +57,7 @@ dependencies:
   path_provider: ^2.0.14
   share_plus: ^6.3.1
   camera: ^0.10.4
+  url_launcher: ^6.1.10
 
 dev_dependencies:
   flutter_test:

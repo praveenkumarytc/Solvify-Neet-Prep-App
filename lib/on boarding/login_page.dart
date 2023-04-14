@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shield_neet/Utils/color_resources.dart';
 import 'package:shield_neet/Utils/dimensions.dart';
-import 'package:shield_neet/Utils/images.dart';
 import 'package:shield_neet/Utils/textstyle.dart';
 import 'package:shield_neet/components/animated_button.dart';
 import 'package:shield_neet/helper/flutter_toast.dart';
@@ -22,8 +21,8 @@ class _LoginPageState extends State<LoginPage> {
   String? errorMessage;
 
   bool isRegister = false;
-  String? name;
-  String? phone;
+  String name = '';
+  String phone = '';
   String email = '';
   String password = '';
 
@@ -68,6 +67,7 @@ class _LoginPageState extends State<LoginPage> {
           child: TextFormField(
             keyboardType: TextInputType.name,
             textCapitalization: TextCapitalization.words,
+            style: const TextStyle(color: Colors.black),
             decoration: InputDecoration(
               hintText: 'Full Name',
               hintStyle: TextStyle(fontWeight: FontWeight.normal, color: Colors.grey.shade500, fontSize: 14),
@@ -100,6 +100,7 @@ class _LoginPageState extends State<LoginPage> {
           child: TextFormField(
             keyboardType: TextInputType.number,
             maxLength: 10,
+            style: const TextStyle(color: Colors.black),
             buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
             decoration: InputDecoration(
               hintText: 'Mobile No.',
@@ -132,6 +133,7 @@ class _LoginPageState extends State<LoginPage> {
           margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           child: TextFormField(
             keyboardType: TextInputType.emailAddress,
+            style: const TextStyle(color: Colors.black),
             decoration: InputDecoration(
               hintText: 'Email',
               hintStyle: TextStyle(fontWeight: FontWeight.normal, color: Colors.grey.shade500, fontSize: 14),
@@ -162,6 +164,7 @@ class _LoginPageState extends State<LoginPage> {
           margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           child: TextFormField(
             keyboardType: TextInputType.visiblePassword,
+            style: const TextStyle(color: Colors.black),
             decoration: InputDecoration(
               hintText: 'Password',
               suffixIcon: IconButton(
@@ -198,8 +201,21 @@ class _LoginPageState extends State<LoginPage> {
         Dimensions.PADDING_SIZE_DEFAULT.heightBox,
         AnimatedButton(
           onTap: () async {
-            // print('$name $phone $password $email');
-            await Provider.of<AuthProvider>(context, listen: false).signUp(context, name, email, password, phone).then((value) {});
+            String passwordPattern = r'^.{6,}$';
+            String emailPattern = r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
+            String phonePattern = r'^\d{10}$';
+
+            if (name.isEmpty) {
+              showToast(message: 'Please enter your full name', isError: true);
+            } else if (!RegExp(emailPattern).hasMatch(email)) {
+              showToast(message: 'Please enter a valid email address', isError: true);
+            } else if (!RegExp(passwordPattern).hasMatch(password)) {
+              showToast(message: 'Please at least 6 digit strong password', isError: true);
+            } else if (!RegExp(phonePattern).hasMatch(phone)) {
+              showToast(message: 'Please enter a valid phone number', isError: true);
+            } else {
+              await Provider.of<AuthProvider>(context, listen: false).signUp(context, name, email, password, phone).then((value) {});
+            }
           },
           child: Provider.of<AuthProvider>(context, listen: false).isLoading
               ? const Center(child: CircularProgressIndicator())
@@ -279,6 +295,7 @@ class _LoginPageState extends State<LoginPage> {
           margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           child: TextFormField(
             keyboardType: TextInputType.emailAddress,
+            style: const TextStyle(color: Colors.black),
             decoration: InputDecoration(
               hintText: 'Email',
               hintStyle: TextStyle(fontWeight: FontWeight.normal, color: Colors.grey.shade500, fontSize: 14),
@@ -309,6 +326,7 @@ class _LoginPageState extends State<LoginPage> {
           margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           child: TextFormField(
             keyboardType: TextInputType.visiblePassword,
+            style: const TextStyle(color: Colors.black),
             decoration: InputDecoration(
               hintText: 'Password',
               suffixIcon: IconButton(
@@ -342,17 +360,17 @@ class _LoginPageState extends State<LoginPage> {
             onFieldSubmitted: (term) => _userPasswordFocus.unfocus(),
           ),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            TextButton(
-                onPressed: () {},
-                child: Text(
-                  'Recovery Password',
-                  style: TextStyle(color: Colors.grey.shade700),
-                )),
-          ],
-        ),
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.end,
+        //   children: [
+        //     TextButton(
+        //         onPressed: () {},
+        //         child: Text(
+        //           'Recovery Password',
+        //           style: TextStyle(color: Colors.grey.shade700),
+        //         )),
+        //   ],
+        // ),
         Dimensions.PADDING_SIZE_DEFAULT.heightBox,
         AnimatedButton(
           onTap: () async {

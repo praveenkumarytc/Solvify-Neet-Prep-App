@@ -26,7 +26,7 @@ class _ChapterScreenState extends State<ChapterScreen> {
       body: ScrollConfiguration(
         behavior: NoGlowScroll(),
         child: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(widget.subjectName).collection(FirestoreCollections.chapters).snapshots(),
+          stream: FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(widget.subjectName).collection(FirestoreCollections.chapters).orderBy(FirestoreCollections.chapterNumber).snapshots(),
           builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (snapshot.hasError) {
               return const Text('Error occured');

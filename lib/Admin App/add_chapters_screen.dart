@@ -64,7 +64,7 @@ class AddChapterScreen extends StatelessWidget {
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.7,
               child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(subjectName).collection(FirestoreCollections.chapters).snapshots(),
+                stream: FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(subjectName).collection(FirestoreCollections.chapters).orderBy(FirestoreCollections.chapterNumber).snapshots(),
                 builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.hasError) {
                     return const Text('Error occured');

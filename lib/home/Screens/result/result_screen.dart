@@ -114,9 +114,15 @@ class _ResultScreenState extends State<ResultScreen> {
                             children: [
                               const Icon(Icons.check, color: Colors.green),
                               const SizedBox(height: 8),
-                              const Text('Correct'),
+                              const Text(
+                                'Correct',
+                                style: TextStyle(color: Colors.black),
+                              ),
                               const SizedBox(height: 4),
-                              Text('${correctAnswers.length}/${widget.performanceData.length}'),
+                              Text(
+                                '${correctAnswers.length}/${widget.performanceData.length}',
+                                style: const TextStyle(color: Colors.black),
+                              ),
                             ],
                           ),
                         ),
@@ -133,9 +139,15 @@ class _ResultScreenState extends State<ResultScreen> {
                             children: [
                               const Icon(Icons.close, color: Colors.red),
                               const SizedBox(height: 8),
-                              const Text('Wrong'),
+                              const Text(
+                                'Wrong',
+                                style: TextStyle(color: Colors.black),
+                              ),
                               const SizedBox(height: 4),
-                              Text('${wrongAnswer.length}/${widget.performanceData.length}'),
+                              Text(
+                                '${wrongAnswer.length}/${widget.performanceData.length}',
+                                style: const TextStyle(color: Colors.black),
+                              ),
                             ],
                           ),
                         ),
@@ -152,9 +164,15 @@ class _ResultScreenState extends State<ResultScreen> {
                             children: [
                               const Icon(Icons.help_outline, color: Colors.grey),
                               const SizedBox(height: 8),
-                              const Text('Skipped'),
+                              const Text(
+                                'Skipped',
+                                style: TextStyle(color: Colors.black),
+                              ),
                               const SizedBox(height: 4),
-                              Text('${skippedAnswers.length}/${widget.performanceData.length}'),
+                              Text(
+                                '${skippedAnswers.length}/${widget.performanceData.length}',
+                                style: const TextStyle(color: Colors.black),
+                              ),
                             ],
                           ),
                         ),
@@ -244,26 +262,40 @@ class DecorativeContainer extends StatelessWidget {
             ),
           ),
           Center(
-            child: ShaderMask(
-              blendMode: BlendMode.srcATop,
-              shaderCallback: (bounds) => const LinearGradient(
-                colors: [
-                  Colors.transparent,
-                  Colors.transparent,
-                  Colors.white
-                ],
-                stops: [
-                  0.0,
-                  0.3,
-                  1.0
-                ],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ).createShader(bounds),
-              child: Image.asset(
-                Images.biology,
-                scale: 3,
-              ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ShaderMask(
+                  blendMode: BlendMode.srcATop,
+                  shaderCallback: (bounds) => const LinearGradient(
+                    colors: [
+                      Colors.transparent,
+                      Colors.transparent,
+                      Colors.white
+                    ],
+                    stops: [
+                      0.0,
+                      0.3,
+                      1.0
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ).createShader(bounds),
+                  child: Image.asset(
+                    Images.APP_LOGO_TRANS_BG,
+                    scale: 2.4,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  'Solvify - Neet Prep App',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

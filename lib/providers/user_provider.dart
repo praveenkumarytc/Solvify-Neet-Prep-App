@@ -34,11 +34,9 @@ class UserProvider extends ChangeNotifier {
 
   void removeBookMark(String question) {
     McqModel? bookmarkedQuestion = bookmarkedQuestions.firstWhere((mcq) => mcq.question == question);
-    if (bookmarkedQuestion != null) {
-      bookmarkedQuestions.remove(bookmarkedQuestion);
-      sharedPreferences!.setStringList(FirestoreCollections.bookMarkedMcq, bookmarkedQuestions.map((q) => json.encode(q.toJson())).toList());
-      notifyListeners();
-    }
+    bookmarkedQuestions.remove(bookmarkedQuestion);
+    sharedPreferences!.setStringList(FirestoreCollections.bookMarkedMcq, bookmarkedQuestions.map((q) => json.encode(q.toJson())).toList());
+    notifyListeners();
   }
 
   Future<void> fetchBookmarkedQuestions() async {

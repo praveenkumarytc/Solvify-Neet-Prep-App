@@ -43,6 +43,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
         darkTheme: ThemeData(
+          fontFamily: 'Poppins',
           brightness: Brightness.dark,
           primarySwatch: ColorResources.PRIMARY_MATERIAL,
           textSelectionTheme: const TextSelectionThemeData(

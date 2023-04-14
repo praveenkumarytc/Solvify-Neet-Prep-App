@@ -42,7 +42,7 @@ class _SplashPageState extends State<SplashPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Image.asset(
-                  Images.openBookIcon,
+                  Images.APP_LOGO_TRANS_BG,
                   width: 150,
                   height: 150,
                 ),

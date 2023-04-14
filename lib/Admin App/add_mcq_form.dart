@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -21,15 +22,15 @@ import 'package:shield_neet/providers/admin_provider.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class AddMcqPage extends StatefulWidget {
-  AddMcqPage({super.key, required this.chapterName, required this.chapterId, required this.subjectname, this.isUpdate = false, this.question, this.explanation, this.options, this.mcqId});
+  const AddMcqPage({super.key, required this.chapterName, required this.chapterId, required this.subjectname, this.isUpdate = false, this.question, this.explanation, this.options, this.mcqId});
   final bool isUpdate;
   final String chapterName;
   final String subjectname;
   final String chapterId;
-  String? question;
-  String? explanation;
-  List<OptionModel>? options;
-  dynamic mcqId;
+  final String? question;
+  final String? explanation;
+  final List<OptionModel>? options;
+  final dynamic mcqId;
 
   @override
   State<AddMcqPage> createState() => _AddMcqPageState();
@@ -97,33 +98,59 @@ class _AddMcqPageState extends State<AddMcqPage> {
     }
   }
 
-  Future<void> extractQuestionAndOptions(String text) async {
-    // Define the regular expressions to match the question and options
-    final questionRegex = RegExp(r'^\s*([^\?]+)\?');
-    final optionRegex = RegExp(r'^\s*[A-D]\.\s*(.+)');
+  void extractQuestionAndOptions(String ocrText) {
+    log(ocrText);
+    final lines = ocrText.split('\n').map((line) => line.trim()).toList();
 
-    // Use the regular expressions to extract the question and options
-    final lines = text.split('\n');
-    String? question;
-    final options = <String?>[];
-    for (final line in lines) {
-      final questionMatch = questionRegex.firstMatch(line);
-      if (questionMatch != null) {
-        question = questionMatch.group(1)?.trim();
-      } else {
-        final optionMatch = optionRegex.firstMatch(line);
-        if (optionMatch != null) {
-          options.add(optionMatch.group(1)?.trim());
-        }
+    // Find the index of the first option
+    int optionIndex = -1;
+    for (int i = 0; i < lines.length; i++) {
+      final line = lines[i];
+      if (line.startsWith('(1)') || line.startsWith('A)') || line.startsWith('a)') || line.startsWith('i)')) {
+        optionIndex = i;
+        break;
       }
     }
 
-    // Assign the question and options to the given text fields
-    questionController.text = question ?? '';
-    option1Controller.text = options.isNotEmpty ? options[0] ?? '' : '';
-    option2Controller.text = options.length > 1 ? options[1] ?? '' : '';
-    option3Controller.text = options.length > 2 ? options[2] ?? '' : '';
-    option4Controller.text = options.length > 3 ? options[3] ?? '' : '';
+    if (optionIndex == -1) {
+      // No options found
+      return;
+    }
+
+    // The question text is the lines before the first option
+    final questionLines = lines.sublist(0, optionIndex);
+    final questionText = questionLines.join(' ');
+
+    // The options are the lines after the question text
+    final optionLines = lines.sublist(optionIndex);
+    final options = optionLines.map((line) => line.substring(2)).toList();
+
+    // Assign the extracted question and options to the relevant text controllers
+    questionController.text = questionText;
+    option1Controller.text = options[0];
+    option2Controller.text = options[1];
+    option3Controller.text = options[2];
+    option4Controller.text = options[3];
+    print(questionController.text);
+    print(option1Controller.text);
+    print(option2Controller.text);
+    print(option3Controller.text);
+    print(option4Controller.text);
+  }
+
+  String? extractQuestion(String text) {
+    // Define the regular expression to match the question
+    final questionRegex = RegExp(r'^\s*([^\?]+)\?');
+
+    // Use the regular expression to extract the question
+    final lines = text.split('\n');
+    for (final line in lines) {
+      final questionMatch = questionRegex.firstMatch(line);
+      if (questionMatch != null) {
+        return questionMatch.group(1)?.trim();
+      }
+    }
+    return null;
   }
 
   @override
@@ -164,9 +191,9 @@ class _AddMcqPageState extends State<AddMcqPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Add a Question',
-                        style: TextStyle(
+                      Text(
+                        widget.isUpdate ? 'Update Question' : 'Add a Question',
+                        style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                         ),
@@ -451,6 +478,7 @@ class _AddMcqPageState extends State<AddMcqPage> {
                           "option_detail": option4Controller.text.trim()
                         }
                       ];
+                      print(options);
 
                       if (option1Controller.text.isEmpty) {
                         showToast(message: 'option 1 can not be empty', isError: true);
@@ -460,7 +488,7 @@ class _AddMcqPageState extends State<AddMcqPage> {
                         showToast(message: 'option 3 can not be empty', isError: true);
                       } else if (option4Controller.text.isEmpty) {
                         showToast(message: 'option 4 can not be empty', isError: true);
-                      } else if (!isoption2Correct && !isoption2Correct && !isoption3Correct && !isoption4Correct) {
+                      } else if (!isoption1Correct && !isoption2Correct && !isoption3Correct && !isoption4Correct) {
                         showToast(message: 'at least one option must be checked be RIGHT', isError: true);
                       } else {
                         if (isExplainationChoosed) {
@@ -469,7 +497,7 @@ class _AddMcqPageState extends State<AddMcqPage> {
                         try {
                           if (widget.isUpdate) {
                             await Provider.of<AdminProvider>(context, listen: false).updateAddMcq(widget.mcqId, widget.subjectname, widget.chapterId, questionController.text.trim(), options, base64).then((value) {
-                              showToast(message: 'mcq added successfully');
+                              showToast(message: 'mcq updated successfully');
                               Navigator.pop(context);
                             });
                           } else {
@@ -493,6 +521,7 @@ class _AddMcqPageState extends State<AddMcqPage> {
     );
   }
 
+  // ignore: unused_element
   _openChangeImageBottomSheet() {
     return showCupertinoModalPopup(
         context: context,

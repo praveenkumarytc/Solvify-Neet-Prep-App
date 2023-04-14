@@ -5,10 +5,8 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
-import 'package:image_cropper/image_cropper.dart';
-import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:shield_neet/components/solvify_appbar.dart';
+import 'package:shield_neet/helper/app_helper.dart';
 
 class OcrScreen extends StatefulWidget {
   const OcrScreen({
@@ -45,16 +43,16 @@ class _OcrScreenState extends State<OcrScreen> with WidgetsBindingObserver {
     return;
   }
 
-  Future<String> cropSquare(String srcFilePath) async {
-    final image = await ImageCropper().cropImage(sourcePath: srcFilePath);
-    String? destFilePath;
-    if (image != null) {
-      destFilePath = join((await getTemporaryDirectory()).path, '${DateTime.now().millisecondsSinceEpoch}.png');
-      // final File finalImage = await image.copy(destFilePath);
-    }
-    return image!.path;
-    // return destFilePath;
-  }
+  // Future<String> cropSquare(String srcFilePath) async {
+  //   final image = await ImageCropper().cropImage(sourcePath: srcFilePath);
+  //   String? destFilePath;
+  //   if (image != null) {
+  //     destFilePath = join((await getTemporaryDirectory()).path, '${DateTime.now().millisecondsSinceEpoch}.png');
+  //     // final File finalImage = await image.copy(destFilePath);
+  //   }
+  //   return image!.path;
+  //   // return destFilePath;
+  // }
 
   @override
   void dispose() {
@@ -67,7 +65,7 @@ class _OcrScreenState extends State<OcrScreen> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    print(state);
+    // print(state);
     if (state == AppLifecycleState.paused) {
       controller!.dispose();
     } else if (state == AppLifecycleState.resumed) {
@@ -82,7 +80,14 @@ class _OcrScreenState extends State<OcrScreen> with WidgetsBindingObserver {
     if (controller == null) return;
     final pictureFile = await controller!.takePicture();
     final file = File(pictureFile.path);
-    final inputImage = InputImage.fromFile(file);
+
+    // Crop the image before passing it to the text recognizer
+    final croppedImage = await AppHelper.cropImage(file);
+    if (croppedImage == null) {
+      return;
+    }
+
+    final inputImage = InputImage.fromFile(croppedImage);
     await _textRecognizer.processImage(inputImage).then((value) {
       Navigator.pop(context, value.text);
     });
@@ -106,7 +111,7 @@ class _OcrScreenState extends State<OcrScreen> with WidgetsBindingObserver {
               return Column(
                 children: <Widget>[
                   Expanded(
-                    child: Container(
+                    child: SizedBox(
                       width: double.infinity,
                       child: CameraPreview(controller!),
                     ),
