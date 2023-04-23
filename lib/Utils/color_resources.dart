@@ -6,19 +6,19 @@ import 'package:shield_neet/providers/user_provider.dart';
 
 class ColorResources {
   static Color getBlue(BuildContext context) {
-    return Provider.of<UserProvider>(context).isDarkMode! ? const Color(0xFF007ca3) : const Color(0xFF00ADE3);
+    return Provider.of<UserProvider>(context, listen: false).isDarkMode! ? const Color(0xFF007ca3) : const Color(0xFF00ADE3);
   }
 
   static Color primaryBlue(BuildContext context) {
-    return Provider.of<UserProvider>(context).isDarkMode! ? const Color(0xFF007ca3) : const Color(0xff608BF7);
+    return Provider.of<UserProvider>(context, listen: false).isDarkMode! ? const Color(0xFF007ca3) : const Color(0xff608BF7);
   }
 
   static Color getBlack54(BuildContext context) {
-    return Provider.of<UserProvider>(context).isDarkMode! ? Colors.grey.shade200 : Colors.black54;
+    return Provider.of<UserProvider>(context, listen: false).isDarkMode! ? Colors.grey.shade200 : Colors.black54;
   }
 
   static Color getWhite(BuildContext context) {
-    return Provider.of<UserProvider>(context).isDarkMode! ? Colors.black : Colors.white;
+    return Provider.of<UserProvider>(context, listen: false).isDarkMode! ? Colors.black : Colors.white;
   }
 
   static const Color BLACK = Color(0xff000000);

@@ -6,6 +6,7 @@ import 'dart:ui' as ui;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shield_neet/Utils/color_resources.dart';
@@ -196,34 +197,38 @@ class _ResultScreenState extends State<ResultScreen> {
                     ),
                   ),
                 ),
-                Container(
-                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          'Wrong Attempts:',
-                          style: TextStyle(
-                            color: ColorResources.PRIMARY_MATERIAL,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 20,
-                          ),
+                onlyWrongAttempts.isEmpty
+                    ? const SizedBox.shrink()
+                    : Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 10),
+                        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(15)),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            10.heightBox,
+                            const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Text(
+                                'Wrong Attempts:',
+                                style: TextStyle(
+                                  color: ColorResources.PRIMARY_MATERIAL,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 20,
+                                ),
+                              ),
+                            ),
+                            Column(
+                              children: List.generate(
+                                onlyWrongAttempts.length,
+                                (index) => WrongAttempts(
+                                  question: onlyWrongAttempts[index].question,
+                                  explaination: 'Explaination: ${onlyWrongAttempts[index].explaination}',
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Column(
-                        children: List.generate(
-                          onlyWrongAttempts.length,
-                          (index) => WrongAttempts(
-                            question: 'Q.${index + 1} ${onlyWrongAttempts[index].question}',
-                            explaination: 'Explaination: ${onlyWrongAttempts[index].explaination}',
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
               ],
             ),
           ),

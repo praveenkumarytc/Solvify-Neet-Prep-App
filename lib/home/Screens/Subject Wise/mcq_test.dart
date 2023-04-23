@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_print
 
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -28,10 +30,14 @@ class _McqTestScreenState extends State<McqTestScreen> {
   String mcqIs = 'skipped';
   PerformanceModel myPerformace = PerformanceModel(question: 'initialized', isCorrect: 'skipped', explaination: 'initialized');
   List<PerformanceModel> perFormanceModelList = [];
+
+  bool _isMcqLoading = false;
   Future<dynamic> getData() async {
+    _isMcqLoading = true;
     final QuerySnapshot<Object?> snapshot = await FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(widget.subjectName).collection(FirestoreCollections.chapters).doc(widget.chapterId).collection(FirestoreCollections.mcq).get();
 
     setState(() {
+      performanceData.clear();
       mcqList.clear(); // clear the list before adding new data
       for (var i = 0; i < snapshot.docs.length; i++) {
         var data = snapshot.docs[i].data() as Map<String, dynamic>?;
@@ -40,6 +46,8 @@ class _McqTestScreenState extends State<McqTestScreen> {
         }
       }
     });
+
+    _isMcqLoading = false;
   }
 
   final PageController controller = PageController(initialPage: 0);
@@ -173,171 +181,175 @@ class _McqTestScreenState extends State<McqTestScreen> {
                   ],
                 ),
               ),
-        body: mcqList.isEmpty
+        body: _isMcqLoading
             ? const Center(
-                child: SizedBox(
-                child: Text('Questions are not availbale for this chapter'),
+                child: CircularProgressIndicator(
+                color: ColorResources.PRIMARY_MATERIAL,
+                backgroundColor: Colors.white,
               ))
-            : SingleChildScrollView(
-                physics: const NeverScrollableScrollPhysics(),
-                child: Stack(
-                  children: [
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height,
-                      width: double.infinity,
-                    ),
-                    TopBgContainer(
-                      icon: details.isBookmarked(mcqList[currentPage].question) ? Icons.bookmark_added : Icons.bookmark_add_outlined,
-                      onBookMarkTap: () async {
-                        if (details.isBookmarked(mcqList[currentPage].question)) {
-                          details.removeBookMark(mcqList[currentPage].question);
+            : mcqList.isEmpty
+                ? const Center(
+                    child: SizedBox(
+                    child: Text('Questions are not availbale for this chapter'),
+                  ))
+                : SingleChildScrollView(
+                    physics: const NeverScrollableScrollPhysics(),
+                    child: Stack(
+                      children: [
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height,
+                          width: double.infinity,
+                        ),
+                        TopBgContainer(
+                          icon: details.isBookmarked(mcqList[currentPage].question) ? Icons.bookmark_added : Icons.bookmark_add_outlined,
+                          onBookMarkTap: () async {
+                            if (details.isBookmarked(mcqList[currentPage].question)) {
+                              details.removeBookMark(mcqList[currentPage].question);
 
-                          // print('removed ${details.bookmarkedQuestions[0].question}');
-                        } else {
-                          Provider.of<UserProvider>(context, listen: false).addBookMark(mcqList[currentPage]);
-                        }
-                      },
-                    ),
-                    Positioned(
-                      top: 110,
-                      left: MediaQuery.of(context).size.width * 0.05,
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * 0.9,
-                        height: MediaQuery.of(context).size.height - 150,
-                        decoration: BoxDecoration(
-                            color: ColorResources.getWhite(context),
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(20),
-                            )),
-                        child: PageView.builder(
-                          controller: controller,
-                          onPageChanged: (value) {
-                            (int index) {
-                              setState(() {
-                                currentPage = index;
-                              });
-                            };
+                              // print('removed ${details.bookmarkedQuestions[0].question}');
+                            } else {
+                              Provider.of<UserProvider>(context, listen: false).addBookMark(mcqList[currentPage]);
+                            }
                           },
-                          itemCount: mcqList.length,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, index) => Column(
-                            children: [
-                              Text(Provider.of<UserProvider>(context, listen: false).isBookmarked(mcqList[currentPage].question).toString()),
-                              Container(
-                                alignment: Alignment.center,
-                                padding: const EdgeInsets.all(10),
-                                child: Column(
-                                  children: [
-                                    Center(
-                                      child: Text(
-                                        'Question ${index + 1}/${mcqList.length}',
-                                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: ColorResources.PRIMARY_MATERIAL),
-                                      ),
-                                    ),
-                                    10.heightBox,
-                                    mcqList[index].question.startsWith('http')
-                                        ? GestureDetector(
-                                            onTap: () => pushTo(context, ZoomableImage(image: NetworkImage(mcqList[index].question))),
-                                            child: Container(
-                                              height: 150,
-                                              padding: const EdgeInsets.all(8),
-                                              child: Image(
-                                                image: NetworkImage(mcqList[index].question),
-                                                fit: BoxFit.cover,
-                                                loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                                                  if (loadingProgress == null) {
-                                                    // Image is fully loaded, return GestureDetector
-                                                    return GestureDetector(
-                                                      onTap: () => pushTo(context, ZoomableImage(image: NetworkImage(mcqList[index].question))),
-                                                      child: child,
-                                                    );
-                                                  } else {
-                                                    // Image is still loading, return placeholder
-                                                    return const ImageError(error: 'Image not available');
-                                                  }
-                                                },
-                                                errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-                                                  // Handle image loading error
-                                                  return const ImageError(error: 'Error loading image');
-                                                },
-                                              ),
-                                            ),
-                                          )
-                                        : Text(
-                                            mcqList[index].question,
-                                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                    (mcqList[index].question.length < 120 ? 80 : 20).heightBox,
-                                    ...List.generate(
-                                      mcqList[index].options.length,
-                                      (i) => GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            setState(() {
-                                              selectedOption = mcqList[index].options[i].optionDetail;
-                                              mcqIs = mcqList[index].options[i].isCorrect.toString();
-
-                                              myPerformace = PerformanceModel(
-                                                question: mcqList[index].question,
-                                                isCorrect: mcqIs,
-                                                explaination: selectedOption!,
-                                              );
-                                              print(mcqIs);
-                                            });
-                                          });
-                                        },
-                                        child: Container(
-                                          width: double.infinity,
-                                          margin: const EdgeInsets.only(top: 15),
-                                          padding: const EdgeInsets.all(8),
-                                          decoration: BoxDecoration(
-                                            border: Border.all(width: 3, color: Colors.blueGrey.shade100),
-                                            borderRadius: const BorderRadius.all(
-                                              Radius.circular(10),
-                                            ),
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Flexible(
-                                                flex: 3,
-                                                child: Text(
-                                                  mcqList[index].options[i].optionDetail,
-                                                  style: const TextStyle(fontWeight: FontWeight.w400),
-                                                ),
-                                              ),
-                                              // Text(mcqList[index].options[i].isCorrect.toString()),
-                                              SizedBox(
-                                                height: 30,
-                                                child: Radio(
-                                                  value: mcqList[index].options[i].optionDetail,
-                                                  groupValue: selectedOption,
-                                                  onChanged: (value) {
-                                                    setState(() {
-                                                      mcqIs = mcqList[index].options[i].isCorrect.toString();
-                                                      print(mcqIs);
-                                                      selectedOption = mcqList[index].options[i].optionDetail;
-                                                    });
-                                                  },
-                                                ),
-                                              )
-                                            ],
+                        ),
+                        Positioned(
+                          top: 110,
+                          left: MediaQuery.of(context).size.width * 0.05,
+                          child: Container(
+                            width: MediaQuery.of(context).size.width * 0.9,
+                            height: MediaQuery.of(context).size.height - 150,
+                            decoration: BoxDecoration(
+                                color: ColorResources.getWhite(context),
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(20),
+                                )),
+                            child: PageView.builder(
+                              controller: controller,
+                              onPageChanged: (value) {
+                                (int index) {
+                                  setState(() {
+                                    currentPage = index;
+                                  });
+                                };
+                              },
+                              itemCount: mcqList.length,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemBuilder: (context, index) => Column(
+                                children: [
+                                  Container(
+                                    alignment: Alignment.center,
+                                    padding: const EdgeInsets.all(10),
+                                    child: Column(
+                                      children: [
+                                        Center(
+                                          child: Text(
+                                            'Question ${index + 1}/${mcqList.length}',
+                                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: ColorResources.PRIMARY_MATERIAL),
                                           ),
                                         ),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              )
-                            ],
+                                        10.heightBox,
+                                        mcqList[index].question.startsWith('http')
+                                            ? GestureDetector(
+                                                onTap: () => pushTo(context, ZoomableImage(image: NetworkImage(mcqList[index].question))),
+                                                child: Container(
+                                                  height: 150,
+                                                  padding: const EdgeInsets.all(8),
+                                                  child: Image(
+                                                    image: NetworkImage(mcqList[index].question),
+                                                    fit: BoxFit.cover,
+                                                    loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                                                      if (loadingProgress == null) {
+                                                        // Image is fully loaded, return GestureDetector
+                                                        return GestureDetector(
+                                                          onTap: () => pushTo(context, ZoomableImage(image: NetworkImage(mcqList[index].question))),
+                                                          child: child,
+                                                        );
+                                                      } else {
+                                                        // Image is still loading, return placeholder
+                                                        return const ImageError(error: 'Image not available');
+                                                      }
+                                                    },
+                                                    errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                                                      // Handle image loading error
+                                                      return const ImageError(error: 'Error loading image');
+                                                    },
+                                                  ),
+                                                ),
+                                              )
+                                            : Text(
+                                                mcqList[index].question,
+                                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                        (mcqList[index].question.length < 120 ? 80 : 20).heightBox,
+                                        ...List.generate(
+                                          mcqList[index].options.length,
+                                          (i) => GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                selectedOption = mcqList[index].options[i].optionDetail;
+                                                mcqIs = mcqList[index].options[i].isCorrect.toString();
+
+                                                myPerformace = PerformanceModel(
+                                                  question: mcqList[index].question,
+                                                  isCorrect: mcqIs,
+                                                  explaination: selectedOption!,
+                                                );
+                                                print('${mcqIs}hhhh');
+                                                print('${myPerformace.isCorrect}11');
+                                              });
+                                            },
+                                            child: Container(
+                                              width: double.infinity,
+                                              margin: const EdgeInsets.only(top: 15),
+                                              padding: const EdgeInsets.all(8),
+                                              decoration: BoxDecoration(
+                                                border: Border.all(width: 3, color: Colors.blueGrey.shade100),
+                                                borderRadius: const BorderRadius.all(
+                                                  Radius.circular(10),
+                                                ),
+                                              ),
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Flexible(
+                                                    flex: 3,
+                                                    child: Text(
+                                                      mcqList[index].options[i].optionDetail,
+                                                      style: const TextStyle(fontWeight: FontWeight.w400),
+                                                    ),
+                                                  ),
+                                                  // Text(mcqList[index].options[i].isCorrect.toString()),
+                                                  SizedBox(
+                                                    height: 30,
+                                                    child: Radio(
+                                                      value: mcqList[index].options[i].optionDetail,
+                                                      groupValue: selectedOption,
+                                                      onChanged: (value) {
+                                                        setState(() {
+                                                          mcqIs = mcqList[index].options[i].isCorrect.toString();
+                                                          print(mcqIs);
+                                                          selectedOption = mcqList[index].options[i].optionDetail;
+                                                        });
+                                                      },
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
+                        )
+                      ],
+                    ),
+                  ),
       );
     });
   }

@@ -1,9 +1,12 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shield_neet/components/solvify_appbar.dart';
 import 'package:shield_neet/home/Screens/Subject%20Wise/chapters_screen.dart';
 import 'package:shield_neet/home/Screens/Subject%20Wise/mcq_model.dart';
 import 'package:shield_neet/providers/user_provider.dart';
+
+import '../Subject Wise/mcq_test.dart';
 
 class BookMarkedQuestScreen extends StatefulWidget {
   const BookMarkedQuestScreen({super.key});
@@ -45,7 +48,17 @@ class _BookMarkedQuestScreenState extends State<BookMarkedQuestScreen> {
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text(details.bookmarkedQuestions[index].question),
+                          title: details.bookmarkedQuestions[index].question.startsWith('http')
+                              ? SizedBox(
+                                  height: 150,
+                                  child: CachedNetworkImage(
+                                    imageUrl: details.bookmarkedQuestions[index].question,
+                                    errorWidget: (context, url, error) => ImageError(error: error),
+                                    placeholder: (context, url) => const SizedBox.shrink(),
+                                    fit: BoxFit.fill,
+                                  ),
+                                )
+                              : Text(details.bookmarkedQuestions[index].question),
                           content: Column(
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,15 +97,25 @@ class _BookMarkedQuestScreenState extends State<BookMarkedQuestScreen> {
                   dense: true,
                   visualDensity: VisualDensity.adaptivePlatformDensity,
                   leading: Text(
-                    '${index + 1}',
+                    '${index + 1}.',
                     style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
-                  title: Text(
-                    details.bookmarkedQuestions[index].question,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
+                  title: details.bookmarkedQuestions[index].question.startsWith('http')
+                      ? SizedBox(
+                          height: 150,
+                          child: CachedNetworkImage(
+                            imageUrl: details.bookmarkedQuestions[index].question,
+                            errorWidget: (context, url, error) => ImageError(error: error),
+                            placeholder: (context, url) => const SizedBox.shrink(),
+                            fit: BoxFit.fill,
+                          ),
+                        )
+                      : Text(
+                          details.bookmarkedQuestions[index].question,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                        ),
                 ),
               ),
             ),

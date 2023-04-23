@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -23,6 +24,8 @@ import 'package:shield_neet/helper/flutter_toast.dart';
 import 'package:shield_neet/helper/ocr_screen.dart';
 import 'package:shield_neet/providers/admin_provider.dart';
 import 'package:velocity_x/velocity_x.dart';
+
+import '../home/Screens/Subject Wise/mcq_test.dart';
 
 class AddMcqPage extends StatefulWidget {
   const AddMcqPage({super.key, required this.chapterName, required this.chapterId, required this.subjectname, this.isUpdate = false, this.question, this.explanation, this.options, this.mcqId});
@@ -48,6 +51,7 @@ class _AddMcqPageState extends State<AddMcqPage> {
   TextEditingController explainationController = TextEditingController();
   TextEditingController ocrTextCOntroller = TextEditingController();
   bool isExplainationChoosed = true;
+  bool _isSubmitting = false;
   final _picker = ImagePicker();
   File? fileImage;
   String? base64;
@@ -72,7 +76,7 @@ class _AddMcqPageState extends State<AddMcqPage> {
       // Encode the compressed image as base64
       final bytes = compressedImage.readAsBytesSync();
       final encoded = base64Encode(bytes);
-
+      questionController.clear();
       setState(() {
         fileImage = compressedImage;
         // Read the image file as bytes
@@ -100,6 +104,7 @@ class _AddMcqPageState extends State<AddMcqPage> {
 
       if (widget.question!.startsWith('http')) {
         isQuestionImage = true;
+        questionController.text = widget.question!;
       } else {
         questionController.text = widget.question!;
       }
@@ -330,21 +335,32 @@ class _AddMcqPageState extends State<AddMcqPage> {
                             _openChangeImageBottomSheet();
                             // Handle tapping the container to select an image from the gallery
                           },
-                          child: fileImage != null
-                              ? Container(
+                          child: questionController.text.startsWith('http')
+                              ? SizedBox(
                                   height: 350,
-                                  width: 300,
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.black12, width: 1),
-                                      borderRadius: const BorderRadius.all(Radius.circular(10)),
-                                      color: Colors.grey,
-                                      image: DecorationImage(
-                                        image: FileImage(fileImage!),
-                                        fit: BoxFit.cover,
-                                      )),
+                                  child: CachedNetworkImage(
+                                    imageUrl: questionController.text,
+                                    errorWidget: (context, url, error) => ImageError(error: error),
+                                    placeholder: (context, url) => const SizedBox.shrink(),
+                                    fit: BoxFit.fill,
+                                  ),
                                 )
-                              : const PlaceholderContainer(),
+                              : fileImage != null
+                                  ? Container(
+                                      height: 350,
+                                      width: 300,
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        border: Border.all(color: Colors.black12, width: 1),
+                                        borderRadius: const BorderRadius.all(Radius.circular(10)),
+                                        color: Colors.grey,
+                                        image: DecorationImage(
+                                          image: FileImage(fileImage!),
+                                          fit: BoxFit.fill,
+                                        ),
+                                      ),
+                                    )
+                                  : const PlaceholderContainer(),
                         )
                       : QuestionTextField(
                           controller: questionController,
@@ -560,82 +576,99 @@ class _AddMcqPageState extends State<AddMcqPage> {
                           : const PlaceholderContainer(),
                     ),*/
                   30.heightBox,
-                  SubmitButton(
-                    onTap: () async {
-                      List<Map<String, dynamic>> options = [
-                        {
-                          "is_correct": isoption1Correct,
-                          "opt_no": 1,
-                          "option_detail": option1Controller.text.trim()
-                        },
-                        {
-                          "is_correct": isoption2Correct,
-                          "opt_no": 2,
-                          "option_detail": option2Controller.text.trim()
-                        },
-                        {
-                          "is_correct": isoption3Correct,
-                          "opt_no": 3,
-                          "option_detail": option3Controller.text.trim()
-                        },
-                        {
-                          "is_correct": isoption4Correct,
-                          "opt_no": 4,
-                          "option_detail": option4Controller.text.trim()
-                        }
-                      ];
-                      print(options);
+                  _isSubmitting
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                          color: ColorResources.PRIMARY_MATERIAL,
+                          backgroundColor: Colors.white,
+                        ))
+                      : SubmitButton(
+                          onTap: () async {
+                            List<Map<String, dynamic>> options = [
+                              {
+                                "is_correct": isoption1Correct,
+                                "opt_no": 1,
+                                "option_detail": option1Controller.text.trim()
+                              },
+                              {
+                                "is_correct": isoption2Correct,
+                                "opt_no": 2,
+                                "option_detail": option2Controller.text.trim()
+                              },
+                              {
+                                "is_correct": isoption3Correct,
+                                "opt_no": 3,
+                                "option_detail": option3Controller.text.trim()
+                              },
+                              {
+                                "is_correct": isoption4Correct,
+                                "opt_no": 4,
+                                "option_detail": option4Controller.text.trim()
+                              }
+                            ];
+                            print(options);
 
-                      if (option1Controller.text.isEmpty) {
-                        showSnackBar(context, message: 'option 1 can not be empty');
-                      } else if (option2Controller.text.isEmpty) {
-                        showSnackBar(context, message: 'option 2 can not be empty');
-                      } else if (option3Controller.text.isEmpty) {
-                        showSnackBar(context, message: 'option 3 can not be empty');
-                      } else if (option4Controller.text.isEmpty) {
-                        showSnackBar(context, message: 'option 4 can not be empty');
-                      } else if (!isoption1Correct && !isoption2Correct && !isoption3Correct && !isoption4Correct) {
-                        showSnackBar(context, message: 'at least one option must be checked be RIGHT');
-                      } else if (questionController.text.isEmpty && base64 == null) {
-                        if (isQuestionImage) {
-                          showSnackBar(context, message: 'select question image');
-                        } else {
-                          showSnackBar(context, message: 'question can not be empty');
-                        }
-                      } else {
-                        // if (isExplainationChoosed) {
-                        //   base64 = explainationController.text;
-                        // }
+                            if (option1Controller.text.isEmpty) {
+                              showSnackBar(context, message: 'option 1 can not be empty');
+                            } else if (option2Controller.text.isEmpty) {
+                              showSnackBar(context, message: 'option 2 can not be empty');
+                            } else if (option3Controller.text.isEmpty) {
+                              showSnackBar(context, message: 'option 3 can not be empty');
+                            } else if (option4Controller.text.isEmpty) {
+                              showSnackBar(context, message: 'option 4 can not be empty');
+                            } else if (!isoption1Correct && !isoption2Correct && !isoption3Correct && !isoption4Correct) {
+                              showSnackBar(context, message: 'at least one option must be checked be RIGHT');
+                            } else if (questionController.text.isEmpty && base64 == null) {
+                              if (isQuestionImage) {
+                                showSnackBar(context, message: 'select question image');
+                              } else {
+                                showSnackBar(context, message: 'question can not be empty');
+                              }
+                            } else {
+                              setState(() {
+                                _isSubmitting = true;
+                              });
+                              // if (isExplainationChoosed) {
+                              //   base64 = explainationController.text;
+                              // }
 
-                        if (isQuestionImage) {
-                          final response = await Provider.of<AdminProvider>(context, listen: false).uploadQuestionImage(context, base64!);
-                          if (response!.status == 'success') {
-                            // ignore: constant_identifier_names
-                            const String QUESTION_IMAGE_BASE_URL = 'http://ivf.ekaltech.com/images/product/';
-                            questionController.text = QUESTION_IMAGE_BASE_URL + response.productImage;
-                          } else {
-                            showToast(message: 'AN_ERROR_OCCURED_WHILE_UPLOADING_IMAGE', isError: true);
-                          }
-                        }
-                        try {
-                          if (widget.isUpdate) {
-                            await Provider.of<AdminProvider>(context, listen: false).updateAddMcq(widget.mcqId, widget.subjectname, widget.chapterId, questionController.text.trim(), options, explainationController.text).then((value) {
-                              showSnackBar(context, message: 'mcq updated successfully', isError: false);
+                              if (isQuestionImage) {
+                                if (fileImage != null) {
+                                  final response = await Provider.of<AdminProvider>(context, listen: false).uploadQuestionImage(context, base64!);
+                                  if (response!.status == 'success') {
+                                    // ignore: constant_identifier_names
+                                    const String QUESTION_IMAGE_BASE_URL = 'http://ivf.ekaltech.com/images/product/';
+                                    questionController.text = QUESTION_IMAGE_BASE_URL + response.productImage;
+                                  } else {
+                                    showToast(message: 'AN_ERROR_OCCURED_WHILE_UPLOADING_IMAGE', isError: true);
+                                    setState(() {
+                                      _isSubmitting = false;
+                                    });
+                                  }
+                                }
+                              }
+                              try {
+                                if (widget.isUpdate) {
+                                  await Provider.of<AdminProvider>(context, listen: false).updateAddMcq(widget.mcqId, widget.subjectname, widget.chapterId, questionController.text.trim(), options, explainationController.text).then((value) {
+                                    showSnackBar(context, message: 'mcq updated successfully', isError: false);
 
-                              Navigator.pop(context);
-                            });
-                          } else {
-                            await Provider.of<AdminProvider>(context, listen: false).addMcq(widget.subjectname, widget.chapterId, questionController.text.trim(), options, explainationController.text).then((value) {
-                              showSnackBar(context, message: 'mcq added successfully', isError: false);
-                              Navigator.pop(context);
-                            });
-                          }
-                        } catch (e) {
-                          showSnackBar(context, message: e.toString());
-                        }
-                      }
-                    },
-                  )
+                                    Navigator.pop(context);
+                                  });
+                                } else {
+                                  await Provider.of<AdminProvider>(context, listen: false).addMcq(widget.subjectname, widget.chapterId, questionController.text.trim(), options, explainationController.text).then((value) {
+                                    showSnackBar(context, message: 'mcq added successfully', isError: false);
+                                    Navigator.pop(context);
+                                  });
+                                }
+                              } catch (e) {
+                                setState(() {
+                                  _isSubmitting = false;
+                                });
+                                showSnackBar(context, message: e.toString());
+                              }
+                            }
+                          },
+                        )
                 ],
               ),
             ),

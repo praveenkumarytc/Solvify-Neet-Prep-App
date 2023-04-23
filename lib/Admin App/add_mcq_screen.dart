@@ -1,5 +1,6 @@
 // ignore_for_file: library_private_types_in_public_api, non_constant_identifier_names
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -13,6 +14,7 @@ import 'package:shield_neet/helper/push_to.dart';
 import 'package:shield_neet/providers/admin_provider.dart';
 import 'package:velocity_x/velocity_x.dart';
 
+import '../home/Screens/Subject Wise/mcq_test.dart';
 import 'add_chapters_screen.dart';
 
 class AddMcqScreen extends StatelessWidget {
@@ -57,78 +59,80 @@ class AddMcqScreen extends StatelessWidget {
                     return const Center(child: CircularProgressIndicator());
                   }
                   return ListView(
-                      children: snapshot.data!.docs.map((data) {
-                    List<OptionModel> options = [];
-                    for (var i = 0; i < data[FirestoreCollections.options].length; i++) {
-                      Map<String, dynamic> mapOption = data[FirestoreCollections.options][i];
-                      options.add(OptionModel.fromJson(mapOption));
-                    }
-                    debugPrint(options.toString());
-                    return QuestionCard(
-                      question: data[FirestoreCollections.question],
-                      options: options,
-                      popupMenuButton: PopupMenuButton(
-                        itemBuilder: (context) => [
-                          const PopupMenuItem(
-                            value: 'edit',
-                            child: Text('Edit'),
-                          ),
-                          const PopupMenuItem(
-                            value: 'delete',
-                            child: Text('Delete'),
-                          ),
-                        ],
-                        onSelected: (value) async {
-                          if (value == 'edit') {
-                            // var querySnapshot = await FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(subjectName).collection(FirestoreCollections.chapters).doc(chapterId).collection(FirestoreCollections.mcq).get();
+                      children: snapshot.data!.docs.map(
+                    (data) {
+                      List<OptionModel> options = [];
+                      for (var i = 0; i < data[FirestoreCollections.options].length; i++) {
+                        Map<String, dynamic> mapOption = data[FirestoreCollections.options][i];
+                        options.add(OptionModel.fromJson(mapOption));
+                      }
+                      debugPrint(options.toString());
+                      return QuestionCard(
+                        question: data[FirestoreCollections.question],
+                        options: options,
+                        popupMenuButton: PopupMenuButton(
+                          itemBuilder: (context) => [
+                            const PopupMenuItem(
+                              value: 'edit',
+                              child: Text('Edit'),
+                            ),
+                            const PopupMenuItem(
+                              value: 'delete',
+                              child: Text('Delete'),
+                            ),
+                          ],
+                          onSelected: (value) async {
+                            if (value == 'edit') {
+                              // var querySnapshot = await FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(subjectName).collection(FirestoreCollections.chapters).doc(chapterId).collection(FirestoreCollections.mcq).get();
 
-                            // var documents = querySnapshot.docs;
+                              // var documents = querySnapshot.docs;
 
-                            // List<Map<String, dynamic>> dataList = [];
+                              // List<Map<String, dynamic>> dataList = [];
 
-                            // for (var document in documents) {
-                            //   var data = document.data();
-                            //   var base64String = data[FirestoreCollections.image] as String;
-                            //   var decodedBytes = base64.decode(base64String);
-                            //   var decodedString = utf8.decode(decodedBytes);
+                              // for (var document in documents) {
+                              //   var data = document.data();
+                              //   var base64String = data[FirestoreCollections.image] as String;
+                              //   var decodedBytes = base64.decode(base64String);
+                              //   var decodedString = utf8.decode(decodedBytes);
 
-                            //   data[FirestoreCollections.image] = decodedString;
+                              //   data[FirestoreCollections.image] = decodedString;
 
-                            //   dataList.add(data);
-                            // }
+                              //   dataList.add(data);
+                              // }
 
-                            pushTo(
-                              context,
-                              AddMcqPage(
-                                mcqId: data.id,
-                                chapterName: chapterName,
-                                chapterId: chapterId,
-                                subjectname: subjectName,
-                                isUpdate: true,
-                                question: data[FirestoreCollections.question],
-                                options: options,
-                                explanation: data[FirestoreCollections.image],
-                              ),
-                            );
-                          } else if (value == 'delete') {
-                            showGeneralDialog(
-                              context: context,
-                              pageBuilder: (context, animation, secondaryAnimation) => AppInfoDialog(
-                                onLogOut: () async {
-                                  await Provider.of<AdminProvider>(context, listen: false).deleteMcq(subjectName, chapterId, data.id).then(
-                                    (value) {
-                                      Navigator.pop(context);
-                                      showToast(message: 'deleted Successfully');
-                                    },
-                                  );
-                                },
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                    );
-                  }).toList());
+                              pushTo(
+                                context,
+                                AddMcqPage(
+                                  mcqId: data.id,
+                                  chapterName: chapterName,
+                                  chapterId: chapterId,
+                                  subjectname: subjectName,
+                                  isUpdate: true,
+                                  question: data[FirestoreCollections.question],
+                                  options: options,
+                                  explanation: data[FirestoreCollections.image],
+                                ),
+                              );
+                            } else if (value == 'delete') {
+                              showGeneralDialog(
+                                context: context,
+                                pageBuilder: (context, animation, secondaryAnimation) => AppInfoDialog(
+                                  onLogOut: () async {
+                                    await Provider.of<AdminProvider>(context, listen: false).deleteMcq(subjectName, chapterId, data.id).then(
+                                      (value) {
+                                        Navigator.pop(context);
+                                        showToast(message: 'deleted Successfully');
+                                      },
+                                    );
+                                  },
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      );
+                    },
+                  ).toList());
                 },
               ),
             ),
@@ -173,10 +177,22 @@ class _QuestionCardState extends State<QuestionCard> {
         child: Column(
           children: [
             ListTile(
-              title: Text(
-                widget.question,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
+              title: widget.question.startsWith('http')
+                  ? SizedBox(
+                      height: 100,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: CachedNetworkImage(
+                          imageUrl: widget.question,
+                          errorWidget: (context, url, error) => ImageError(error: error),
+                          placeholder: (context, url) => const SizedBox.shrink(),
+                        ),
+                      ),
+                    )
+                  : Text(
+                      widget.question,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
               trailing: widget.popupMenuButton,
             ),
             if (_isExpanded) ...widget.options.map((option) => ListTile(title: Text(option.option_detail))).toList(),
