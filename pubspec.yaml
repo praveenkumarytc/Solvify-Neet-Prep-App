@@ -58,6 +58,10 @@ dependencies:
   share_plus: ^6.3.1
   camera: ^0.10.4
   url_launcher: ^6.1.10
+  dio: ^5.1.1
+  http: ^0.13.5
+  cached_network_image: ^3.2.3
+  photo_view: ^0.14.0
 
 dev_dependencies:
   flutter_test:

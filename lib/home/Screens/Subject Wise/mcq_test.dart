@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shield_neet/Utils/app_constants.dart';
 import 'package:shield_neet/Utils/color_resources.dart';
+import 'package:shield_neet/custom%20%20widget/zoomable_image.dart';
+import 'package:shield_neet/helper/push_to.dart';
 import 'package:shield_neet/home/Screens/Subject%20Wise/mcq_model.dart';
 import 'package:shield_neet/home/Screens/result/result_screen.dart';
 import 'package:shield_neet/providers/user_provider.dart';
@@ -24,7 +26,8 @@ class _McqTestScreenState extends State<McqTestScreen> {
   List<McqModel> mcqList = [];
   List<String> performanceData = [];
   String mcqIs = 'skipped';
-
+  PerformanceModel myPerformace = PerformanceModel(question: 'initialized', isCorrect: 'skipped', explaination: 'initialized');
+  List<PerformanceModel> perFormanceModelList = [];
   Future<dynamic> getData() async {
     final QuerySnapshot<Object?> snapshot = await FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(widget.subjectName).collection(FirestoreCollections.chapters).doc(widget.chapterId).collection(FirestoreCollections.mcq).get();
 
@@ -49,6 +52,8 @@ class _McqTestScreenState extends State<McqTestScreen> {
       });
       //to add option response
       performanceData.add(mcqIs);
+      perFormanceModelList.add(myPerformace);
+
       print(performanceData);
       controller.nextPage(
         duration: const Duration(milliseconds: 300),
@@ -64,6 +69,7 @@ class _McqTestScreenState extends State<McqTestScreen> {
       });
       //to add option response
       performanceData.add(mcqIs);
+      perFormanceModelList.add(myPerformace);
       controller.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.ease,
@@ -79,6 +85,7 @@ class _McqTestScreenState extends State<McqTestScreen> {
 
       //to add option response
       performanceData.removeLast();
+      perFormanceModelList.removeLast();
 
       controller.previousPage(
         duration: const Duration(milliseconds: 300),
@@ -147,11 +154,13 @@ class _McqTestScreenState extends State<McqTestScreen> {
                             onPressed: () {
                               //to add option response
                               performanceData.add(mcqIs);
+                              perFormanceModelList.add(myPerformace);
                               Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => ResultScreen(
                                       performanceData: performanceData,
+                                      myPerformaceData: perFormanceModelList,
                                     ),
                                   ),
                                   (route) => false);
@@ -226,11 +235,39 @@ class _McqTestScreenState extends State<McqTestScreen> {
                                       ),
                                     ),
                                     10.heightBox,
-                                    Text(
-                                      mcqList[index].question,
-                                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                                      textAlign: TextAlign.center,
-                                    ),
+                                    mcqList[index].question.startsWith('http')
+                                        ? GestureDetector(
+                                            onTap: () => pushTo(context, ZoomableImage(image: NetworkImage(mcqList[index].question))),
+                                            child: Container(
+                                              height: 150,
+                                              padding: const EdgeInsets.all(8),
+                                              child: Image(
+                                                image: NetworkImage(mcqList[index].question),
+                                                fit: BoxFit.cover,
+                                                loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                                                  if (loadingProgress == null) {
+                                                    // Image is fully loaded, return GestureDetector
+                                                    return GestureDetector(
+                                                      onTap: () => pushTo(context, ZoomableImage(image: NetworkImage(mcqList[index].question))),
+                                                      child: child,
+                                                    );
+                                                  } else {
+                                                    // Image is still loading, return placeholder
+                                                    return const ImageError(error: 'Image not available');
+                                                  }
+                                                },
+                                                errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                                                  // Handle image loading error
+                                                  return const ImageError(error: 'Error loading image');
+                                                },
+                                              ),
+                                            ),
+                                          )
+                                        : Text(
+                                            mcqList[index].question,
+                                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                                            textAlign: TextAlign.center,
+                                          ),
                                     (mcqList[index].question.length < 120 ? 80 : 20).heightBox,
                                     ...List.generate(
                                       mcqList[index].options.length,
@@ -240,6 +277,12 @@ class _McqTestScreenState extends State<McqTestScreen> {
                                             setState(() {
                                               selectedOption = mcqList[index].options[i].optionDetail;
                                               mcqIs = mcqList[index].options[i].isCorrect.toString();
+
+                                              myPerformace = PerformanceModel(
+                                                question: mcqList[index].question,
+                                                isCorrect: mcqIs,
+                                                explaination: selectedOption!,
+                                              );
                                               print(mcqIs);
                                             });
                                           });
@@ -300,6 +343,25 @@ class _McqTestScreenState extends State<McqTestScreen> {
   }
 }
 
+class ImageError extends StatelessWidget {
+  const ImageError({super.key, required this.error});
+  final String error;
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+        height: 50,
+        child: Center(
+          child: Text(
+            error,
+            style: const TextStyle(
+              color: Colors.grey,
+              fontSize: 12,
+            ),
+          ),
+        ));
+  }
+}
+
 class TopBgContainer extends StatelessWidget {
   const TopBgContainer({super.key, required this.onBookMarkTap, required this.icon});
   final Function() onBookMarkTap;
@@ -342,4 +404,15 @@ class TopBgContainer extends StatelessWidget {
       ),
     );
   }
+}
+
+class PerformanceModel {
+  String question;
+  String isCorrect;
+  String explaination;
+  PerformanceModel({
+    required this.question,
+    required this.isCorrect,
+    required this.explaination,
+  });
 }

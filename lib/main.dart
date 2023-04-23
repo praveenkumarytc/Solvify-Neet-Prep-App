@@ -32,25 +32,26 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<UserProvider>(builder: (context, snapshot, child) {
       return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'Solvify - Neet prep app',
-          themeMode: snapshot.isDarkMode! ? ThemeMode.dark : ThemeMode.light,
-          theme: ThemeData(
-            fontFamily: 'Poppins',
-            primarySwatch: ColorResources.PRIMARY_MATERIAL,
-            textSelectionTheme: const TextSelectionThemeData(
-              cursorColor: ColorResources.PRIMARY_MATERIAL,
-            ),
+        debugShowCheckedModeBanner: false,
+        title: 'Solvify - Neet prep app',
+        themeMode: snapshot.isDarkMode! ? ThemeMode.dark : ThemeMode.light,
+        theme: ThemeData(
+          fontFamily: 'Poppins',
+          primarySwatch: ColorResources.PRIMARY_MATERIAL,
+          textSelectionTheme: const TextSelectionThemeData(
+            cursorColor: ColorResources.PRIMARY_MATERIAL,
           ),
-          darkTheme: ThemeData(
-            fontFamily: 'Poppins',
-            brightness: Brightness.dark,
-            primarySwatch: ColorResources.PRIMARY_MATERIAL,
-            textSelectionTheme: const TextSelectionThemeData(
-              cursorColor: ColorResources.PRIMARY_MATERIAL,
-            ),
+        ),
+        darkTheme: ThemeData(
+          fontFamily: 'Poppins',
+          brightness: Brightness.dark,
+          primarySwatch: ColorResources.PRIMARY_MATERIAL,
+          textSelectionTheme: const TextSelectionThemeData(
+            cursorColor: ColorResources.PRIMARY_MATERIAL,
           ),
-          home: const SplashPage());
+        ),
+        home: const SplashPage(),
+      );
     });
   }
 }

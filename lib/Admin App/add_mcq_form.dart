@@ -1,15 +1,18 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, use_build_context_synchronously
 
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:shield_neet/Admin%20App/add_mcq_screen.dart';
 import 'package:shield_neet/Utils/color_resources.dart';
 import 'package:shield_neet/Utils/images.dart';
+import 'package:shield_neet/components/placeholder_container.dart';
 import 'package:shield_neet/components/question_form_field.dart';
 import 'package:shield_neet/components/solvify_appbar.dart';
 import 'package:shield_neet/components/submit_button.dart';
@@ -49,7 +52,7 @@ class _AddMcqPageState extends State<AddMcqPage> {
   File? fileImage;
   String? base64;
   bool isoption1Correct = false, isoption2Correct = false, isoption3Correct = false, isoption4Correct = false;
-
+  bool isQuestionImage = false;
   _getImageFrom({required ImageSource source}) async {
     final pickedImage = await _picker.pickImage(source: source);
     if (pickedImage != null) {
@@ -65,11 +68,19 @@ class _AddMcqPageState extends State<AddMcqPage> {
       var compressedImage = await AppHelper.compress(image: croppedImage);
       final sizeInKbAfterCompression = compressedImage.lengthSync() / 1024;
       print('After Compress $sizeInKbAfterCompression kb');
+
+      // Encode the compressed image as base64
+      final bytes = compressedImage.readAsBytesSync();
+      final encoded = base64Encode(bytes);
+
       setState(() {
         fileImage = compressedImage;
         // Read the image file as bytes
-        List<int> imageBytes = fileImage!.readAsBytesSync();
-        print(imageBytes);
+
+        base64 = encoded;
+
+        log(base64!);
+
         // Store the bytes in Firestore
       });
     }
@@ -77,7 +88,6 @@ class _AddMcqPageState extends State<AddMcqPage> {
 
   _autoFillData() {
     if (widget.isUpdate) {
-      questionController.text = widget.question!;
       option1Controller.text = widget.options![0].option_detail;
       option2Controller.text = widget.options![1].option_detail;
       option3Controller.text = widget.options![2].option_detail;
@@ -87,14 +97,20 @@ class _AddMcqPageState extends State<AddMcqPage> {
       isoption3Correct = widget.options![2].is_correct;
       isoption4Correct = widget.options![3].is_correct;
       print(widget.explanation);
-      if (isBase64Image(widget.explanation!)) {
-        isExplainationChoosed = false;
 
-        base64 = widget.explanation;
+      if (widget.question!.startsWith('http')) {
+        isQuestionImage = true;
       } else {
-        isExplainationChoosed = true;
-        explainationController.text = widget.explanation!;
+        questionController.text = widget.question!;
       }
+      // if (isBase64Image(widget.explanation!)) {
+      //   isExplainationChoosed = false;
+
+      //   base64 = widget.explanation;
+      // } else {
+      //   isExplainationChoosed = true;
+      explainationController.text = widget.explanation!;
+      // }
     }
   }
 
@@ -198,53 +214,143 @@ class _AddMcqPageState extends State<AddMcqPage> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      IconButton(
-                          onPressed: () async {
-                            ocrTextCOntroller.clear();
-                            await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const OcrScreen(),
-                                )).then((ocrText) {
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  ocrTextCOntroller.text = ocrText; // Initialize ocrText with an empty string
-                                  return AlertDialog(
-                                    title: const Text('OCR Text'),
-                                    content: QuestionTextField(
-                                      controller: ocrTextCOntroller,
-                                      hintLabelText: 'Ocr text',
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.pop(context); // Close the dialog box
-                                        },
-                                        child: const Text('Cancel'),
-                                      ),
-                                      TextButton(
-                                        onPressed: () {
-                                          extractQuestionAndOptions(ocrTextCOntroller.text);
-                                          Navigator.pop(context);
-                                        },
-                                        child: const Text('Save'),
-                                      ),
-                                    ],
+                      isQuestionImage
+                          ? const SizedBox.shrink()
+                          : IconButton(
+                              onPressed: () async {
+                                ocrTextCOntroller.clear();
+                                await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const OcrScreen(),
+                                    )).then((ocrText) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      ocrTextCOntroller.text = ocrText; // Initialize ocrText with an empty string
+                                      return AlertDialog(
+                                        title: const Text('OCR Text'),
+                                        content: QuestionTextField(
+                                          controller: ocrTextCOntroller,
+                                          hintLabelText: 'Ocr text',
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context); // Close the dialog box
+                                            },
+                                            child: const Text('Cancel'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              extractQuestionAndOptions(ocrTextCOntroller.text);
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text('Save'),
+                                          ),
+                                        ],
+                                      );
+                                    },
                                   );
-                                },
-                              );
-                            });
-                          },
-                          icon: Image.asset(Images.ocrImage))
+                                });
+                              },
+                              icon: Image.asset(Images.ocrImage))
                     ],
                   ),
-                  // Text(isBase64Image(widget.explanation!).toString()),
                   20.heightBox,
-                  QuestionTextField(
-                    controller: questionController,
-                    hintLabelText: 'Question',
+                  // Text(isBase64Image(widget.explanation!).toString()),
+
+                  SizedBox(
+                    height: 40,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                isQuestionImage = false;
+                              });
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: !isQuestionImage ? ColorResources.primaryBlue(context) : Colors.grey.shade300,
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(10),
+                                  bottomLeft: Radius.circular(10),
+                                ),
+                              ),
+                              child: Text(
+                                'Text',
+                                style: TextStyle(
+                                  color: Colors.grey[700],
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                isQuestionImage = true;
+                                questionController.clear();
+                              });
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: isQuestionImage ? ColorResources.primaryBlue(context) : Colors.grey.shade300,
+                                border: Border.all(
+                                  color: Colors.grey[300]!,
+                                ),
+                                borderRadius: const BorderRadius.only(
+                                  topRight: Radius.circular(10),
+                                  bottomRight: Radius.circular(10),
+                                ),
+                              ),
+                              child: Text(
+                                'Image',
+                                style: TextStyle(
+                                  color: Colors.grey[800],
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
+                  15.heightBox,
+                  isQuestionImage
+                      ? GestureDetector(
+                          onTap: () {
+                            _openChangeImageBottomSheet();
+                            // Handle tapping the container to select an image from the gallery
+                          },
+                          child: fileImage != null
+                              ? Container(
+                                  height: 350,
+                                  width: 300,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.black12, width: 1),
+                                      borderRadius: const BorderRadius.all(Radius.circular(10)),
+                                      color: Colors.grey,
+                                      image: DecorationImage(
+                                        image: FileImage(fileImage!),
+                                        fit: BoxFit.cover,
+                                      )),
+                                )
+                              : const PlaceholderContainer(),
+                        )
+                      : QuestionTextField(
+                          controller: questionController,
+                          hintLabelText: 'Question',
+                        ),
+
                   20.heightBox,
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -481,33 +587,51 @@ class _AddMcqPageState extends State<AddMcqPage> {
                       print(options);
 
                       if (option1Controller.text.isEmpty) {
-                        showToast(message: 'option 1 can not be empty', isError: true);
+                        showSnackBar(context, message: 'option 1 can not be empty');
                       } else if (option2Controller.text.isEmpty) {
-                        showToast(message: 'option 2 can not be empty', isError: true);
+                        showSnackBar(context, message: 'option 2 can not be empty');
                       } else if (option3Controller.text.isEmpty) {
-                        showToast(message: 'option 3 can not be empty', isError: true);
+                        showSnackBar(context, message: 'option 3 can not be empty');
                       } else if (option4Controller.text.isEmpty) {
-                        showToast(message: 'option 4 can not be empty', isError: true);
+                        showSnackBar(context, message: 'option 4 can not be empty');
                       } else if (!isoption1Correct && !isoption2Correct && !isoption3Correct && !isoption4Correct) {
-                        showToast(message: 'at least one option must be checked be RIGHT', isError: true);
+                        showSnackBar(context, message: 'at least one option must be checked be RIGHT');
+                      } else if (questionController.text.isEmpty && base64 == null) {
+                        if (isQuestionImage) {
+                          showSnackBar(context, message: 'select question image');
+                        } else {
+                          showSnackBar(context, message: 'question can not be empty');
+                        }
                       } else {
-                        if (isExplainationChoosed) {
-                          base64 = explainationController.text;
+                        // if (isExplainationChoosed) {
+                        //   base64 = explainationController.text;
+                        // }
+
+                        if (isQuestionImage) {
+                          final response = await Provider.of<AdminProvider>(context, listen: false).uploadQuestionImage(context, base64!);
+                          if (response!.status == 'success') {
+                            // ignore: constant_identifier_names
+                            const String QUESTION_IMAGE_BASE_URL = 'http://ivf.ekaltech.com/images/product/';
+                            questionController.text = QUESTION_IMAGE_BASE_URL + response.productImage;
+                          } else {
+                            showToast(message: 'AN_ERROR_OCCURED_WHILE_UPLOADING_IMAGE', isError: true);
+                          }
                         }
                         try {
                           if (widget.isUpdate) {
-                            await Provider.of<AdminProvider>(context, listen: false).updateAddMcq(widget.mcqId, widget.subjectname, widget.chapterId, questionController.text.trim(), options, base64).then((value) {
-                              showToast(message: 'mcq updated successfully');
+                            await Provider.of<AdminProvider>(context, listen: false).updateAddMcq(widget.mcqId, widget.subjectname, widget.chapterId, questionController.text.trim(), options, explainationController.text).then((value) {
+                              showSnackBar(context, message: 'mcq updated successfully', isError: false);
+
                               Navigator.pop(context);
                             });
                           } else {
-                            await Provider.of<AdminProvider>(context, listen: false).addMcq(widget.subjectname, widget.chapterId, questionController.text.trim(), options, base64).then((value) {
-                              showToast(message: 'mcq added successfully');
+                            await Provider.of<AdminProvider>(context, listen: false).addMcq(widget.subjectname, widget.chapterId, questionController.text.trim(), options, explainationController.text).then((value) {
+                              showSnackBar(context, message: 'mcq added successfully', isError: false);
                               Navigator.pop(context);
                             });
                           }
                         } catch (e) {
-                          showToast(message: e.toString(), isError: true);
+                          showSnackBar(context, message: e.toString());
                         }
                       }
                     },
@@ -529,8 +653,9 @@ class _AddMcqPageState extends State<AddMcqPage> {
         builder: (context) {
           return SafeArea(
             child: CupertinoActionSheet(
+              cancelButton: 5.heightBox,
               title: Text(
-                'Change Image',
+                'Select Image',
                 textAlign: TextAlign.center,
                 style: AppTextStyles.regular(fontSize: 19),
               ),

@@ -3,19 +3,25 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shield_neet/Utils/color_resources.dart';
 import 'package:shield_neet/Utils/images.dart';
+import 'package:shield_neet/home/Screens/Subject%20Wise/mcq_test.dart';
 import 'package:shield_neet/home/dashboard.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class ResultScreen extends StatefulWidget {
-  const ResultScreen({super.key, required this.performanceData});
+  const ResultScreen({
+    super.key,
+    required this.performanceData,
+    required this.myPerformaceData,
+  });
   final List<String> performanceData;
+  final List<PerformanceModel> myPerformaceData;
 
   @override
   State<ResultScreen> createState() => _ResultScreenState();
@@ -65,6 +71,7 @@ class _ResultScreenState extends State<ResultScreen> {
 
   @override
   Widget build(BuildContext context) {
+    List<PerformanceModel> onlyWrongAttempts = widget.myPerformaceData.where((element) => element.isCorrect == 'false').toList();
     return WillPopScope(
       onWillPop: () async {
         // Navigate back to the Dashboard screen and block the back button
@@ -85,109 +92,185 @@ class _ResultScreenState extends State<ResultScreen> {
           ),
           child: Padding(
             padding: const EdgeInsets.all(15),
-            child: RepaintBoundary(
-              key: _globalKey,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const DecorativeContainer(),
-                    50.heightBox,
-                    const Padding(
-                      padding: EdgeInsets.only(left: 10),
-                      child: Text(
-                        'Your today\'s result are here:',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
+            child: ListView(
+              children: [
+                RepaintBoundary(
+                  key: _globalKey,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    20.heightBox,
-                    Row(
+                    margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(Icons.check, color: Colors.green),
-                              const SizedBox(height: 8),
-                              const Text(
-                                'Correct',
-                                style: TextStyle(color: Colors.black),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                '${correctAnswers.length}/${widget.performanceData.length}',
-                                style: const TextStyle(color: Colors.black),
-                              ),
-                            ],
+                        const DecorativeContainer(),
+                        50.heightBox,
+                        const Padding(
+                          padding: EdgeInsets.only(left: 10),
+                          child: Text(
+                            'Your today\'s result are here:',
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                         ),
-                        const SizedBox(
-                          width: 5,
-                          height: 65,
-                          child: VerticalDivider(
-                            thickness: 1.5,
-                          ),
-                        ),
-                        Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(Icons.close, color: Colors.red),
-                              const SizedBox(height: 8),
-                              const Text(
-                                'Wrong',
-                                style: TextStyle(color: Colors.black),
+                        20.heightBox,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.check, color: Colors.green),
+                                  const SizedBox(height: 8),
+                                  const Text(
+                                    'Correct',
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '${correctAnswers.length}/${widget.performanceData.length}',
+                                    style: const TextStyle(color: Colors.black),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                '${wrongAnswer.length}/${widget.performanceData.length}',
-                                style: const TextStyle(color: Colors.black),
+                            ),
+                            const SizedBox(
+                              width: 5,
+                              height: 65,
+                              child: VerticalDivider(
+                                thickness: 1.5,
                               ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 5,
-                          height: 65,
-                          child: VerticalDivider(
-                            thickness: 1.5,
-                          ),
-                        ),
-                        Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(Icons.help_outline, color: Colors.grey),
-                              const SizedBox(height: 8),
-                              const Text(
-                                'Skipped',
-                                style: TextStyle(color: Colors.black),
+                            ),
+                            Expanded(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.close, color: Colors.red),
+                                  const SizedBox(height: 8),
+                                  const Text(
+                                    'Wrong',
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '${wrongAnswer.length}/${widget.performanceData.length}',
+                                    style: const TextStyle(color: Colors.black),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                '${skippedAnswers.length}/${widget.performanceData.length}',
-                                style: const TextStyle(color: Colors.black),
+                            ),
+                            const SizedBox(
+                              width: 5,
+                              height: 65,
+                              child: VerticalDivider(
+                                thickness: 1.5,
                               ),
-                            ],
-                          ),
+                            ),
+                            Expanded(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.help_outline, color: Colors.grey),
+                                  const SizedBox(height: 8),
+                                  const Text(
+                                    'Skipped',
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '${skippedAnswers.length}/${widget.performanceData.length}',
+                                    style: const TextStyle(color: Colors.black),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
+                        50.heightBox,
+                        ShareButton(
+                          onSharePressed: _onSharePressed,
+                        ),
+                        50.heightBox,
                       ],
                     ),
-                    50.heightBox,
-                    ShareButton(
-                      onSharePressed: _onSharePressed,
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+                Container(
+                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text(
+                          'Wrong Attempts:',
+                          style: TextStyle(
+                            color: ColorResources.PRIMARY_MATERIAL,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                      Column(
+                        children: List.generate(
+                          onlyWrongAttempts.length,
+                          (index) => WrongAttempts(
+                            question: 'Q.${index + 1} ${onlyWrongAttempts[index].question}',
+                            explaination: 'Explaination: ${onlyWrongAttempts[index].explaination}',
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class WrongAttempts extends StatelessWidget {
+  const WrongAttempts({super.key, required this.question, required this.explaination});
+
+  final String question, explaination;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(5),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: ColorResources.PRIMARY_MATERIAL,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          question.startsWith('http')
+              ? SizedBox(
+                  height: 150,
+                  child: CachedNetworkImage(
+                    imageUrl: question,
+                    errorWidget: (context, url, error) => ImageError(error: error),
+                    placeholder: (context, url) => const SizedBox.shrink(),
+                  ),
+                )
+              : Text(
+                  question,
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+          Text(
+            explaination,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.grey),
+          ),
+        ],
       ),
     );
   }

@@ -1,7 +1,12 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shield_neet/Utils/app_constants.dart';
+import 'package:shield_neet/models/uploadProductGallaryModel.dart';
+import 'package:http/http.dart' as http;
 
 class AdminProvider extends ChangeNotifier {
   AdminProvider({this.sharedPreferences});
@@ -58,5 +63,32 @@ class AdminProvider extends ChangeNotifier {
       FirestoreCollections.question: question,
       FirestoreCollections.image: image
     });
+  }
+
+  UploadImage? _uploadImgae;
+  UploadImage? get uploadImgae => _uploadImgae;
+
+  Future<UploadImage?> uploadQuestionImage(BuildContext context, String image) async {
+    String uploadUrl = 'http://ivf.ekaltech.com/api/upload_product_image';
+
+    Uri parsedUri = Uri.parse(uploadUrl);
+
+    var body = {
+      "connection_id": '8WQEJ0T8FO',
+      "auth_code": 'G7PMW8H90Y',
+      "image": image
+    };
+
+    debugPrint(body.toString());
+
+    final response = await http.post(parsedUri, body: body);
+
+    debugPrint(response.body);
+
+    _uploadImgae = UploadImage.fromJson(json.decode(response.body));
+
+    notifyListeners();
+
+    return _uploadImgae;
   }
 }
