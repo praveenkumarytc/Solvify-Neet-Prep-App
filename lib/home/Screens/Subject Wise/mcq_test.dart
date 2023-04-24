@@ -38,6 +38,7 @@ class _McqTestScreenState extends State<McqTestScreen> {
 
     setState(() {
       performanceData.clear();
+      perFormanceModelList.clear();
       mcqList.clear(); // clear the list before adding new data
       for (var i = 0; i < snapshot.docs.length; i++) {
         var data = snapshot.docs[i].data() as Map<String, dynamic>?;
@@ -60,6 +61,7 @@ class _McqTestScreenState extends State<McqTestScreen> {
       });
       //to add option response
       performanceData.add(mcqIs);
+      log(myPerformace.toJson().toString());
       perFormanceModelList.add(myPerformace);
 
       print(performanceData);
@@ -76,8 +78,11 @@ class _McqTestScreenState extends State<McqTestScreen> {
         currentPage++;
       });
       //to add option response
+
       performanceData.add(mcqIs);
+
       perFormanceModelList.add(myPerformace);
+      log(myPerformace.toJson().toString());
       controller.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.ease,
@@ -163,6 +168,8 @@ class _McqTestScreenState extends State<McqTestScreen> {
                               //to add option response
                               performanceData.add(mcqIs);
                               perFormanceModelList.add(myPerformace);
+                              log(myPerformace.toJson().toString());
+
                               Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(
@@ -286,18 +293,16 @@ class _McqTestScreenState extends State<McqTestScreen> {
                                           mcqList[index].options.length,
                                           (i) => GestureDetector(
                                             onTap: () {
-                                              setState(() {
-                                                selectedOption = mcqList[index].options[i].optionDetail;
-                                                mcqIs = mcqList[index].options[i].isCorrect.toString();
+                                              selectedOption = mcqList[index].options[i].optionDetail;
+                                              mcqIs = mcqList[index].options[i].isCorrect.toString();
 
-                                                myPerformace = PerformanceModel(
-                                                  question: mcqList[index].question,
-                                                  isCorrect: mcqIs,
-                                                  explaination: selectedOption!,
-                                                );
-                                                print('${mcqIs}hhhh');
-                                                print('${myPerformace.isCorrect}11');
-                                              });
+                                              myPerformace = PerformanceModel(
+                                                question: mcqList[index].question,
+                                                isCorrect: mcqIs,
+                                                explaination: selectedOption!,
+                                              );
+                                              log(myPerformace.toJson().toString());
+                                              setState(() {});
                                             },
                                             child: Container(
                                               width: double.infinity,
@@ -427,4 +432,18 @@ class PerformanceModel {
     required this.isCorrect,
     required this.explaination,
   });
+
+  Map<String, dynamic> toJson() => {
+        'question': question,
+        'isCorrect': isCorrect,
+        'explaination': explaination,
+      };
+
+  factory PerformanceModel.fromJson(Map<String, dynamic> json) {
+    return PerformanceModel(
+      question: json['question'],
+      isCorrect: json['isCorrect'],
+      explaination: json['explaination'],
+    );
+  }
 }

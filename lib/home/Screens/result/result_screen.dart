@@ -201,34 +201,61 @@ class _ResultScreenState extends State<ResultScreen> {
                     ? const SizedBox.shrink()
                     : Container(
                         margin: const EdgeInsets.symmetric(horizontal: 10),
-                        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(15)),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(15),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 10,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                        ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            10.heightBox,
+                            const SizedBox(height: 16),
                             const Padding(
-                              padding: EdgeInsets.all(8.0),
+                              padding: EdgeInsets.symmetric(horizontal: 16),
                               child: Text(
                                 'Wrong Attempts:',
                                 style: TextStyle(
-                                  color: ColorResources.PRIMARY_MATERIAL,
-                                  fontWeight: FontWeight.w600,
+                                  color: ColorResources.COLOR_BLUE,
+                                  fontWeight: FontWeight.bold,
                                   fontSize: 20,
                                 ),
                               ),
                             ),
-                            Column(
-                              children: List.generate(
-                                onlyWrongAttempts.length,
-                                (index) => WrongAttempts(
-                                  question: onlyWrongAttempts[index].question,
-                                  explaination: 'Explaination: ${onlyWrongAttempts[index].explaination}',
+                            const SizedBox(height: 16),
+                            if (onlyWrongAttempts.isNotEmpty)
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: onlyWrongAttempts
+                                    .map((attempt) => Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                                          child: WrongAttempts(
+                                            question: attempt.question,
+                                            explaination: 'Explanation: ${attempt.explaination}',
+                                          ),
+                                        ))
+                                    .toList(),
+                              )
+                            else
+                              const Padding(
+                                padding: EdgeInsets.all(16),
+                                child: Text(
+                                  'No wrong attempts.',
+                                  style: TextStyle(
+                                    color: Colors.black54,
+                                    fontSize: 16,
+                                  ),
                                 ),
                               ),
-                            ),
+                            const SizedBox(height: 16),
                           ],
                         ),
-                      ),
+                      )
               ],
             ),
           ),
@@ -239,41 +266,59 @@ class _ResultScreenState extends State<ResultScreen> {
 }
 
 class WrongAttempts extends StatelessWidget {
-  const WrongAttempts({super.key, required this.question, required this.explaination});
+  const WrongAttempts({
+    Key? key,
+    required this.question,
+    required this.explaination,
+  }) : super(key: key);
 
-  final String question, explaination;
+  final String question;
+  final String explaination;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
       margin: const EdgeInsets.all(10),
-      padding: const EdgeInsets.all(5),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: ColorResources.PRIMARY_MATERIAL,
-        ),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 10,
+            offset: Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          question.startsWith('http')
-              ? SizedBox(
-                  height: 150,
-                  child: CachedNetworkImage(
-                    imageUrl: question,
-                    errorWidget: (context, url, error) => ImageError(error: error),
-                    placeholder: (context, url) => const SizedBox.shrink(),
-                  ),
-                )
-              : Text(
-                  question,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                ),
+          if (question.startsWith('http'))
+            SizedBox(
+              height: 150,
+              child: CachedNetworkImage(
+                imageUrl: question,
+                errorWidget: (context, url, error) => ImageError(error: error),
+                placeholder: (context, url) => const SizedBox.shrink(),
+              ),
+            )
+          else
+            Text(
+              question,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: ColorResources.PRIMARY_MATERIAL,
+              ),
+            ),
+          const SizedBox(height: 16),
           Text(
             explaination,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.grey),
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.black87,
+            ),
           ),
         ],
       ),
