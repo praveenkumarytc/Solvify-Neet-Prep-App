@@ -78,9 +78,9 @@ class _McqTestScreenState extends State<McqTestScreen> {
         currentPage++;
       });
       //to add option response
-      mcqIs = 'skipped';
+      // mcqIs = 'skipped';
       performanceData.add(mcqIs);
-      myPerformace = PerformanceModel(question: 'initialized', isCorrect: 'skipped', explaination: 'initialized');
+      // myPerformace = PerformanceModel(question: 'initialized', isCorrect: 'skipped', explaination: 'initialized');
       perFormanceModelList.add(myPerformace);
       log(myPerformace.toJson().toString());
       controller.nextPage(
@@ -233,8 +233,8 @@ class _McqTestScreenState extends State<McqTestScreen> {
                             child: PageView.builder(
                               controller: controller,
                               onPageChanged: (value) {
-                                mcqIs = 'skipped';
-                                myPerformace = PerformanceModel(question: 'initialized', isCorrect: 'skipped', explaination: 'initialized');
+                                // mcqIs = 'skipped';
+                                // myPerformace = PerformanceModel(question: 'initialized', isCorrect: 'skipped', explaination: 'initialized');
                                 (int index) {
                                   setState(() {
                                     currentPage = index;

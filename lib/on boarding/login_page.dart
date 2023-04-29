@@ -54,6 +54,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  bool _isLoading = false;
   Column signupForm(BuildContext context) {
     return Column(
       children: [
@@ -214,7 +215,17 @@ class _LoginPageState extends State<LoginPage> {
             } else if (!RegExp(phonePattern).hasMatch(phone)) {
               showToast(message: 'Please enter a valid phone number', isError: true);
             } else {
-              await Provider.of<AuthProvider>(context, listen: false).signUp(context, name, email, password, phone).then((value) {});
+              setState(() {
+                _isLoading = true;
+              });
+              await Provider.of<AuthProvider>(context, listen: false).signUp(context, name, email, password, phone).then((value) {
+                setState(() {
+                  _isLoading = false;
+                });
+              });
+              setState(() {
+                _isLoading = false;
+              });
             }
           },
           child: Provider.of<AuthProvider>(context, listen: false).isLoading
@@ -253,28 +264,30 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-                AnimatedButton(
-                  onTap: () {
-                    setState(() {
-                      isRegister = true;
-                    });
-                  },
-                  child: Container(
-                    width: MediaQuery.of(context).size.width * 0.4,
-                    height: 45,
-                    decoration: BoxDecoration(
-                        color: isRegister ? Colors.white : Colors.white30,
-                        borderRadius: const BorderRadius.all(
-                          Radius.circular(10),
-                        )),
-                    child: const Center(
-                      child: Text(
-                        'Register',
-                        style: blackButtonText,
+                _isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : AnimatedButton(
+                        onTap: () {
+                          setState(() {
+                            isRegister = true;
+                          });
+                        },
+                        child: Container(
+                          width: MediaQuery.of(context).size.width * 0.4,
+                          height: 45,
+                          decoration: BoxDecoration(
+                              color: isRegister ? Colors.white : Colors.white30,
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(10),
+                              )),
+                          child: const Center(
+                            child: Text(
+                              'Register',
+                              style: blackButtonText,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                ),
               ],
             ),
           ),
@@ -372,26 +385,39 @@ class _LoginPageState extends State<LoginPage> {
         //   ],
         // ),
         Dimensions.PADDING_SIZE_DEFAULT.heightBox,
-        AnimatedButton(
-          onTap: () async {
-            if (email.isEmpty) {
-              showToast(message: "Enter email", isError: true);
-            } else if (password.isEmpty) {
-              showToast(message: "Enter password", isError: true);
-            } else {
-              await Provider.of<AuthProvider>(context, listen: false).signIn(context, email, password);
-            }
-          },
-          child: Container(
-            width: double.infinity,
-            margin: const EdgeInsets.all(8),
-            height: 55,
-            decoration: const BoxDecoration(color: ColorResources.PRIMARY_MATERIAL, borderRadius: BorderRadius.all(Radius.circular(10))),
-            child: const Center(
-              child: Text('Sign In', style: whiteButtonText),
-            ),
-          ),
-        ),
+        _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : AnimatedButton(
+                onTap: () async {
+                  if (email.isEmpty) {
+                    showToast(message: "Enter email", isError: true);
+                  } else if (password.isEmpty) {
+                    showToast(message: "Enter password", isError: true);
+                  } else {
+                    setState(() {
+                      _isLoading = true;
+                    });
+                    await Provider.of<AuthProvider>(context, listen: false).signIn(context, email, password).then((value) {
+                      setState(() {
+                        _isLoading = false;
+                      });
+                    });
+                    setState(() {
+                      _isLoading = false;
+                    });
+                    print(_isLoading);
+                  }
+                },
+                child: Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.all(8),
+                  height: 55,
+                  decoration: const BoxDecoration(color: ColorResources.PRIMARY_MATERIAL, borderRadius: BorderRadius.all(Radius.circular(10))),
+                  child: const Center(
+                    child: Text('Sign In', style: whiteButtonText),
+                  ),
+                ),
+              ),
         20.heightBox,
         Container(
           width: double.infinity,

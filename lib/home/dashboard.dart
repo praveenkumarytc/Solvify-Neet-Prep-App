@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:shield_neet/home/Screens/homeScreen.dart';
 import 'package:shield_neet/home/Screens/Account/profile.dart';
 
+import '../helper/network_info.dart';
+
 class DashBoard extends StatefulWidget {
   const DashBoard({super.key});
 
@@ -15,6 +17,12 @@ class _DashBoardState extends State<DashBoard> {
     const HomeScreen(),
     const ProfileScreen(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    NetworkInfo.checkConnectivity(context);
+  }
 
   int pageIndex = 0;
   @override

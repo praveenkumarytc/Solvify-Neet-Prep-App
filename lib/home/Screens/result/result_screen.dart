@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
+import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -11,6 +12,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shield_neet/Utils/color_resources.dart';
 import 'package:shield_neet/Utils/images.dart';
+import 'package:shield_neet/home/Screens/Subject%20Wise/chapters_screen.dart';
 import 'package:shield_neet/home/Screens/Subject%20Wise/mcq_test.dart';
 import 'package:shield_neet/home/dashboard.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -72,6 +74,7 @@ class _ResultScreenState extends State<ResultScreen> {
 
   @override
   Widget build(BuildContext context) {
+    log(widget.myPerformaceData.toString());
     List<PerformanceModel> onlyWrongAttempts = widget.myPerformaceData.where((element) => element.isCorrect == 'false').toList();
     return WillPopScope(
       onWillPop: () async {
@@ -91,9 +94,10 @@ class _ResultScreenState extends State<ResultScreen> {
               end: Alignment.bottomRight,
             ),
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(15),
+          child: ScrollConfiguration(
+            behavior: NoGlowScroll(),
             child: ListView(
+              padding: const EdgeInsets.all(15),
               children: [
                 RepaintBoundary(
                   key: _globalKey,
@@ -219,7 +223,7 @@ class _ResultScreenState extends State<ResultScreen> {
                             const Padding(
                               padding: EdgeInsets.symmetric(horizontal: 16),
                               child: Text(
-                                'Wrong Attempts:',
+                                'Explanations',
                                 style: TextStyle(
                                   color: ColorResources.COLOR_BLUE,
                                   fontWeight: FontWeight.bold,
@@ -228,15 +232,15 @@ class _ResultScreenState extends State<ResultScreen> {
                               ),
                             ),
                             const SizedBox(height: 16),
-                            if (onlyWrongAttempts.isNotEmpty)
+                            if (widget.myPerformaceData.isNotEmpty)
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: onlyWrongAttempts
+                                children: widget.myPerformaceData
                                     .map((attempt) => Padding(
                                           padding: const EdgeInsets.symmetric(horizontal: 16),
                                           child: WrongAttempts(
                                             question: attempt.question,
-                                            explaination: 'Explanation: ${attempt.explaination}',
+                                            explaination: attempt.explaination,
                                           ),
                                         ))
                                     .toList(),
@@ -266,11 +270,7 @@ class _ResultScreenState extends State<ResultScreen> {
 }
 
 class WrongAttempts extends StatelessWidget {
-  const WrongAttempts({
-    Key? key,
-    required this.question,
-    required this.explaination,
-  }) : super(key: key);
+  const WrongAttempts({Key? key, required this.question, required this.explaination}) : super(key: key);
 
   final String question;
   final String explaination;
@@ -280,6 +280,7 @@ class WrongAttempts extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.all(10),
       padding: const EdgeInsets.all(16),
+      width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -307,7 +308,7 @@ class WrongAttempts extends StatelessWidget {
             Text(
               question,
               style: const TextStyle(
-                fontSize: 18,
+                fontSize: 13,
                 fontWeight: FontWeight.bold,
                 color: ColorResources.PRIMARY_MATERIAL,
               ),
@@ -315,9 +316,9 @@ class WrongAttempts extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             explaination,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.black87,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey.shade600,
             ),
           ),
         ],
