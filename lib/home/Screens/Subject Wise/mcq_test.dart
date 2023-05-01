@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:shield_neet/Utils/app_constants.dart';
 import 'package:shield_neet/Utils/color_resources.dart';
 import 'package:shield_neet/custom%20%20widget/zoomable_image.dart';
+import 'package:shield_neet/helper/check_text_is_url.dart';
 import 'package:shield_neet/helper/push_to.dart';
 import 'package:shield_neet/home/Screens/Subject%20Wise/mcq_model.dart';
 import 'package:shield_neet/home/Screens/result/result_screen.dart';
@@ -257,7 +258,7 @@ class _McqTestScreenState extends State<McqTestScreen> {
                                           ),
                                         ),
                                         10.heightBox,
-                                        mcqList[index].question.startsWith('http')
+                                        checkForImage(mcqList[index].question)
                                             ? GestureDetector(
                                                 onTap: () => pushTo(context, ZoomableImage(image: NetworkImage(mcqList[index].question))),
                                                 child: Container(

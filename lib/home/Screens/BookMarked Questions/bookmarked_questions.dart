@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shield_neet/components/solvify_appbar.dart';
+import 'package:shield_neet/helper/check_text_is_url.dart';
 import 'package:shield_neet/home/Screens/Subject%20Wise/chapters_screen.dart';
 import 'package:shield_neet/home/Screens/Subject%20Wise/mcq_model.dart';
 import 'package:shield_neet/providers/user_provider.dart';
@@ -48,7 +49,7 @@ class _BookMarkedQuestScreenState extends State<BookMarkedQuestScreen> {
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: details.bookmarkedQuestions[index].question.startsWith('http')
+                          title: checkForImage(details.bookmarkedQuestions[index].question)
                               ? SizedBox(
                                   height: 150,
                                   child: CachedNetworkImage(

@@ -68,7 +68,7 @@ class _AddMcqPageState extends State<AddMcqPage> {
   String? base64Solution;
   bool isoption1Correct = false, isoption2Correct = false, isoption3Correct = false, isoption4Correct = false;
   bool isQuestionImage = false;
-  _getImageFrom({required ImageSource source, bool isSolution = false}) async {
+  _getImageFrom({required ImageSource source, required bool isSolution}) async {
     final pickedImage = await _picker.pickImage(source: source);
     if (pickedImage != null) {
       var image = File(pickedImage.path.toString());
@@ -87,18 +87,18 @@ class _AddMcqPageState extends State<AddMcqPage> {
       // Encode the compressed image as base64
       final bytes = compressedImage.readAsBytesSync();
       final encoded = base64Encode(bytes);
-      questionController.clear();
+
       setState(() {
         // Read the image file as bytes
         if (isSolution) {
+          explainationController.clear();
           solutionImage = compressedImage;
           base64Solution = encoded;
         } else {
+          questionController.clear();
           fileImage = compressedImage;
           base64 = encoded;
         }
-
-        log(base64!);
 
         // Store the bytes in Firestore
       });
@@ -115,7 +115,6 @@ class _AddMcqPageState extends State<AddMcqPage> {
       isoption2Correct = widget.options![1].is_correct;
       isoption3Correct = widget.options![2].is_correct;
       isoption4Correct = widget.options![3].is_correct;
-      print(widget.explanation);
 
       if (checkForImage(widget.question!)) {
         isQuestionImage = true;
@@ -125,10 +124,12 @@ class _AddMcqPageState extends State<AddMcqPage> {
       }
       if (checkForImage(widget.explanation!)) {
         isExplainationChoosed = false;
-        explainationController.text = widget.question!;
+        explainationController.text = widget.explanation!;
       } else {
         explainationController.text = widget.explanation!;
       }
+      // log(questionController.text);
+      // log(explainationController.text);
     }
   }
 
@@ -345,7 +346,7 @@ class _AddMcqPageState extends State<AddMcqPage> {
                   isQuestionImage
                       ? GestureDetector(
                           onTap: () {
-                            _openChangeImageBottomSheet();
+                            _openChangeImageBottomSheet(isSolution: false);
                             // Handle tapping the container to select an image from the gallery
                           },
                           child: checkForImage(questionController.text)
@@ -716,7 +717,7 @@ class _AddMcqPageState extends State<AddMcqPage> {
   }
 
   // ignore: unused_element
-  _openChangeImageBottomSheet({bool isSolution = false}) {
+  _openChangeImageBottomSheet({required bool isSolution}) {
     return showCupertinoModalPopup(
         context: context,
         barrierDismissible: false,

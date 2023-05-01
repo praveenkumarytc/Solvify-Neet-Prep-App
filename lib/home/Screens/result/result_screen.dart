@@ -201,7 +201,7 @@ class _ResultScreenState extends State<ResultScreen> {
                     ),
                   ),
                 ),
-                onlyWrongAttempts.isEmpty
+                /*      onlyWrongAttempts.isEmpty
                     ? const SizedBox.shrink()
                     : Container(
                         margin: const EdgeInsets.symmetric(horizontal: 10),
@@ -260,6 +260,8 @@ class _ResultScreenState extends State<ResultScreen> {
                           ],
                         ),
                       )
+             
+             */
               ],
             ),
           ),

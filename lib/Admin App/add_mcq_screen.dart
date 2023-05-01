@@ -8,6 +8,7 @@ import 'package:shield_neet/Admin%20App/add_mcq_form.dart';
 import 'package:shield_neet/Utils/app_constants.dart';
 import 'package:shield_neet/Utils/color_resources.dart';
 import 'package:shield_neet/components/solvify_appbar.dart';
+import 'package:shield_neet/helper/check_text_is_url.dart';
 import 'package:shield_neet/helper/flutter_toast.dart';
 import 'package:shield_neet/helper/log_out_dialog.dart';
 import 'package:shield_neet/helper/push_to.dart';
@@ -177,7 +178,7 @@ class _QuestionCardState extends State<QuestionCard> {
         child: Column(
           children: [
             ListTile(
-              title: widget.question.startsWith('http')
+              title: checkForImage(widget.question)
                   ? SizedBox(
                       height: 100,
                       child: ClipRRect(
