@@ -7,7 +7,6 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:shield_neet/Admin%20App/add_mcq_screen.dart';
@@ -19,7 +18,7 @@ import 'package:shield_neet/components/solvify_appbar.dart';
 import 'package:shield_neet/components/submit_button.dart';
 import 'package:shield_neet/helper/app_helper.dart';
 import 'package:shield_neet/helper/app_text_style.dart';
-import 'package:shield_neet/helper/base64_image_checker.dart';
+import 'package:shield_neet/helper/check_text_is_url.dart';
 import 'package:shield_neet/helper/flutter_toast.dart';
 import 'package:shield_neet/helper/ocr_screen.dart';
 import 'package:shield_neet/providers/admin_provider.dart';
@@ -28,7 +27,17 @@ import 'package:velocity_x/velocity_x.dart';
 import '../home/Screens/Subject Wise/mcq_test.dart';
 
 class AddMcqPage extends StatefulWidget {
-  const AddMcqPage({super.key, required this.chapterName, required this.chapterId, required this.subjectname, this.isUpdate = false, this.question, this.explanation, this.options, this.mcqId});
+  const AddMcqPage({
+    super.key,
+    required this.chapterName,
+    required this.chapterId,
+    required this.subjectname,
+    this.isUpdate = false,
+    this.question,
+    this.explanation,
+    this.options,
+    this.mcqId,
+  });
   final bool isUpdate;
   final String chapterName;
   final String subjectname;
@@ -54,10 +63,12 @@ class _AddMcqPageState extends State<AddMcqPage> {
   bool _isSubmitting = false;
   final _picker = ImagePicker();
   File? fileImage;
+  File? solutionImage;
   String? base64;
+  String? base64Solution;
   bool isoption1Correct = false, isoption2Correct = false, isoption3Correct = false, isoption4Correct = false;
   bool isQuestionImage = false;
-  _getImageFrom({required ImageSource source}) async {
+  _getImageFrom({required ImageSource source, bool isSolution = false}) async {
     final pickedImage = await _picker.pickImage(source: source);
     if (pickedImage != null) {
       var image = File(pickedImage.path.toString());
@@ -78,10 +89,14 @@ class _AddMcqPageState extends State<AddMcqPage> {
       final encoded = base64Encode(bytes);
       questionController.clear();
       setState(() {
-        fileImage = compressedImage;
         // Read the image file as bytes
-
-        base64 = encoded;
+        if (isSolution) {
+          solutionImage = compressedImage;
+          base64Solution = encoded;
+        } else {
+          fileImage = compressedImage;
+          base64 = encoded;
+        }
 
         log(base64!);
 
@@ -102,20 +117,18 @@ class _AddMcqPageState extends State<AddMcqPage> {
       isoption4Correct = widget.options![3].is_correct;
       print(widget.explanation);
 
-      if (widget.question!.startsWith('http')) {
+      if (checkForImage(widget.question!)) {
         isQuestionImage = true;
         questionController.text = widget.question!;
       } else {
         questionController.text = widget.question!;
       }
-      // if (isBase64Image(widget.explanation!)) {
-      //   isExplainationChoosed = false;
-
-      //   base64 = widget.explanation;
-      // } else {
-      //   isExplainationChoosed = true;
-      explainationController.text = widget.explanation!;
-      // }
+      if (checkForImage(widget.explanation!)) {
+        isExplainationChoosed = false;
+        explainationController.text = widget.question!;
+      } else {
+        explainationController.text = widget.explanation!;
+      }
     }
   }
 
@@ -335,7 +348,7 @@ class _AddMcqPageState extends State<AddMcqPage> {
                             _openChangeImageBottomSheet();
                             // Handle tapping the container to select an image from the gallery
                           },
-                          child: questionController.text.startsWith('http')
+                          child: checkForImage(questionController.text)
                               ? SizedBox(
                                   height: 350,
                                   child: CachedNetworkImage(
@@ -481,7 +494,7 @@ class _AddMcqPageState extends State<AddMcqPage> {
                       const SizedBox(height: 20),
                     ],
                   ),
-                  /*    SizedBox(
+                  SizedBox(
                     height: 40,
                     child: Row(
                       children: [
@@ -543,38 +556,46 @@ class _AddMcqPageState extends State<AddMcqPage> {
                         ),
                       ],
                     ),
-                  ),*/
+                  ),
 
                   15.heightBox,
-                  // isExplainationChoosed
-                  //     ?
-                  QuestionTextField(
-                    controller: explainationController,
-                    hintLabelText: 'Explaination',
-                    maxLines: 6,
-                  ),
-                  10.heightBox,
-                  /*             : GestureDetector(
-                      onTap: () {
-                        _openChangeImageBottomSheet();
-                        // Handle tapping the container to select an image from the gallery
-                      },
-                      child: fileImage != null
-                          ? Container(
-                              height: 350,
-                              width: 300,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.black12, width: 1),
-                                  borderRadius: const BorderRadius.all(Radius.circular(10)),
-                                  color: Colors.grey,
-                                  image: DecorationImage(
-                                    image: FileImage(fileImage!),
-                                    fit: BoxFit.cover,
-                                  )),
-                            )
-                          : const PlaceholderContainer(),
-                    ),*/
+                  isExplainationChoosed
+                      ? QuestionTextField(
+                          controller: explainationController,
+                          hintLabelText: 'Explaination',
+                          maxLines: 6,
+                        )
+                      : GestureDetector(
+                          onTap: () {
+                            _openChangeImageBottomSheet(isSolution: true);
+                            // Handle tapping the container to select an image from the gallery
+                          },
+                          child: checkForImage(explainationController.text)
+                              ? SizedBox(
+                                  height: 350,
+                                  child: CachedNetworkImage(
+                                    imageUrl: explainationController.text,
+                                    errorWidget: (context, url, error) => ImageError(error: error),
+                                    placeholder: (context, url) => const SizedBox.shrink(),
+                                    fit: BoxFit.fill,
+                                  ),
+                                )
+                              : solutionImage != null
+                                  ? Container(
+                                      height: 350,
+                                      width: 300,
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                          border: Border.all(color: Colors.black12, width: 1),
+                                          borderRadius: const BorderRadius.all(Radius.circular(10)),
+                                          color: Colors.grey,
+                                          image: DecorationImage(
+                                            image: FileImage(solutionImage!),
+                                            fit: BoxFit.cover,
+                                          )),
+                                    )
+                                  : const PlaceholderContainer(),
+                        ),
                   30.heightBox,
                   _isSubmitting
                       ? const Center(
@@ -647,6 +668,22 @@ class _AddMcqPageState extends State<AddMcqPage> {
                                   }
                                 }
                               }
+
+                              if (!isExplainationChoosed) {
+                                if (solutionImage != null) {
+                                  final response = await Provider.of<AdminProvider>(context, listen: false).uploadQuestionImage(context, base64Solution!);
+                                  if (response!.status == 'success') {
+                                    // ignore: constant_identifier_names
+                                    const String QUESTION_IMAGE_BASE_URL = 'http://ivf.ekaltech.com/images/product/';
+                                    explainationController.text = QUESTION_IMAGE_BASE_URL + response.productImage;
+                                  } else {
+                                    showToast(message: 'AN_ERROR_OCCURED_WHILE_UPLOADING_IMAGE', isError: true);
+                                    setState(() {
+                                      _isSubmitting = false;
+                                    });
+                                  }
+                                }
+                              }
                               try {
                                 if (widget.isUpdate) {
                                   await Provider.of<AdminProvider>(context, listen: false).updateAddMcq(widget.mcqId, widget.subjectname, widget.chapterId, questionController.text.trim(), options, explainationController.text).then((value) {
@@ -679,7 +716,7 @@ class _AddMcqPageState extends State<AddMcqPage> {
   }
 
   // ignore: unused_element
-  _openChangeImageBottomSheet() {
+  _openChangeImageBottomSheet({bool isSolution = false}) {
     return showCupertinoModalPopup(
         context: context,
         barrierDismissible: false,
@@ -698,7 +735,7 @@ class _AddMcqPageState extends State<AddMcqPage> {
                   title: 'Take Photo',
                   voidCallback: () {
                     Navigator.pop(context);
-                    _getImageFrom(source: ImageSource.camera);
+                    _getImageFrom(source: ImageSource.camera, isSolution: isSolution);
                   },
                 ),
                 _buildCupertinoActionSheetAction(
@@ -706,7 +743,7 @@ class _AddMcqPageState extends State<AddMcqPage> {
                   title: 'Gallery',
                   voidCallback: () {
                     Navigator.pop(context);
-                    _getImageFrom(source: ImageSource.gallery);
+                    _getImageFrom(source: ImageSource.gallery, isSolution: isSolution);
                   },
                 ),
                 _buildCupertinoActionSheetAction(
