@@ -74,8 +74,8 @@ class AdminProvider extends ChangeNotifier {
     Uri parsedUri = Uri.parse(uploadUrl);
 
     var body = {
-      "connection_id": '8WQEJ0T8FO',
-      "auth_code": 'G7PMW8H90Y',
+      "connection_id": "OVQH19P\$2C",
+      "auth_code": 'M#LEB6T5ZH',
       "image": image
     };
 
