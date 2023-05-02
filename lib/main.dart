@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
     return Consumer<UserProvider>(builder: (context, snapshot, child) {
       return MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Solvify - Neet prep app',
+        title: 'Solvify Neet Preparation App',
         themeMode: snapshot.isDarkMode! ? ThemeMode.dark : ThemeMode.light,
         theme: ThemeData(
           fontFamily: 'Poppins',
