@@ -6,6 +6,7 @@ showToast({required String message, bool isError = false}) {
   Fluttertoast.showToast(msg: message, backgroundColor: isError ? Colors.red : Colors.white, textColor: isError ? Colors.grey.shade200 : Colors.black);
 }
 
+// to show snackbar
 showSnackBar(BuildContext context, {required String message, bool isError = true}) {
   final snackBar = SnackBar(
     content: Text(message),
