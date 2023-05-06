@@ -73,8 +73,11 @@ class AddChapterScreen extends StatelessWidget {
                   } else if (!snapshot.hasData) {
                     return const Center(child: CircularProgressIndicator());
                   }
+
+                  final documents = snapshot.data!.docs;
+                  documents.sort(numSortFunction);
                   return ListView(
-                      children: snapshot.data!.docs.map((data) {
+                      children: documents.map((data) {
                     return ChapterListCard(
                       chapterNumber: data[FirestoreCollections.chapterNumber].toString(),
                       chapterName: data[FirestoreCollections.chapterName],
@@ -135,6 +138,19 @@ class AddChapterScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+int numSortFunction(a, b) {
+  final int? aChapterNumber = int.tryParse(a[FirestoreCollections.chapterNumber]);
+  final int? bChapterNumber = int.tryParse(b[FirestoreCollections.chapterNumber]);
+
+  if (aChapterNumber != null && bChapterNumber != null) {
+    return aChapterNumber.compareTo(bChapterNumber);
+  } else {
+    // Handle the case when the chapter number is not a valid integer
+    // You can adjust the logic based on your requirements
+    return 0;
   }
 }
 

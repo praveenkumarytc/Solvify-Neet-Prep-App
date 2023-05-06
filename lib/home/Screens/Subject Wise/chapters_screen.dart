@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:shield_neet/Admin%20App/add_chapters_screen.dart';
 import 'package:shield_neet/Utils/app_constants.dart';
 import 'package:shield_neet/Utils/color_resources.dart';
 import 'package:shield_neet/components/solvify_appbar.dart';
@@ -37,9 +38,12 @@ class _ChapterScreenState extends State<ChapterScreen> {
             } else if (!snapshot.hasData) {
               return const Center(child: CircularProgressIndicator());
             }
+            final documents = snapshot.data!.docs;
+            documents.sort(numSortFunction);
+
             return ListView(
                 padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                children: snapshot.data!.docs.map((data) {
+                children: documents.map((data) {
                   return Card(
                     elevation: 4,
                     child: ListTile(
