@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:shield_neet/Firebase%20Notifications/notification_services.dart';
 import 'package:shield_neet/home/Screens/homeScreen.dart';
 import 'package:shield_neet/home/Screens/Account/profile.dart';
 
@@ -18,9 +20,22 @@ class _DashBoardState extends State<DashBoard> {
     const ProfileScreen(),
   ];
 
+  NotificationServices notificationServices = NotificationServices();
   @override
   void initState() {
     super.initState();
+    notificationServices.requestNotificationPermission();
+    notificationServices.forgroundMessage();
+    notificationServices.firebaseInit(context);
+    notificationServices.setupInteractMessage(context);
+    notificationServices.isTokenRefresh();
+
+    notificationServices.getDeviceToken().then((value) {
+      if (kDebugMode) {
+        print('device token');
+        print(value);
+      }
+    });
     NetworkInfo.checkConnectivity(context);
   }
 
