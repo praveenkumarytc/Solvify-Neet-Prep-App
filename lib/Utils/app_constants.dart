@@ -14,6 +14,9 @@ class FirestoreCollections {
   static const String physics = "Physics";
   static const String biology = "Biology";
   static const String chapters = "Chapters";
+  static const String chapterTopic = "ChapterTopics";
+  static const String topicName = "topicName";
+  static const String topicNumber = "topicNumber";
   static const String mcq = "Mcq";
   static const String chapterName = "chapter_name";
   static const String chapterNumber = "chapter_number";

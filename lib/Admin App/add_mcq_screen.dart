@@ -19,9 +19,18 @@ import '../home/Screens/Subject Wise/mcq_test.dart';
 import 'add_chapters_screen.dart';
 
 class AddMcqScreen extends StatelessWidget {
-  const AddMcqScreen({super.key, required this.chapterName, required this.subjectName, required this.chapterId});
+  const AddMcqScreen({
+    super.key,
+    required this.chapterName,
+    required this.subjectName,
+    required this.chapterId,
+    required this.topicName,
+    required this.topicId,
+  });
   final String chapterName;
   final String subjectName;
+  final String topicName;
+  final String topicId;
   final String chapterId;
 
   @override
@@ -42,6 +51,8 @@ class AddMcqScreen extends StatelessWidget {
                   chapterName: chapterName,
                   chapterId: chapterId,
                   subjectname: subjectName,
+                  topicName: topicName,
+                  topicId: topicId,
                 ),
               ),
               title: 'Add a MCQ',
@@ -50,7 +61,7 @@ class AddMcqScreen extends StatelessWidget {
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.7,
               child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(subjectName).collection(FirestoreCollections.chapters).doc(chapterId).collection(FirestoreCollections.mcq).snapshots(),
+                stream: FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(subjectName).collection(FirestoreCollections.chapters).doc(chapterId).collection(FirestoreCollections.chapterTopic).doc(topicId).collection(FirestoreCollections.mcq).snapshots(),
                 builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.hasError) {
                     return const Text('Error occured');
@@ -84,23 +95,6 @@ class AddMcqScreen extends StatelessWidget {
                           ],
                           onSelected: (value) async {
                             if (value == 'edit') {
-                              // var querySnapshot = await FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(subjectName).collection(FirestoreCollections.chapters).doc(chapterId).collection(FirestoreCollections.mcq).get();
-
-                              // var documents = querySnapshot.docs;
-
-                              // List<Map<String, dynamic>> dataList = [];
-
-                              // for (var document in documents) {
-                              //   var data = document.data();
-                              //   var base64String = data[FirestoreCollections.image] as String;
-                              //   var decodedBytes = base64.decode(base64String);
-                              //   var decodedString = utf8.decode(decodedBytes);
-
-                              //   data[FirestoreCollections.image] = decodedString;
-
-                              //   dataList.add(data);
-                              // }
-
                               pushTo(
                                 context,
                                 AddMcqPage(
@@ -112,6 +106,8 @@ class AddMcqScreen extends StatelessWidget {
                                   question: data[FirestoreCollections.question],
                                   options: options,
                                   explanation: data[FirestoreCollections.image],
+                                  topicName: topicName,
+                                  topicId: topicId,
                                 ),
                               );
                             } else if (value == 'delete') {
@@ -119,7 +115,7 @@ class AddMcqScreen extends StatelessWidget {
                                 context: context,
                                 pageBuilder: (context, animation, secondaryAnimation) => AppInfoDialog(
                                   onLogOut: () async {
-                                    await Provider.of<AdminProvider>(context, listen: false).deleteMcq(subjectName, chapterId, data.id).then(
+                                    await Provider.of<AdminProvider>(context, listen: false).deleteMcq(subjectName, chapterId, topicId, data.id).then(
                                       (value) {
                                         Navigator.pop(context);
                                         showToast(message: 'deleted Successfully');

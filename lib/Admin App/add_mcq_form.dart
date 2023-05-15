@@ -32,6 +32,8 @@ class AddMcqPage extends StatefulWidget {
     required this.chapterName,
     required this.chapterId,
     required this.subjectname,
+    required this.topicName,
+    required this.topicId,
     this.isUpdate = false,
     this.question,
     this.explanation,
@@ -42,6 +44,8 @@ class AddMcqPage extends StatefulWidget {
   final String chapterName;
   final String subjectname;
   final String chapterId;
+  final String topicName;
+  final String topicId;
   final String? question;
   final String? explanation;
   final List<OptionModel>? options;
@@ -687,13 +691,13 @@ class _AddMcqPageState extends State<AddMcqPage> {
                               }
                               try {
                                 if (widget.isUpdate) {
-                                  await Provider.of<AdminProvider>(context, listen: false).updateAddMcq(widget.mcqId, widget.subjectname, widget.chapterId, questionController.text.trim(), options, explainationController.text).then((value) {
+                                  await Provider.of<AdminProvider>(context, listen: false).updateAddMcq(widget.topicId, widget.mcqId, widget.subjectname, widget.chapterId, questionController.text.trim(), options, explainationController.text).then((value) {
                                     showSnackBar(context, message: 'mcq updated successfully', isError: false);
 
                                     Navigator.pop(context);
                                   });
                                 } else {
-                                  await Provider.of<AdminProvider>(context, listen: false).addMcq(widget.subjectname, widget.chapterId, questionController.text.trim(), options, explainationController.text).then((value) {
+                                  await Provider.of<AdminProvider>(context, listen: false).addMcq(widget.subjectname, widget.chapterId, widget.topicId, questionController.text.trim(), options, explainationController.text).then((value) {
                                     showSnackBar(context, message: 'mcq added successfully', isError: false);
                                     Navigator.pop(context);
                                   });

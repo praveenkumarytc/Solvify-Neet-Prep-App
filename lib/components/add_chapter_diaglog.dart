@@ -7,12 +7,14 @@ class AddChapterDialog extends StatelessWidget {
   final TextEditingController chapterNumberController;
   final VoidCallback onTap;
   final bool isYear;
+  final bool isTopicScreen;
   const AddChapterDialog({
     Key? key,
     required this.chapterNameController,
     required this.chapterNumberController,
     required this.onTap,
     required this.isYear,
+    this.isTopicScreen = false,
   }) : super(key: key);
 
   @override
@@ -28,7 +30,13 @@ class AddChapterDialog extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              isYear ? 'Add Year' : 'Add Chapter',
+              !isTopicScreen
+                  ? isYear
+                      ? 'Add Year'
+                      : 'Add Chapter'
+                  : isYear
+                      ? 'Add Subject'
+                      : 'Add Topic',
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -37,23 +45,33 @@ class AddChapterDialog extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             TextField(
-              controller: chapterNumberController,
-              buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly
-              ],
-              keyboardType: TextInputType.number,
-              maxLength: 2,
-              decoration: InputDecoration(
-                hintText: isYear ? 'Serial No' : 'Chapter Number',
-              ),
-            ),
+                controller: chapterNumberController,
+                buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly
+                ],
+                keyboardType: TextInputType.number,
+                maxLength: 2,
+                decoration: InputDecoration(
+                    hintText: !isTopicScreen
+                        ? isYear
+                            ? 'S No.'
+                            : 'Chapter No'
+                        : isYear
+                            ? 'Subject No'
+                            : 'Topic No')),
             const SizedBox(height: 10),
             TextField(
               controller: chapterNameController,
               textCapitalization: TextCapitalization.words,
               decoration: InputDecoration(
-                hintText: isYear ? 'YYYY' : 'Chapter Name',
+                hintText: !isTopicScreen
+                    ? isYear
+                        ? 'YYYY'
+                        : 'Chapter Name'
+                    : isYear
+                        ? 'Subject Name'
+                        : 'Topic Name',
               ),
             ),
             const SizedBox(height: 20),

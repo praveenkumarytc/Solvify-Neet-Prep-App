@@ -6,7 +6,7 @@ import 'package:shield_neet/Utils/app_constants.dart';
 import 'package:shield_neet/Utils/color_resources.dart';
 import 'package:shield_neet/components/solvify_appbar.dart';
 import 'package:shield_neet/helper/push_to.dart';
-import 'package:shield_neet/home/Screens/Subject%20Wise/test_loading.dart';
+import 'package:shield_neet/home/Screens/Subject%20Wise/chapters_topic_screen.dart';
 
 class ChapterScreen extends StatefulWidget {
   const ChapterScreen({super.key, required this.subjectName});
@@ -46,20 +46,34 @@ class _ChapterScreenState extends State<ChapterScreen> {
                 children: documents.map((data) {
                   return Card(
                     elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     child: ListTile(
                       onTap: () {
                         pushTo(
-                            context,
-                            LoadingScreen(
-                              chapterId: data.id,
-                              subjectName: widget.subjectName,
-                            ));
+                          context,
+                          ChapterTopicsPage(
+                            subjectname: widget.subjectName,
+                            chapterId: data.id,
+                            chapterName: data[FirestoreCollections.chapterName],
+                          ),
+                        );
                       },
-                      leading: Text(
-                        "${data[FirestoreCollections.chapterNumber].toString()}.",
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                      leading: Container(
+                        width: 40,
+                        height: double.infinity,
+                        decoration: const BoxDecoration(color: ColorResources.PRIMARY_MATERIAL, shape: BoxShape.circle),
+                        child: Center(
+                          child: Text(
+                            data[FirestoreCollections.chapterNumber].toString(),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
                       ),
                       title: Text(

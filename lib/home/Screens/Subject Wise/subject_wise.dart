@@ -19,21 +19,21 @@ class SubjectWiseQuestScreen extends StatelessWidget {
         padding: const EdgeInsets.all(10),
         child: Column(
           children: [
-            SubjecstsCard(
+            SubjectCard(
               imagePath: Images.pendulum,
               subjectName: FirestoreCollections.physics,
               iconPath: Images.prism,
               onTap: () => pushTo(context, const ChapterScreen(subjectName: FirestoreCollections.physics)),
             ),
             Dimensions.PADDING_SIZE_SMALL.heightBox,
-            SubjecstsCard(
+            SubjectCard(
               imagePath: Images.laboratory,
               subjectName: FirestoreCollections.chemistry,
               iconPath: Images.chemistry,
               onTap: () => pushTo(context, const ChapterScreen(subjectName: FirestoreCollections.chemistry)),
             ),
             Dimensions.PADDING_SIZE_SMALL.heightBox,
-            SubjecstsCard(
+            SubjectCard(
               imagePath: Images.biology,
               iconPath: Images.evolution,
               subjectName: FirestoreCollections.biology,
@@ -46,8 +46,8 @@ class SubjectWiseQuestScreen extends StatelessWidget {
   }
 }
 
-class SubjecstsCard extends StatelessWidget {
-  const SubjecstsCard({super.key, required this.imagePath, required this.iconPath, required this.subjectName, required this.onTap});
+class SubjectCard extends StatelessWidget {
+  const SubjectCard({super.key, required this.imagePath, required this.iconPath, required this.subjectName, required this.onTap});
   final String imagePath, iconPath, subjectName;
   final Function() onTap;
 

@@ -25,17 +25,18 @@ class _DashBoardState extends State<DashBoard> {
   void initState() {
     super.initState();
     notificationServices.requestNotificationPermission();
-    notificationServices.forgroundMessage();
     notificationServices.firebaseInit(context);
-    notificationServices.setupInteractMessage(context);
-    notificationServices.isTokenRefresh();
+    notificationServices.forgroundMessage();
 
-    notificationServices.getDeviceToken().then((value) {
-      if (kDebugMode) {
-        print('device token');
-        print(value);
-      }
-    });
+    notificationServices.setupInteractMessage(context);
+
+    // notificationServices.isTokenRefresh();
+    // notificationServices.getDeviceToken().then((value) {
+    //   if (kDebugMode) {
+    //     print('device token');
+    //     print(value);
+    //   }
+    // });
     NetworkInfo.checkConnectivity(context);
   }
 

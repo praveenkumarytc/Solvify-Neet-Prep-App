@@ -5,9 +5,15 @@ import 'package:shield_neet/Utils/color_resources.dart';
 import 'package:shield_neet/home/Screens/Subject%20Wise/mcq_test.dart';
 
 class LoadingScreen extends StatefulWidget {
-  const LoadingScreen({super.key, required this.subjectName, required this.chapterId});
+  const LoadingScreen({
+    super.key,
+    required this.subjectName,
+    required this.chapterId,
+    required this.topicId,
+  });
   final String chapterId;
   final String subjectName;
+  final String topicId;
   @override
   _LoadingScreenState createState() => _LoadingScreenState();
 }
@@ -32,6 +38,7 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
         builder: (context) => McqTestScreen(
           chapterId: widget.chapterId,
           subjectName: widget.subjectName,
+          topicId: widget.topicId,
         ),
       ),
     );

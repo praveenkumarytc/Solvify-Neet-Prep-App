@@ -2,6 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,6 +12,8 @@ import 'package:shield_neet/home/dashboard.dart';
 class AuthProvider extends ChangeNotifier {
   AuthProvider({this.sharedPreferences});
   SharedPreferences? sharedPreferences;
+
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
 
   String? errorMessage;
   bool _isLoading = false;
@@ -45,6 +48,9 @@ class AuthProvider extends ChangeNotifier {
         final email0 = userDoc.get("email");
         final password0 = userDoc.get("password");
         setPrefDeta(uid0, userName, mobile0, email0, password0);
+        await userCollection.doc(uid0).update({
+          "fcm_token": await messaging.getToken(),
+        });
         Fluttertoast.showToast(msg: "Login Successful as $userName");
         Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const DashBoard()), (route) => false);
         notifyListeners();
@@ -65,6 +71,7 @@ class AuthProvider extends ChangeNotifier {
       "mobile": mobile,
       "email": email,
       "password": password,
+      "fcm_token": await messaging.getToken()
     }).then((value) {
       signIn(context, email, password);
     });

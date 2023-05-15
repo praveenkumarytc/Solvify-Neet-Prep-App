@@ -42,7 +42,6 @@ class AppInfoDialog extends StatelessWidget {
             const SizedBox(
               height: 10,
             ),
-            // Image.asset(Images.not_for_delivery),
             const SizedBox(
               height: 10,
             ),

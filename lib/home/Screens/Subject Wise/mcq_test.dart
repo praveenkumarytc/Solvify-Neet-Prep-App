@@ -17,9 +17,15 @@ import 'package:shield_neet/providers/user_provider.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class McqTestScreen extends StatefulWidget {
-  const McqTestScreen({super.key, required this.chapterId, required this.subjectName});
+  const McqTestScreen({
+    super.key,
+    required this.chapterId,
+    required this.subjectName,
+    required this.topicId,
+  });
   final String chapterId;
   final String subjectName;
+  final String topicId;
   @override
   State<McqTestScreen> createState() => _McqTestScreenState();
 }
@@ -36,7 +42,7 @@ class _McqTestScreenState extends State<McqTestScreen> {
   bool _isMcqLoading = false;
   Future<dynamic> getData() async {
     _isMcqLoading = true;
-    final QuerySnapshot<Object?> snapshot = await FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(widget.subjectName).collection(FirestoreCollections.chapters).doc(widget.chapterId).collection(FirestoreCollections.mcq).get();
+    final QuerySnapshot<Object?> snapshot = await FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(widget.subjectName).collection(FirestoreCollections.chapters).doc(widget.chapterId).collection(FirestoreCollections.chapterTopic).doc(widget.topicId).collection(FirestoreCollections.mcq).get();
 
     setState(() {
       performanceData.clear();
@@ -207,7 +213,7 @@ class _McqTestScreenState extends State<McqTestScreen> {
             : mcqList.isEmpty
                 ? const Center(
                     child: SizedBox(
-                    child: Text('Questions are not availbale for this chapter'),
+                    child: Text('Questions are not availbale for this topic'),
                   ))
                 : SingleChildScrollView(
                     physics: const NeverScrollableScrollPhysics(),

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shield_neet/Admin%20App/add_chapter_topic.dart';
 import 'package:shield_neet/Admin%20App/add_mcq_screen.dart';
 import 'package:shield_neet/Utils/app_constants.dart';
 import 'package:shield_neet/Utils/color_resources.dart';
@@ -62,7 +63,7 @@ class AddChapterScreen extends StatelessWidget {
               title: subjectName == FirestoreCollections.yearWise ? "Add a year" : 'Add a chapter',
             ),
             SizedBox(
-              height: MediaQuery.of(context).size.height * 0.7,
+              height: MediaQuery.of(context).size.height * 0.75,
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(subjectName).collection(FirestoreCollections.chapters).orderBy(FirestoreCollections.chapterNumber).snapshots(),
                 builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -84,7 +85,7 @@ class AddChapterScreen extends StatelessWidget {
                       onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => AddMcqScreen(
+                          builder: (context) => AddChapterTopic(
                             chapterName: data[FirestoreCollections.chapterName],
                             subjectName: subjectName,
                             chapterId: data.id,
@@ -144,6 +145,19 @@ class AddChapterScreen extends StatelessWidget {
 int numSortFunction(a, b) {
   final int? aChapterNumber = int.tryParse(a[FirestoreCollections.chapterNumber]);
   final int? bChapterNumber = int.tryParse(b[FirestoreCollections.chapterNumber]);
+
+  if (aChapterNumber != null && bChapterNumber != null) {
+    return aChapterNumber.compareTo(bChapterNumber);
+  } else {
+    // Handle the case when the chapter number is not a valid integer
+    // You can adjust the logic based on your requirements
+    return 0;
+  }
+}
+
+int numSortFunctionTopic(a, b) {
+  final int? aChapterNumber = int.tryParse(a[FirestoreCollections.topicNumber]);
+  final int? bChapterNumber = int.tryParse(b[FirestoreCollections.topicNumber]);
 
   if (aChapterNumber != null && bChapterNumber != null) {
     return aChapterNumber.compareTo(bChapterNumber);

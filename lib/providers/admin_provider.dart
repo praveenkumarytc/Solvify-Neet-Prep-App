@@ -33,13 +33,34 @@ class AdminProvider extends ChangeNotifier {
     return await medicineCollection.doc(chapterId).delete();
   }
 
-  Future<void> deleteMcq(subjectName, chapterId, mcqId) async {
-    final CollectionReference medicineCollection = FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(subjectName).collection(FirestoreCollections.chapters).doc(chapterId).collection(FirestoreCollections.mcq);
-    return await medicineCollection.doc(mcqId).delete();
+  Future<void> addChapterTopic(subjectName, topicName, topicNumber, chapterId) async {
+    final CollectionReference medicineCollection = FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(subjectName).collection(FirestoreCollections.chapters).doc(chapterId).collection(FirestoreCollections.chapterTopic);
+    return await medicineCollection.doc().set({
+      FirestoreCollections.topicName: topicName,
+      FirestoreCollections.topicNumber: topicNumber,
+    });
   }
 
-  Future<void> addMcq(subjectName, chapterId, question, List<Map<String, dynamic>> options, image) async {
-    final CollectionReference mcqCollection = FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(subjectName).collection(FirestoreCollections.chapters).doc(chapterId).collection(FirestoreCollections.mcq);
+  Future<void> updateChapterTopic(subjectName, chapterName, chapterNumber, chapterId, topicId) async {
+    final CollectionReference medicineCollection = FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(subjectName).collection(FirestoreCollections.chapters).doc(chapterId).collection(FirestoreCollections.chapterTopic);
+    return await medicineCollection.doc(topicId).set({
+      FirestoreCollections.topicName: chapterName,
+      FirestoreCollections.topicNumber: chapterNumber,
+    });
+  }
+
+  Future<void> deleteChapterTopic(subjectName, chapterName, topicId) async {
+    final CollectionReference medicineCollection = FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(subjectName).collection(FirestoreCollections.chapters).doc(chapterName).collection(FirestoreCollections.chapterTopic);
+    return await medicineCollection.doc(topicId).delete();
+  }
+
+  Future<void> deleteMcq(subjectName, chapterId, topicId, mcqId) async {
+    final CollectionReference mcqCollection = FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(subjectName).collection(FirestoreCollections.chapters).doc(chapterId).collection(FirestoreCollections.chapterTopic).doc(topicId).collection(FirestoreCollections.mcq);
+    return await mcqCollection.doc(mcqId).delete();
+  }
+
+  Future<void> addMcq(subjectName, chapterId, topicId, question, List<Map<String, dynamic>> options, image) async {
+    final CollectionReference mcqCollection = FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(subjectName).collection(FirestoreCollections.chapters).doc(chapterId).collection(FirestoreCollections.chapterTopic).doc(topicId).collection(FirestoreCollections.mcq);
     return await mcqCollection.doc().set({
       FirestoreCollections.options: options,
       FirestoreCollections.question: question,
@@ -47,8 +68,8 @@ class AdminProvider extends ChangeNotifier {
     });
   }
 
-  Future<void> updateAddMcq(mcqId, subjectName, chapterId, question, List<Map<String, dynamic>> options, image) async {
-    final CollectionReference mcqCollection = FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(subjectName).collection(FirestoreCollections.chapters).doc(chapterId).collection(FirestoreCollections.mcq);
+  Future<void> updateAddMcq(topicId, mcqId, subjectName, chapterId, question, List<Map<String, dynamic>> options, image) async {
+    final CollectionReference mcqCollection = FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(subjectName).collection(FirestoreCollections.chapters).doc(chapterId).collection(FirestoreCollections.chapterTopic).doc(topicId).collection(FirestoreCollections.mcq);
     return await mcqCollection.doc(mcqId).set({
       FirestoreCollections.options: options,
       FirestoreCollections.question: question,
