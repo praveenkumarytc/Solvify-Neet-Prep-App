@@ -28,13 +28,13 @@ Future main() async {
         ChangeNotifierProvider<AdminProvider>(create: (context) => AdminProvider(sharedPreferences: SharedPreference.preferences)),
         ChangeNotifierProvider<UserProvider>(create: (context) => UserProvider(sharedPreferences: SharedPreference.preferences)),
       ],
-      child: MyApp(),
+      child: const MyApp(),
     ),
   );
 }
 
 class MyApp extends StatefulWidget {
-  MyApp({super.key});
+  const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -45,29 +45,29 @@ class _MyAppState extends State<MyApp> {
   AppUpdateInfo? updateInfo;
 
 // Method to check for updates
-  Future<void> checkForUpdate() async {
-    final updateInfo = await InAppUpdate.checkForUpdate();
-    if (updateInfo.updateAvailability == UpdateAvailability.updateAvailable) {
-      debugPrint('Update is available');
+  // Future<void> checkForUpdate() async {
+  //   final updateInfo = await InAppUpdate.checkForUpdate();
+  //   if (updateInfo.updateAvailability == UpdateAvailability.updateAvailable) {
+  //     debugPrint('Update is available');
 
-      // Prompt the user for an in-app update
-      InAppUpdate.startFlexibleUpdate().then((_) {
-        // The update flow has started successfully
-        setState(() {
-          // Update the state variable if necessary
-          this.updateInfo = updateInfo;
-        });
-      }).catchError((e) {
-        // Handle any errors that occur during the update flow
-        debugPrint('Error starting flexible update: $e');
-      });
-    } else if (updateInfo.updateAvailability == UpdateAvailability.updateNotAvailable) {
-      debugPrint('Update is not available');
-    } else if (updateInfo.updateAvailability == UpdateAvailability.unknown) {
-      debugPrint('Unable to determine update availability');
-    }
-  }
-  /* Future<void> checkForUpdate() async {
+  //     // Prompt the user for an in-app update
+  //     InAppUpdate.startFlexibleUpdate().then((_) {
+  //       // The update flow has started successfully
+  //       setState(() {
+  //         // Update the state variable if necessary
+  //         this.updateInfo = updateInfo;
+  //       });
+  //     }).catchError((e) {
+  //       // Handle any errors that occur during the update flow
+  //       debugPrint('Error starting flexible update: $e');
+  //     });
+  //   } else if (updateInfo.updateAvailability == UpdateAvailability.updateNotAvailable) {
+  //     debugPrint('Update is not available');
+  //   } else if (updateInfo.updateAvailability == UpdateAvailability.unknown) {
+  //     debugPrint('Unable to determine update availability');
+  //   }
+  // }
+  Future<void> checkForUpdate() async {
     final updateInfo = await InAppUpdate.checkForUpdate();
     if (updateInfo.updateAvailability == UpdateAvailability.updateAvailable) {
       debugPrint('Update is available');
@@ -88,7 +88,7 @@ class _MyAppState extends State<MyApp> {
     } else if (updateInfo.updateAvailability == UpdateAvailability.unknown) {
       debugPrint('Unable to determine update availability');
     }
-  }*/
+  }
 
 // Method to display snack bar
   void showSnack(String text) {

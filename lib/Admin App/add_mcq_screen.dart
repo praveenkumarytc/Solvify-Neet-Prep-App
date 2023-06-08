@@ -26,19 +26,31 @@ class AddMcqScreen extends StatelessWidget {
     required this.chapterId,
     required this.topicName,
     required this.topicId,
+    this.fromNCERT = false,
+    this.unitId,
   });
   final String chapterName;
   final String subjectName;
   final String topicName;
   final String topicId;
   final String chapterId;
+  final bool fromNCERT;
+  final String? unitId;
 
   @override
   Widget build(BuildContext context) {
+    Stream<QuerySnapshot<Object?>> mcqStream() {
+      if (fromNCERT) {
+        return FirebaseFirestore.instance.collection(FirestoreCollections.subjectNCERT).doc(subjectName).collection(FirestoreCollections.units).doc(unitId).collection(FirestoreCollections.chapters).doc(chapterId).collection(FirestoreCollections.chapterTopic).doc(topicId).collection(FirestoreCollections.mcq).snapshots();
+      } else {
+        return FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(subjectName).collection(FirestoreCollections.chapters).doc(chapterId).collection(FirestoreCollections.chapterTopic).doc(topicId).collection(FirestoreCollections.mcq).snapshots();
+      }
+    }
+
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(50),
-        child: SolvifyAppbar(title: chapterName),
+        child: SolvifyAppbar(title: topicName),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(10),
@@ -53,6 +65,8 @@ class AddMcqScreen extends StatelessWidget {
                   subjectname: subjectName,
                   topicName: topicName,
                   topicId: topicId,
+                  fromNCERT: fromNCERT,
+                  unitId: unitId,
                 ),
               ),
               title: 'Add a MCQ',
@@ -61,7 +75,7 @@ class AddMcqScreen extends StatelessWidget {
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.7,
               child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(subjectName).collection(FirestoreCollections.chapters).doc(chapterId).collection(FirestoreCollections.chapterTopic).doc(topicId).collection(FirestoreCollections.mcq).snapshots(),
+                stream: mcqStream(),
                 builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.hasError) {
                     return const Text('Error occured');
@@ -98,6 +112,7 @@ class AddMcqScreen extends StatelessWidget {
                               pushTo(
                                 context,
                                 AddMcqPage(
+                                  fromNCERT: fromNCERT,
                                   mcqId: data.id,
                                   chapterName: chapterName,
                                   chapterId: chapterId,
@@ -108,6 +123,7 @@ class AddMcqScreen extends StatelessWidget {
                                   explanation: data[FirestoreCollections.image],
                                   topicName: topicName,
                                   topicId: topicId,
+                                  unitId: unitId,
                                 ),
                               );
                             } else if (value == 'delete') {

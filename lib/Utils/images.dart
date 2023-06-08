@@ -24,5 +24,13 @@ class Images {
   static const String APP_LOGO_WHITE_BG = 'assets/images/app_logo_white.png';
   static const String APP_LOGO_TRANS_BG = 'assets/images/app_logo_trans.png';
   static const String whatsapp_logo = 'assets/images/whatsapp_logo.png';
+  static const String ncertLogo = 'assets/images/NCERT.png';
+  static const String priviousPaper = 'assets/images/paper.png';
+  // static const String googleLogo = 'assets/images/google_logo.png';
+  // static const String googleLogo = 'assets/images/google_logo.png';
+  // static const String googleLogo = 'assets/images/google_logo.png';
+  // static const String googleLogo = 'assets/images/google_logo.png';
+  // static const String googleLogo = 'assets/images/google_logo.png';
+  // static const String googleLogo = 'assets/images/google_logo.png';
   // static const String googleLogo = 'assets/images/google_logo.png';
 }

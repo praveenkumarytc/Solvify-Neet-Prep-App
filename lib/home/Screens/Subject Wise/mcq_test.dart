@@ -63,18 +63,13 @@ class _McqTestScreenState extends State<McqTestScreen> {
   int currentPage = 0;
   bool isAttempt = false;
   bool solutionVisible = false;
+
   void nextPage() {
     if (currentPage < mcqList.length - 1) {
-      setState(() {
-        currentPage++;
-      });
-      //to add option response
+      currentPage++;
       performanceData.add(mcqIs);
-      // log(myPerformace.toJson().toString());
-      // perFormanceModelList.add(myPerformace);
       solutionVisible = false;
       isAttempt = false;
-      // print(performanceData);
       controller.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.ease,
@@ -84,17 +79,10 @@ class _McqTestScreenState extends State<McqTestScreen> {
 
   void skipPage() {
     if (currentPage < mcqList.length - 1) {
-      setState(() {
-        currentPage++;
-        solutionVisible = false;
-        isAttempt = false;
-      });
-      // //to add option response
-      // // mcqIs = 'skipped';
+      currentPage++;
+      solutionVisible = false;
+      isAttempt = false;
       performanceData.add(mcqIs);
-      // // myPerformace = PerformanceModel(question: 'initialized', isCorrect: 'skipped', explaination: 'initialized');
-      // perFormanceModelList.add(myPerformace);
-      // log(myPerformace.toJson().toString());
       controller.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.ease,
@@ -104,16 +92,10 @@ class _McqTestScreenState extends State<McqTestScreen> {
 
   void previousPage() {
     if (currentPage > 0) {
-      setState(() {
-        currentPage--;
-        solutionVisible = false;
-        isAttempt = false;
-      });
-
-      //to add option response
+      currentPage--;
+      solutionVisible = false;
+      isAttempt = false;
       performanceData.removeLast();
-      perFormanceModelList.removeLast();
-
       controller.previousPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.ease,

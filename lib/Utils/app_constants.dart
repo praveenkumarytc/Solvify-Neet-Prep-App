@@ -20,6 +20,7 @@ class FirestoreCollections {
   static const String mcq = "Mcq";
   static const String chapterName = "chapter_name";
   static const String chapterNumber = "chapter_number";
+  static const String chapterImageUrl = "chapter_image";
   static const String question = "question";
   static const String options = "options";
   static const String optionDetail = "option_detail";
@@ -27,4 +28,14 @@ class FirestoreCollections {
   static const String yearWise = "YearWise";
   static const String years = "years";
   static const String bookMarkedMcq = "bookMarkedMcq";
+
+  static const String unitName = "unitName";
+  static const String unitNumber = "unitNumber";
+  static const String unitImageUrl = "unitImage";
+  static const String pdfUrl = "pdfLink";
+  static const String units = "Units";
+
+  static const String subjectNCERT = "SubjectNCERT";
+
+  static const String revisionNotes = "RevisionNotes";
 }

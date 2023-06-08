@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shield_neet/Utils/app_constants.dart';
-import 'package:shield_neet/Utils/dimensions.dart';
 import 'package:shield_neet/Utils/images.dart';
 import 'package:shield_neet/components/solvify_appbar.dart';
-import 'package:shield_neet/home/Screens/Subject%20Wise/chapters_screen.dart';
 import 'package:shield_neet/helper/push_to.dart';
+import 'package:shield_neet/home/Screens/Subject%20Wise/chapters_screen.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class SubjectWiseQuestScreen extends StatelessWidget {
@@ -13,13 +12,16 @@ class SubjectWiseQuestScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const PreferredSize(preferredSize: Size.fromHeight(50), child: SolvifyAppbar(title: 'Subject Wise Questions')),
+      appBar: const PreferredSize(
+        preferredSize: Size.fromHeight(50),
+        child: SolvifyAppbar(title: 'Subject Wise Questions'),
+      ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.all(10),
         child: Column(
           children: [
-            SubjectCard(
+            /*   SubjectCard(
               imagePath: Images.pendulum,
               subjectName: FirestoreCollections.physics,
               iconPath: Images.prism,
@@ -32,7 +34,7 @@ class SubjectWiseQuestScreen extends StatelessWidget {
               iconPath: Images.chemistry,
               onTap: () => pushTo(context, const ChapterScreen(subjectName: FirestoreCollections.chemistry)),
             ),
-            Dimensions.PADDING_SIZE_SMALL.heightBox,
+            Dimensions.PADDING_SIZE_SMALL.heightBox,*/
             SubjectCard(
               imagePath: Images.biology,
               iconPath: Images.evolution,

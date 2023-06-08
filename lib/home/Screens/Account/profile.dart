@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:provider/provider.dart';
-import 'package:shield_neet/Admin%20App/admin_page.dart';
+import 'package:shield_neet/Admin%20App/admin_home_page.dart';
 import 'package:shield_neet/Utils/color_resources.dart';
 import 'package:shield_neet/Utils/dimensions.dart';
 import 'package:shield_neet/Utils/images.dart';
@@ -57,7 +57,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         onPressed: () => Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => AdminPage(),
+                              builder: (context) => const AdminHomePage(),
                             )),
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white30,

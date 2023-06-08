@@ -63,7 +63,7 @@ class AddChapterTopic extends StatelessWidget {
               title: subjectName == FirestoreCollections.yearWise ? "Add Subject" : 'Add a topic ',
             ),
             SizedBox(
-              height: MediaQuery.of(context).size.height * 0.7,
+              height: MediaQuery.of(context).size.height * 0.75,
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(subjectName).collection(FirestoreCollections.chapters).doc(chapterId).collection(FirestoreCollections.chapterTopic).orderBy(FirestoreCollections.topicNumber).snapshots(),
                 builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -78,7 +78,7 @@ class AddChapterTopic extends StatelessWidget {
                   final documents = snapshot.data!.docs;
                   documents.sort(numSortFunctionTopic);
                   return ListView(
-                      children: snapshot.data!.docs.map((data) {
+                      children: documents.map((data) {
                     return ChapterListCard(
                       chapterNumber: data[FirestoreCollections.topicNumber].toString(),
                       chapterName: data[FirestoreCollections.topicName],

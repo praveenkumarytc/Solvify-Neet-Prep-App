@@ -81,21 +81,28 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const HelloDoctorsCard(),
-            // ElevatedButton(
-            //   onPressed: () async {
-            //     // Uint8List imageBytes = await captureWidgetAsImage(globalKey);
-            //     // final bytes = base64Encode(imageBytes);
-            //     // print(bytes);
-            //     // Do something with the imageBytes
-            //   },
-            //   child: Text('Capture Image'),
-            // ),
             QuestionButtons(
               onTap: () => pushTo(context, const SubjectWiseQuestScreen()),
-              title: 'Subject Wise Questions',
+              title: 'Subject Wise Questions (NCERT BASED)',
+              color1: Colors.red.withOpacity(.4),
+              color2: Colors.red,
+              imageIcon: Images.ncertLogo,
+            ),
+            Dimensions.PADDING_SIZE_DEFAULT.heightBox,
+            QuestionButtons(
+              onTap: () => pushTo(context, const SubjectWiseQuestScreen()),
+              title: 'Previous year Questions (Subject Wise)',
               color1: Colors.teal.withOpacity(.4),
               color2: Colors.teal,
               imageIcon: Images.bookshelf,
+            ),
+            Dimensions.PADDING_SIZE_DEFAULT.heightBox,
+            QuestionButtons(
+              onTap: () => pushTo(context, const SubjectWiseQuestScreen()),
+              title: 'Quick revision Notes',
+              color1: const ui.Color.fromARGB(255, 255, 191, 40).withOpacity(.5),
+              color2: const ui.Color.fromARGB(255, 255, 191, 40),
+              imageIcon: Images.contract,
             ),
             Dimensions.PADDING_SIZE_DEFAULT.heightBox,
             QuestionButtons(
@@ -103,7 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
               title: 'Previous Year Papers',
               color1: const Color(0xFFE5B2CA),
               color2: const Color(0xFF7028E4),
-              imageIcon: Images.contract,
+              imageIcon: Images.priviousPaper,
             ),
             Dimensions.PADDING_SIZE_DEFAULT.heightBox,
             QuestionButtons(
@@ -188,9 +195,12 @@ class QuestionButtons extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              title,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: Colors.white),
+            Flexible(
+              flex: 3,
+              child: Text(
+                title,
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: Colors.white),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.only(right: 10),

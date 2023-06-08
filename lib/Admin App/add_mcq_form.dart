@@ -39,6 +39,8 @@ class AddMcqPage extends StatefulWidget {
     this.explanation,
     this.options,
     this.mcqId,
+    this.fromNCERT = false,
+    this.unitId,
   });
   final bool isUpdate;
   final String chapterName;
@@ -50,6 +52,8 @@ class AddMcqPage extends StatefulWidget {
   final String? explanation;
   final List<OptionModel>? options;
   final dynamic mcqId;
+  final bool fromNCERT;
+  final String? unitId;
 
   @override
   State<AddMcqPage> createState() => _AddMcqPageState();
@@ -84,7 +88,7 @@ class _AddMcqPageState extends State<AddMcqPage> {
       }
       final sizeInKbBeforeCompression = croppedImage.lengthSync() / 1024;
       print('Before Compressing the cropped image $sizeInKbBeforeCompression kb');
-      var compressedImage = await AppHelper.compress(image: croppedImage);
+      var compressedImage = await AppHelper.compress(image: croppedImage, percentage: 50, quality: 50);
       final sizeInKbAfterCompression = compressedImage.lengthSync() / 1024;
       print('After Compress $sizeInKbAfterCompression kb');
 
@@ -691,16 +695,31 @@ class _AddMcqPageState extends State<AddMcqPage> {
                               }
                               try {
                                 if (widget.isUpdate) {
-                                  await Provider.of<AdminProvider>(context, listen: false).updateAddMcq(widget.topicId, widget.mcqId, widget.subjectname, widget.chapterId, questionController.text.trim(), options, explainationController.text).then((value) {
-                                    showSnackBar(context, message: 'mcq updated successfully', isError: false);
+                                  if (widget.fromNCERT) {
+                                    await Provider.of<AdminProvider>(context, listen: false).updateAddMcqNCERT(widget.unitId, widget.topicId, widget.mcqId, widget.subjectname, widget.chapterId, questionController.text.trim(), options, explainationController.text).then((value) {
+                                      showSnackBar(context, message: 'mcq updated successfully', isError: false);
 
-                                    Navigator.pop(context);
-                                  });
+                                      Navigator.pop(context);
+                                    });
+                                  } else {
+                                    await Provider.of<AdminProvider>(context, listen: false).updateAddMcq(widget.topicId, widget.mcqId, widget.subjectname, widget.chapterId, questionController.text.trim(), options, explainationController.text).then((value) {
+                                      showSnackBar(context, message: 'mcq updated successfully', isError: false);
+
+                                      Navigator.pop(context);
+                                    });
+                                  }
                                 } else {
-                                  await Provider.of<AdminProvider>(context, listen: false).addMcq(widget.subjectname, widget.chapterId, widget.topicId, questionController.text.trim(), options, explainationController.text).then((value) {
-                                    showSnackBar(context, message: 'mcq added successfully', isError: false);
-                                    Navigator.pop(context);
-                                  });
+                                  if (widget.fromNCERT) {
+                                    await Provider.of<AdminProvider>(context, listen: false).addMcqNCERT(widget.subjectname, widget.unitId, widget.chapterId, widget.topicId, questionController.text.trim(), options, explainationController.text).then((value) {
+                                      showSnackBar(context, message: 'mcq added successfully', isError: false);
+                                      Navigator.pop(context);
+                                    });
+                                  } else {
+                                    await Provider.of<AdminProvider>(context, listen: false).addMcq(widget.subjectname, widget.chapterId, widget.topicId, questionController.text.trim(), options, explainationController.text).then((value) {
+                                      showSnackBar(context, message: 'mcq added successfully', isError: false);
+                                      Navigator.pop(context);
+                                    });
+                                  }
                                 }
                               } catch (e) {
                                 setState(() {
