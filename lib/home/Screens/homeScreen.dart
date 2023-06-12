@@ -82,7 +82,11 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             const HelloDoctorsCard(),
             QuestionButtons(
-              onTap: () => pushTo(context, const SubjectWiseQuestScreen()),
+              onTap: () => pushTo(
+                  context,
+                  const SubjectWiseQuestScreen(
+                    fromNCERT: true,
+                  )),
               title: 'Subject Wise Questions (NCERT BASED)',
               color1: Colors.red.withOpacity(.4),
               color2: Colors.red,
@@ -98,7 +102,12 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Dimensions.PADDING_SIZE_DEFAULT.heightBox,
             QuestionButtons(
-              onTap: () => pushTo(context, const SubjectWiseQuestScreen()),
+              onTap: () => pushTo(
+                  context,
+                  const SubjectWiseQuestScreen(
+                    fromNotes: true,
+                    fromNCERT: true,
+                  )),
               title: 'Quick revision Notes',
               color1: const ui.Color.fromARGB(255, 255, 191, 40).withOpacity(.5),
               color2: const ui.Color.fromARGB(255, 255, 191, 40),

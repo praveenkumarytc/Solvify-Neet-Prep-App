@@ -22,10 +22,14 @@ class McqTestScreen extends StatefulWidget {
     required this.chapterId,
     required this.subjectName,
     required this.topicId,
+    this.fromNCERT = false,
+    this.unitId,
   });
   final String chapterId;
   final String subjectName;
   final String topicId;
+  final String? unitId;
+  final bool fromNCERT;
   @override
   State<McqTestScreen> createState() => _McqTestScreenState();
 }
@@ -42,19 +46,36 @@ class _McqTestScreenState extends State<McqTestScreen> {
   bool _isMcqLoading = false;
   Future<dynamic> getData() async {
     _isMcqLoading = true;
-    final QuerySnapshot<Object?> snapshot = await FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(widget.subjectName).collection(FirestoreCollections.chapters).doc(widget.chapterId).collection(FirestoreCollections.chapterTopic).doc(widget.topicId).collection(FirestoreCollections.mcq).get();
 
-    setState(() {
-      performanceData.clear();
-      perFormanceModelList.clear();
-      mcqList.clear(); // clear the list before adding new data
-      for (var i = 0; i < snapshot.docs.length; i++) {
-        var data = snapshot.docs[i].data() as Map<String, dynamic>?;
-        if (data != null) {
-          mcqList.add(McqModel.fromJson(data));
+    if (widget.fromNCERT) {
+      final QuerySnapshot<Object?> snapshot = await FirebaseFirestore.instance.collection(FirestoreCollections.subjectNCERT).doc(widget.subjectName).collection(FirestoreCollections.units).doc(widget.unitId).collection(FirestoreCollections.chapters).doc(widget.chapterId).collection(FirestoreCollections.chapterTopic).doc(widget.topicId).collection(FirestoreCollections.mcq).get();
+
+      setState(() {
+        performanceData.clear();
+        perFormanceModelList.clear();
+        mcqList.clear(); // clear the list before adding new data
+        for (var i = 0; i < snapshot.docs.length; i++) {
+          var data = snapshot.docs[i].data() as Map<String, dynamic>?;
+          if (data != null) {
+            mcqList.add(McqModel.fromJson(data));
+          }
         }
-      }
-    });
+      });
+    } else {
+      final QuerySnapshot<Object?> snapshot = await FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(widget.subjectName).collection(FirestoreCollections.chapters).doc(widget.chapterId).collection(FirestoreCollections.chapterTopic).doc(widget.topicId).collection(FirestoreCollections.mcq).get();
+
+      setState(() {
+        performanceData.clear();
+        perFormanceModelList.clear();
+        mcqList.clear(); // clear the list before adding new data
+        for (var i = 0; i < snapshot.docs.length; i++) {
+          var data = snapshot.docs[i].data() as Map<String, dynamic>?;
+          if (data != null) {
+            mcqList.add(McqModel.fromJson(data));
+          }
+        }
+      });
+    }
 
     _isMcqLoading = false;
   }
@@ -113,9 +134,23 @@ class _McqTestScreenState extends State<McqTestScreen> {
   Widget build(BuildContext context) {
     return Consumer<UserProvider>(builder: (context, details, child) {
       return Scaffold(
+        appBar: mcqList.isEmpty
+            ? AppBar(
+                automaticallyImplyLeading: false,
+                centerTitle: true,
+                title: const Text('COMING SOON'),
+              )
+            : null,
         backgroundColor: ColorResources.getWhite(context),
         bottomNavigationBar: mcqList.isEmpty
-            ? const SizedBox.shrink()
+            ? SizedBox(
+                height: 65,
+                child: OutlinedButton.icon(
+                  onPressed: () => popPage(context),
+                  icon: const Icon(Icons.arrow_back),
+                  label: const Text('Go Back'),
+                ),
+              )
             : Container(
                 height: 60,
                 decoration: BoxDecoration(

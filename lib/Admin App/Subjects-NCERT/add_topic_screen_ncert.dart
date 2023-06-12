@@ -10,7 +10,7 @@ import 'package:shield_neet/components/solvify_appbar.dart';
 import 'package:shield_neet/helper/flutter_toast.dart';
 import 'package:shield_neet/helper/log_out_dialog.dart';
 import 'package:shield_neet/helper/push_to.dart';
-import 'package:shield_neet/providers/pdf_viewer.dart';
+import 'package:shield_neet/pdf%20viwer/pdf_viewer.dart';
 
 import '../../providers/admin_provider.dart';
 

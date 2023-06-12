@@ -1,11 +1,17 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:in_app_update/in_app_update.dart';
 import 'package:provider/provider.dart';
 import 'package:shield_neet/Utils/images.dart';
+import 'package:shield_neet/helper/log_out_dialog.dart';
 import 'package:shield_neet/home/dashboard.dart';
+import 'package:shield_neet/main.dart';
 import 'package:shield_neet/on%20boarding/on_boarding.dart';
 import 'package:shield_neet/providers/auth_providers.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -18,7 +24,72 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    routes();
+    checkForUpdate();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    checkForUpdate();
+  }
+
+  Future<void> checkForUpdate() async {
+    final updateInfo = await InAppUpdate.checkForUpdate();
+    if (updateInfo.updateAvailability == UpdateAvailability.updateAvailable) {
+      debugPrint('Update is available');
+      final playStoreUrl = 'https://play.google.com/store/apps/details?id=com.praveen.shield.shield_neet';
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Row(
+              children: [
+                Text('Update Available'),
+                Image.asset(
+                  Images.APP_LOGO_WHITE_BG,
+                  scale: 10,
+                )
+              ],
+            ),
+            content: Text('An update is available for the app. Would you like to update now?'),
+            actions: [
+              TextButton(
+                child: Text('Update'),
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  await launch(playStoreUrl);
+                },
+              ),
+              TextButton(
+                child: Text('Cancel'),
+                onPressed: () {
+                  routes();
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+      // // Prompt the user for an immediate update
+      // InAppUpdate.performImmediateUpdate().then((_) {
+      //   // The immediate update flow has started successfully
+      //   setState(() {
+      //     // Update the state variable if necessary
+      //     this.updateInfo = updateInfo;
+      //   });
+      // }).catchError((e) {
+      //   // Handle any errors that occur during the immediate update flow
+      //   debugPrint('Error performing immediate update: $e');
+      // });
+    } else if (updateInfo.updateAvailability == UpdateAvailability.updateNotAvailable) {
+      routes();
+      debugPrint('Update is not available');
+    } else if (updateInfo.updateAvailability == UpdateAvailability.unknown) {
+      routes();
+      debugPrint('Unable to determine update availability');
+    }
   }
 
   routes() {

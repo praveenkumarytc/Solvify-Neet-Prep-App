@@ -7,18 +7,30 @@ import 'package:shield_neet/components/solvify_appbar.dart';
 import 'package:shield_neet/helper/push_to.dart';
 import 'package:shield_neet/home/Screens/Subject%20Wise/chapters_screen.dart';
 import 'package:shield_neet/home/Screens/Subject%20Wise/test_loading.dart';
+import 'package:shield_neet/pdf%20viwer/attemp_mcq_pdf.dart';
 
-class ChapterTopicsPage extends StatefulWidget {
-  const ChapterTopicsPage({super.key, required this.chapterId, required this.chapterName, required this.subjectname});
+class ChapterTopicsPage extends StatelessWidget {
+  const ChapterTopicsPage({
+    super.key,
+    required this.chapterId,
+    required this.chapterName,
+    required this.subjectname,
+    this.fromNCERT = false,
+    this.unitId,
+  });
   final String chapterId;
   final String chapterName;
   final String subjectname;
+  final String? unitId;
+  final bool fromNCERT;
+  Stream<QuerySnapshot<Object?>> topicSteream() {
+    if (fromNCERT) {
+      return FirebaseFirestore.instance.collection(FirestoreCollections.subjectNCERT).doc(subjectname).collection(FirestoreCollections.units).doc(unitId).collection(FirestoreCollections.chapters).doc(chapterId).collection(FirestoreCollections.chapterTopic).snapshots();
+    } else {
+      return FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(subjectname).collection(FirestoreCollections.chapters).doc(chapterId).collection(FirestoreCollections.chapterTopic).snapshots();
+    }
+  }
 
-  @override
-  State<ChapterTopicsPage> createState() => _ChapterTopicsPageState();
-}
-
-class _ChapterTopicsPageState extends State<ChapterTopicsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,7 +41,7 @@ class _ChapterTopicsPageState extends State<ChapterTopicsPage> {
       body: ScrollConfiguration(
         behavior: NoGlowScroll(),
         child: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance.collection(FirestoreCollections.subjects).doc(widget.subjectname).collection(FirestoreCollections.chapters).doc(widget.chapterId).collection(FirestoreCollections.chapterTopic).snapshots(),
+          stream: topicSteream(),
           builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (snapshot.hasError) {
               return const Text('Error occured');
@@ -63,13 +75,29 @@ class _ChapterTopicsPageState extends State<ChapterTopicsPage> {
                       child: InkWell(
                         borderRadius: BorderRadius.circular(12),
                         onTap: () {
-                          pushTo(
+                          if (fromNCERT) {
+                            pushTo(
                               context,
-                              LoadingScreen(
-                                subjectName: widget.subjectname,
-                                chapterId: widget.chapterId,
+                              PdfViewerPageMCQ(
+                                title: data[FirestoreCollections.topicName],
+                                chapterId: chapterId,
+                                chapterName: chapterName,
+                                subjectname: subjectname,
+                                fromNCERT: fromNCERT,
+                                unitId: unitId,
                                 topicId: data.id,
-                              ));
+                                url: data[FirestoreCollections.pdfUrl],
+                              ),
+                            );
+                          } else {
+                            pushTo(
+                                context,
+                                LoadingScreen(
+                                  subjectName: subjectname,
+                                  chapterId: chapterId,
+                                  topicId: data.id,
+                                ));
+                          }
                         },
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,

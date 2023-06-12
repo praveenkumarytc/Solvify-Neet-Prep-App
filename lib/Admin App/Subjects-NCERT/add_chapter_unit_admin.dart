@@ -8,7 +8,7 @@ import 'package:shield_neet/components/add_unit_dialog.dart';
 import 'package:shield_neet/components/solvify_appbar.dart';
 import 'package:shield_neet/helper/flutter_toast.dart';
 import 'package:shield_neet/helper/push_to.dart';
-import 'package:shield_neet/providers/pdf_viewer.dart';
+import 'package:shield_neet/pdf%20viwer/pdf_viewer.dart';
 
 import '../../helper/log_out_dialog.dart';
 import '../../providers/admin_provider.dart';
@@ -61,7 +61,7 @@ class AddUnitChapterScreenAdmin extends StatelessWidget {
                 imageController.text.trim(),
                 unitId,
                 fromNote: fromNote,
-                pdfLink: 'https://drive.google.com/file/d/1s7ohA1irGQsN8QqqXAf_5shZ17zZIKPD/view?usp=sharing',
+                pdfLink: pdfLinkController.text,
               )
                   .then((value) {
                 Navigator.of(context).pop();
@@ -99,7 +99,7 @@ class AddUnitChapterScreenAdmin extends StatelessWidget {
                   if (snapshot.hasError) {
                     return const Text('Error occured');
                   } else if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Text('Loading...');
+                    return const Center(child: CircularProgressIndicator());
                   } else if (!snapshot.hasData) {
                     return const Center(child: CircularProgressIndicator());
                   }
@@ -147,14 +147,17 @@ class AddUnitChapterScreenAdmin extends StatelessWidget {
                         chapterNameController.text = data[FirestoreCollections.chapterName];
                         chapterNumberController.text = data[FirestoreCollections.chapterNumber];
                         imageController.text = data[FirestoreCollections.chapterImageUrl];
-                        pdfLinkController.text = data[FirestoreCollections.pdfUrl];
+                        if (fromNote) {
+                          pdfLinkController.text = data[FirestoreCollections.pdfUrl];
+                        }
+
                         showDialog(
                           context: context,
                           builder: (_) => AddUnitDialog(
                             isTopicScreen: true,
                             chapterNameController: chapterNameController,
                             chapterNumberController: chapterNumberController,
-                            pdfLinkController: pdfLinkController,
+                            pdfLinkController: fromNote ? pdfLinkController : null,
                             isYear: subjectName == FirestoreCollections.yearWise,
                             onTap: () async {
                               if (chapterNameController.text.isEmpty || chapterNumberController.text.isEmpty) {

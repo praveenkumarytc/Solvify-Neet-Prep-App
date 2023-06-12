@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shield_neet/Utils/color_resources.dart';
+import 'package:shield_neet/helper/push_to.dart';
+import 'package:shield_neet/image_screen/image_search_screen.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class AddUnitDialog extends StatelessWidget {
@@ -83,7 +85,27 @@ class AddUnitDialog extends StatelessWidget {
               const SizedBox(height: 10),
               TextField(
                 controller: imageController,
-                decoration: InputDecoration(hintText: isTopicScreen ? 'pdf url (optional)' : 'image URL'),
+                decoration: InputDecoration(
+                  hintText: isTopicScreen ? 'pdf url (optional)' : 'image URL',
+                  suffix: isTopicScreen
+                      ? null
+                      : IconButton(
+                          onPressed: () async {
+                            FocusScope.of(context).requestFocus(FocusNode());
+                            final String? imagePath = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ImageListScreen(),
+                              ),
+                            );
+                            if (imagePath != null) {
+                              imageController.text = imagePath;
+                            }
+
+                            // pushTo(context, const ImageListScreen());
+                          },
+                          icon: const Icon(Icons.search)),
+                ),
               ),
               const SizedBox(height: 10),
               pdfLinkController != null

@@ -10,10 +10,14 @@ class LoadingScreen extends StatefulWidget {
     required this.subjectName,
     required this.chapterId,
     required this.topicId,
+    this.fromNCERT = false,
+    this.unitId,
   });
   final String chapterId;
   final String subjectName;
   final String topicId;
+  final String? unitId;
+  final bool fromNCERT;
   @override
   _LoadingScreenState createState() => _LoadingScreenState();
 }

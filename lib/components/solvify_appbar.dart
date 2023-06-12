@@ -14,7 +14,10 @@ class SolvifyAppbar extends StatelessWidget {
         onPressed: () => Navigator.pop(context),
         icon: const Icon(Icons.arrow_back),
       ),
-      title: Text(title),
+      title: Text(
+        title,
+        maxLines: 2,
+      ),
     );
   }
 }

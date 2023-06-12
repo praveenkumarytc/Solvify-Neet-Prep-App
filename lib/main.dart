@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -6,16 +8,20 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shield_neet/Utils/color_resources.dart';
 import 'package:shield_neet/Utils/share_prefs.dart';
+import 'package:shield_neet/helper/log_out_dialog.dart';
 import 'package:shield_neet/providers/admin_provider.dart';
 import 'package:shield_neet/providers/auth_providers.dart';
 import 'package:shield_neet/providers/user_provider.dart';
 import 'package:shield_neet/splash_page.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
 }
 
+GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -41,7 +47,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
   AppUpdateInfo? updateInfo;
 
 // Method to check for updates
@@ -71,18 +76,25 @@ class _MyAppState extends State<MyApp> {
     final updateInfo = await InAppUpdate.checkForUpdate();
     if (updateInfo.updateAvailability == UpdateAvailability.updateAvailable) {
       debugPrint('Update is available');
+      final playStoreUrl = 'https://play.google.com/store/apps/details?id=com.solvify.neet_prep_app';
 
-      // Prompt the user for an immediate update
-      InAppUpdate.performImmediateUpdate().then((_) {
-        // The immediate update flow has started successfully
-        setState(() {
-          // Update the state variable if necessary
-          this.updateInfo = updateInfo;
-        });
-      }).catchError((e) {
-        // Handle any errors that occur during the immediate update flow
-        debugPrint('Error performing immediate update: $e');
-      });
+      showGeneralDialog(
+        context: Get.context!,
+        pageBuilder: (context, animation, secondaryAnimation) => AppInfoDialog(onLogOut: () async {
+          await launch(playStoreUrl);
+        }),
+      );
+      // // Prompt the user for an immediate update
+      // InAppUpdate.performImmediateUpdate().then((_) {
+      //   // The immediate update flow has started successfully
+      //   setState(() {
+      //     // Update the state variable if necessary
+      //     this.updateInfo = updateInfo;
+      //   });
+      // }).catchError((e) {
+      //   // Handle any errors that occur during the immediate update flow
+      //   debugPrint('Error performing immediate update: $e');
+      // });
     } else if (updateInfo.updateAvailability == UpdateAvailability.updateNotAvailable) {
       debugPrint('Update is not available');
     } else if (updateInfo.updateAvailability == UpdateAvailability.unknown) {
@@ -99,7 +111,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    checkForUpdate();
+    // checkForUpdate();
     super.initState();
   }
 
@@ -117,6 +129,7 @@ class _MyAppState extends State<MyApp> {
             cursorColor: ColorResources.PRIMARY_MATERIAL,
           ),
         ),
+        navigatorKey: navigatorKey,
         darkTheme: ThemeData(
           fontFamily: 'Poppins',
           brightness: Brightness.dark,
@@ -129,4 +142,9 @@ class _MyAppState extends State<MyApp> {
       );
     });
   }
+}
+
+class Get {
+  static BuildContext? get context => navigatorKey.currentContext;
+  static NavigatorState? get navigator => navigatorKey.currentState;
 }

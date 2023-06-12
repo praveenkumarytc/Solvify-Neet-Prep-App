@@ -1,14 +1,23 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shield_neet/Utils/app_constants.dart';
+import 'package:shield_neet/Utils/dimensions.dart';
 import 'package:shield_neet/Utils/images.dart';
 import 'package:shield_neet/components/solvify_appbar.dart';
 import 'package:shield_neet/helper/push_to.dart';
 import 'package:shield_neet/home/Screens/Subject%20Wise/chapters_screen.dart';
+import 'package:shield_neet/home/Screens/Subject%20Wise/subject_unit_screen.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class SubjectWiseQuestScreen extends StatelessWidget {
-  const SubjectWiseQuestScreen({super.key});
+  const SubjectWiseQuestScreen({
+    super.key,
+    this.fromNCERT = false,
+    this.fromNotes = false,
+  });
+  final bool fromNCERT;
 
+  final bool fromNotes;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,25 +30,102 @@ class SubjectWiseQuestScreen extends StatelessWidget {
         padding: const EdgeInsets.all(10),
         child: Column(
           children: [
-            /*   SubjectCard(
-              imagePath: Images.pendulum,
-              subjectName: FirestoreCollections.physics,
-              iconPath: Images.prism,
-              onTap: () => pushTo(context, const ChapterScreen(subjectName: FirestoreCollections.physics)),
-            ),
-            Dimensions.PADDING_SIZE_SMALL.heightBox,
-            SubjectCard(
-              imagePath: Images.laboratory,
-              subjectName: FirestoreCollections.chemistry,
-              iconPath: Images.chemistry,
-              onTap: () => pushTo(context, const ChapterScreen(subjectName: FirestoreCollections.chemistry)),
-            ),
-            Dimensions.PADDING_SIZE_SMALL.heightBox,*/
+            Visibility(
+                visible: kDebugMode,
+                child: Column(
+                  children: [
+                    SubjectCard(
+                        imagePath: Images.pendulum,
+                        subjectName: FirestoreCollections.physics,
+                        iconPath: Images.prism,
+                        onTap: () {
+                          if (fromNCERT) {
+                            if (fromNotes) {
+                              pushTo(
+                                  context,
+                                  SubjectUnitScreen(
+                                    subjectName: FirestoreCollections.physics,
+                                    fromNote: fromNotes,
+                                    fromNCERT: fromNCERT,
+                                  ));
+                            } else {
+                              pushTo(
+                                  context,
+                                  SubjectUnitScreen(
+                                    subjectName: FirestoreCollections.physics,
+                                    fromNCERT: fromNCERT,
+                                  ));
+                            }
+                          } else {
+                            pushTo(
+                              context,
+                              const ChapterScreen(subjectName: FirestoreCollections.physics),
+                            );
+                          }
+                        }),
+                    Dimensions.PADDING_SIZE_SMALL.heightBox,
+                    SubjectCard(
+                      imagePath: Images.laboratory,
+                      subjectName: FirestoreCollections.chemistry,
+                      iconPath: Images.chemistry,
+                      onTap: () {
+                        if (fromNCERT) {
+                          if (fromNotes) {
+                            pushTo(
+                                context,
+                                SubjectUnitScreen(
+                                  subjectName: FirestoreCollections.chemistry,
+                                  fromNote: fromNotes,
+                                  fromNCERT: fromNCERT,
+                                ));
+                          } else {
+                            pushTo(
+                                context,
+                                SubjectUnitScreen(
+                                  subjectName: FirestoreCollections.chemistry,
+                                  fromNCERT: fromNCERT,
+                                ));
+                          }
+                        } else {
+                          pushTo(
+                            context,
+                            const ChapterScreen(subjectName: FirestoreCollections.chemistry),
+                          );
+                        }
+                      },
+                    ),
+                    Dimensions.PADDING_SIZE_SMALL.heightBox,
+                  ],
+                )),
             SubjectCard(
               imagePath: Images.biology,
               iconPath: Images.evolution,
               subjectName: FirestoreCollections.biology,
-              onTap: () => pushTo(context, const ChapterScreen(subjectName: FirestoreCollections.biology)),
+              onTap: () {
+                if (fromNCERT) {
+                  if (fromNotes) {
+                    pushTo(
+                        context,
+                        SubjectUnitScreen(
+                          subjectName: FirestoreCollections.biology,
+                          fromNote: fromNotes,
+                          fromNCERT: fromNCERT,
+                        ));
+                  } else {
+                    pushTo(
+                        context,
+                        SubjectUnitScreen(
+                          subjectName: FirestoreCollections.biology,
+                          fromNCERT: fromNCERT,
+                        ));
+                  }
+                } else {
+                  pushTo(
+                    context,
+                    const ChapterScreen(subjectName: FirestoreCollections.biology),
+                  );
+                }
+              },
             ),
           ],
         ),

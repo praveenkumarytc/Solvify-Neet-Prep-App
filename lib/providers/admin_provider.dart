@@ -1,12 +1,14 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shield_neet/Utils/app_constants.dart';
+import 'package:shield_neet/helper/flutter_toast.dart';
 import 'package:shield_neet/models/uploadProductGallaryModel.dart';
-import 'package:http/http.dart' as http;
+
+import '../models/pexel_image_model.dart';
 
 class AdminProvider extends ChangeNotifier {
   AdminProvider({this.sharedPreferences});
@@ -112,6 +114,7 @@ class AdminProvider extends ChangeNotifier {
 
   Future<void> addChapterNCERT(subjectName, chapterName, chapterNumber, imageUrl, unitId, {bool fromNote = false, String pdfLink = ''}) async {
     final CollectionReference medicineCollection = FirebaseFirestore.instance.collection(fromNote ? FirestoreCollections.revisionNotes : FirestoreCollections.subjectNCERT).doc(subjectName).collection(FirestoreCollections.units).doc(unitId).collection(FirestoreCollections.chapters);
+
     var data = fromNote
         ? {
             FirestoreCollections.chapterName: chapterName,
@@ -221,5 +224,38 @@ class AdminProvider extends ChangeNotifier {
     notifyListeners();
 
     return _uploadImgae;
+  }
+
+  PexelImageModel? _pexelImageModel;
+  PexelImageModel? get pexelImageModel => _pexelImageModel;
+
+  final List<Photo> _photos = [];
+  List<Photo> get photos => _photos;
+  Future<PexelImageModel?> fetchPexelImages(BuildContext context, query, page) async {
+    String perPage = '20';
+    String pexelUrl = 'https://api.pexels.com/v1/search?query=$query&per_page=$perPage&page=$page';
+
+    Uri parsedUri = Uri.parse(pexelUrl);
+
+    debugPrint(pexelUrl);
+    try {
+      final response = await http.get(parsedUri, headers: {
+        "Authorization": "6Fd87RyZT1tzI1l3VA4v0SRzW9Ip7vIgTcALHi0iEL8VZufNufJux0Bi"
+      });
+
+      debugPrint("response ==>> ${response.body}");
+      if (jsonDecode(response.body)["status"] == 400) {
+        showToast(message: jsonDecode(response.body)["code"]);
+      }
+
+      _pexelImageModel = PexelImageModel.fromJson(json.decode(response.body));
+    } catch (e) {
+      showToast(message: e.toString());
+      debugPrint(e.toString());
+    }
+
+    notifyListeners();
+
+    return _pexelImageModel;
   }
 }
