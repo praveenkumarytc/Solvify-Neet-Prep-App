@@ -43,6 +43,19 @@ class _PdfViewerPageMCQState extends State<PdfViewerPageMCQ> {
 
   @override
   void initState() {
+    Future.delayed(const Duration(seconds: 1), () {
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => LoadingScreen(
+              subjectName: widget.subjectname,
+              chapterId: widget.chapterId,
+              topicId: widget.topicId,
+              fromNCERT: widget.fromNCERT,
+              unitId: widget.unitId,
+            ),
+          ));
+    });
     super.initState();
   }
 

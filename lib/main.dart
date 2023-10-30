@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -30,9 +28,15 @@ Future main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider<AuthProvider>(create: (context) => AuthProvider(sharedPreferences: SharedPreference.preferences)),
-        ChangeNotifierProvider<AdminProvider>(create: (context) => AdminProvider(sharedPreferences: SharedPreference.preferences)),
-        ChangeNotifierProvider<UserProvider>(create: (context) => UserProvider(sharedPreferences: SharedPreference.preferences)),
+        ChangeNotifierProvider<AuthProvider>(
+          create: (context) => AuthProvider(sharedPreferences: SharedPreference.preferences),
+        ),
+        ChangeNotifierProvider<AdminProvider>(
+          create: (context) => AdminProvider(sharedPreferences: SharedPreference.preferences),
+        ),
+        ChangeNotifierProvider<UserProvider>(
+          create: (context) => UserProvider(sharedPreferences: SharedPreference.preferences),
+        ),
       ],
       child: const MyApp(),
     ),

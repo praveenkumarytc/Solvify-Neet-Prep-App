@@ -31,7 +31,7 @@ class SubjectWiseQuestScreen extends StatelessWidget {
         child: Column(
           children: [
             Visibility(
-                visible: kDebugMode,
+                visible: false,
                 child: Column(
                   children: [
                     SubjectCard(

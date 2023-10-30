@@ -8,6 +8,7 @@ import 'package:shield_neet/Utils/color_resources.dart';
 import 'package:shield_neet/Utils/dimensions.dart';
 import 'package:shield_neet/Utils/images.dart';
 import 'package:shield_neet/helper/log_out_dialog.dart';
+import 'package:shield_neet/home/Screens/Account/custom_switch.dart';
 import 'package:shield_neet/home/Screens/Account/feedback.dart';
 import 'package:shield_neet/home/Screens/Account/privacy_policy.dart';
 import 'package:shield_neet/home/Screens/Account/support_page.dart';
@@ -96,36 +97,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 trailing: Consumer<UserProvider>(builder: (context, snapshot, child) {
                   return SizedBox(
                     width: 80,
-                    child: FlutterSwitch(
-                      activeText: '' /* '🌙'*/,
-                      inactiveText: '' /*"🌕" */,
-                      activeTextColor: Colors.white,
-                      activeTextFontWeight: FontWeight.normal,
-                      inactiveToggleColor: Colors.white,
-                      inactiveColor: ColorResources.PRIMARY_MATERIAL.withOpacity(.55),
-                      activeColor: ColorResources.primaryBlue(context),
-                      inactiveSwitchBorder: Border.all(color: ColorResources.PRIMARY_MATERIAL.withOpacity(.35)),
-                      width: 60,
-                      height: 35.0,
-                      showOnOff: true,
-                      activeIcon: const Icon(
-                        Icons.dark_mode,
-                        color: ColorResources.PRIMARY_MATERIAL,
-                      ),
-                      inactiveIcon: const Icon(
-                        Icons.lightbulb,
-                        color: ColorResources.COLOR_BLUE,
-                      ),
+                    child: CustomSwitch(
                       value: snapshot.isDarkMode!,
                       onToggle: (value) {
                         snapshot.toggleAppTheme();
                         // setState(() {});
                       },
+                      activeIcon: Image.asset(
+                        Images.moon_switch,
+                        fit: BoxFit.fill,
+                      ),
+                      inactiveIcon: Image.asset(Images.sun_switch),
                     ),
+
+                    // FlutterSwitch(
+                    //   duration: const Duration(milliseconds: 500),
+                    //   toggleSize: 35,
+                    //   activeText: '',
+                    //   inactiveText: '',
+                    //   activeTextColor: Colors.white,
+                    //   activeTextFontWeight: FontWeight.normal,
+                    //   inactiveToggleColor: Colors.white,
+                    //   inactiveColor: ColorResources.PRIMARY_MATERIAL.withOpacity(.55),
+                    //   activeColor: ColorResources.primaryBlue(context),
+                    //   inactiveSwitchBorder: Border.all(color: ColorResources.PRIMARY_MATERIAL.withOpacity(.35)),
+                    //   width: 60,
+                    //   height: 35.0,
+                    //   showOnOff: true,
+                    //   activeIcon: Image.asset(
+                    //     Images.sun_switch,
+                    //     fit: BoxFit.fill,
+                    //   ),
+                    //   inactiveIcon: Image.asset(Images.moon_switch),
+                    //   value: snapshot.isDarkMode!,
+                    //   onToggle: (value) {
+                    //     snapshot.toggleAppTheme();
+                    //     // setState(() {});
+                    //   },
+                    // ),
                   );
                 }),
               ),
             ),
+            // Image.asset(Images.sun_switch),
+            // Image.asset(Images.moon_switch),
             AccountCards(
               onTap: () {
                 Navigator.push(

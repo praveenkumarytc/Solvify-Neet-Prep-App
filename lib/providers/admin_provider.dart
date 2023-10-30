@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -197,6 +199,30 @@ class AdminProvider extends ChangeNotifier {
       FirestoreCollections.question: question,
       FirestoreCollections.image: image
     });
+  }
+
+  Future<String?> uploadFileToStorage(File file) async {
+    try {
+      // Get the original file name
+      String fileName = file.path.split('/').last;
+
+      // Create a Firebase Storage reference with the provided path and the original file name
+      Reference storageReference = FirebaseStorage.instance.ref().child('questions/$fileName');
+
+      // Upload the file to the specified path
+      UploadTask uploadTask = storageReference.putFile(file);
+
+      // Wait for the upload to complete and get the download URL
+      await uploadTask.whenComplete(() {});
+
+      // Get the download URL for the uploaded file
+      String downloadURL = await storageReference.getDownloadURL();
+
+      return downloadURL;
+    } catch (e) {
+      print("Error uploading file: $e");
+      return null; // Handle the error as needed
+    }
   }
 
   UploadImage? _uploadImgae;

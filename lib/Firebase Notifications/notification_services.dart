@@ -14,15 +14,15 @@ class NotificationServices {
 
   //function to initialise flutter local notification plugin to show notifications for android when app is active
   void initLocalNotifications(BuildContext context, RemoteMessage message) async {
-    var androidInitializationSettings = const AndroidInitializationSettings('@mipmap/ic_launcher');
+    // var androidInitializationSettings =  AndroidInitializationSettings();
     var iosInitializationSettings = const DarwinInitializationSettings();
 
-    var initializationSetting = InitializationSettings(android: androidInitializationSettings, iOS: iosInitializationSettings);
+    // // var initializationSetting = InitializationSettings(android: androidInitializationSettings, iOS: iosInitializationSettings);
 
-    await _flutterLocalNotificationsPlugin.initialize(initializationSetting, onDidReceiveNotificationResponse: (payload) {
-      // handle interaction when app is active for android
-      handleMessage(context, message);
-    });
+    // await _flutterLocalNotificationsPlugin.initialize(initializationSetting, onDidReceiveNotificationResponse: (payload) {
+    //   // handle interaction when app is active for android
+    //   handleMessage(context, message);
+    // });
   }
 
   void firebaseInit(BuildContext context) {
@@ -89,7 +89,7 @@ class NotificationServices {
     AndroidNotificationDetails androidNotificationDetails = AndroidNotificationDetails(
       channel.id.toString(), channel.name.toString(), channelDescription: 'your channel description', importance: Importance.high, priority: Priority.high, playSound: true, ticker: 'ticker', sound: channel.sound,
       //     sound: RawResourceAndroidNotificationSound('jetsons_doorbell')
-      //  icon: largeIconPath
+      icon: 'ic_notification',
     );
 
     const DarwinNotificationDetails darwinNotificationDetails = DarwinNotificationDetails(presentAlert: true, presentBadge: true, presentSound: true);

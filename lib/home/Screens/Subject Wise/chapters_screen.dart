@@ -6,10 +6,13 @@ import 'package:flutter/rendering.dart';
 import 'package:shield_neet/Admin%20App/add_chapters_screen.dart';
 import 'package:shield_neet/Utils/app_constants.dart';
 import 'package:shield_neet/Utils/color_resources.dart';
+import 'package:shield_neet/Utils/webview_screen.dart';
+import 'package:shield_neet/components/note_pad.dart';
 import 'package:shield_neet/components/solvify_appbar.dart';
 import 'package:shield_neet/helper/push_to.dart';
 import 'package:shield_neet/home/Screens/Subject%20Wise/chapters_topic_screen.dart';
 import 'package:shield_neet/home/Screens/Subject%20Wise/subject_unit_screen.dart';
+import 'package:shield_neet/home/Screens/Subject%20Wise/text_viewer_page.dart';
 import 'package:shield_neet/pdf%20viwer/pdf_viewer.dart';
 
 class ChapterScreen extends StatelessWidget {
@@ -61,86 +64,69 @@ class ChapterScreen extends StatelessWidget {
             documents.sort(numSortFunction);
 
             return ListView(
-                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                children: documents.map((data) {
-                  return fromNCERT
-                      ? Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
-                          child: CustomCard(
-                            unitImageUrl: data[FirestoreCollections.chapterImageUrl].toString(),
-                            unitNumber: data[FirestoreCollections.chapterNumber].toString(),
-                            unitName: data[FirestoreCollections.chapterName],
-                            itemId: data.id,
-                            onTap: () {
-                              if (fromNote) {
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+              children: List.generate(documents.length, (index) {
+                var data = documents[index];
+                final color = index % 2 == 0 ? Colors.red : Colors.blue;
+                return fromNCERT
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+                        child: NewChapterCard(
+                          color: color,
+                          chapterNumber: data[FirestoreCollections.chapterNumber].toString(),
+                          chapterName: data[FirestoreCollections.chapterName],
+                          onTap: () {
+                            if (fromNote) {
+                              print(data[FirestoreCollections.pdfUrl].toString());
+                              if (data[FirestoreCollections.pdfUrl].toString().startsWith('http')) {
                                 pushTo(
                                   context,
-                                  PdfViewerPage(
-                                    title: data[FirestoreCollections.chapterName],
-                                    url: data[FirestoreCollections.pdfUrl],
+                                  WebviewScreen(
+                                    appBarTitle: data[FirestoreCollections.chapterName],
+                                    webviewUrl: data[FirestoreCollections.pdfUrl],
                                   ),
                                 );
                               } else {
                                 pushTo(
                                   context,
-                                  ChapterTopicsPage(
-                                    subjectname: subjectName,
-                                    chapterId: data.id,
-                                    chapterName: data[FirestoreCollections.chapterName],
-                                    fromNCERT: fromNCERT,
-                                    unitId: unitId,
+                                  TextViewerPage(
+                                    text: data[FirestoreCollections.pdfUrl],
+                                    appbarTitle: data[FirestoreCollections.chapterName],
                                   ),
                                 );
                               }
-                            },
-                          ),
-                        )
-                      : Card(
-                          elevation: 4,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: ListTile(
-                            onTap: () {
+                            } else {
                               pushTo(
                                 context,
                                 ChapterTopicsPage(
                                   subjectname: subjectName,
                                   chapterId: data.id,
                                   chapterName: data[FirestoreCollections.chapterName],
+                                  fromNCERT: fromNCERT,
+                                  unitId: unitId,
                                 ),
                               );
-                            },
-                            contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                            leading: Container(
-                              width: 40,
-                              height: double.infinity,
-                              decoration: const BoxDecoration(color: ColorResources.PRIMARY_MATERIAL, shape: BoxShape.circle),
-                              child: Center(
-                                child: Text(
-                                  data[FirestoreCollections.chapterNumber].toString(),
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
+                            }
+                          },
+                        ),
+                      )
+                    : NewChapterCard(
+                        chapterName: data[FirestoreCollections.chapterName],
+                        chapterNumber: data[FirestoreCollections.chapterNumber],
+                        color: color,
+                        onTap: () {
+                          pushTo(
+                            context,
+                            ChapterTopicsPage(
+                              subjectname: subjectName,
+                              chapterId: data.id,
+                              chapterName: data[FirestoreCollections.chapterName],
                             ),
-                            title: Text(
-                              data[FirestoreCollections.chapterName],
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                              ),
-                            ),
-                            trailing: const Icon(
-                              Icons.arrow_forward_ios,
-                              color: ColorResources.PRIMARY_MATERIAL,
-                            ),
-                          ),
-                        );
-                }).toList());
+                          );
+                        },
+                      );
+              }),
+            );
           },
         ),
       ),

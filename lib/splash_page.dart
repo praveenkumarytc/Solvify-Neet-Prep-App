@@ -6,9 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'package:provider/provider.dart';
 import 'package:shield_neet/Utils/images.dart';
-import 'package:shield_neet/helper/log_out_dialog.dart';
 import 'package:shield_neet/home/dashboard.dart';
-import 'package:shield_neet/main.dart';
 import 'package:shield_neet/on%20boarding/on_boarding.dart';
 import 'package:shield_neet/providers/auth_providers.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -126,13 +124,13 @@ class _SplashPageState extends State<SplashPage> {
                   height: 150,
                 ),
                 const SizedBox(height: 30),
-                const Text(
-                  'Solvify Neet Prep App',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                // const Text(
+                //   'Solvify Neet Prep App',
+                //   style: TextStyle(
+                //     fontSize: 24,
+                //     fontWeight: FontWeight.bold,
+                //   ),
+                // ),
               ],
             ),
           ),

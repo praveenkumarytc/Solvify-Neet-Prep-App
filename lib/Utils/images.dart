@@ -2,6 +2,7 @@
 
 class Images {
   static const String googleLogo = 'assets/images/google_logo.png';
+  static const String googlelogo2 = 'assets/images/google.png';
   static const String homepageIcon = 'assets/images/home_page_icon.png';
   static const String openBookIcon = 'assets/images/open-book.png';
   static const String userIcon = 'assets/images/user.png';
@@ -26,6 +27,34 @@ class Images {
   static const String whatsapp_logo = 'assets/images/whatsapp_logo.png';
   static const String ncertLogo = 'assets/images/NCERT.png';
   static const String priviousPaper = 'assets/images/paper.png';
+  static const String book1 = 'assets/images/book 1.png';
+  static const String book2 = 'assets/images/book 2.png';
+  static const String book3 = 'assets/images/book 3.png';
+  static const String book4 = 'assets/images/book 4.png';
+  static const String book5 = 'assets/images/book 5.png';
+  static const String avtar1 = 'assets/images/avtar1.png';
+  static const String avtar2 = 'assets/images/avtar2.png';
+  static const String avtar3 = 'assets/images/avtar3.png';
+  static const String avtar4 = 'assets/images/avtar4.png';
+  static const String avtar5 = 'assets/images/avtar5.png';
+  static const String avtar6 = 'assets/images/avtar6.png';
+  static const String moon_switch = 'assets/images/moon_switch.png';
+  static const String sun_switch = 'assets/images/sun_switch.png';
+  static const String moon_switch_body = 'assets/images/moon_switch_body.png';
+  static const String sun_switch_body = 'assets/images/sun_switch_body.png';
+  static const String bookmark2 = 'assets/images/bookmark2.png';
+  // static const String googleLogo = 'assets/images/google_logo.png';
+  // static const String googleLogo = 'assets/images/google_logo.png';
+  // static const String googleLogo = 'assets/images/google_logo.png';
+  // static const String googleLogo = 'assets/images/google_logo.png';
+  // static const String googleLogo = 'assets/images/google_logo.png';
+  // static const String googleLogo = 'assets/images/google_logo.png';
+  // static const String googleLogo = 'assets/images/google_logo.png';
+  // static const String googleLogo = 'assets/images/google_logo.png';
+  // static const String googleLogo = 'assets/images/google_logo.png';
+  // static const String googleLogo = 'assets/images/google_logo.png';
+  // static const String googleLogo = 'assets/images/google_logo.png';
+  // static const String googleLogo = 'assets/images/google_logo.png';
   // static const String googleLogo = 'assets/images/google_logo.png';
   // static const String googleLogo = 'assets/images/google_logo.png';
   // static const String googleLogo = 'assets/images/google_logo.png';

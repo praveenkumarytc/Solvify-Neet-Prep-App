@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shield_neet/Utils/color_resources.dart';
+import 'package:shield_neet/components/note_pad.dart';
 import 'package:shield_neet/helper/push_to.dart';
 import 'package:shield_neet/image_screen/image_search_screen.dart';
 import 'package:velocity_x/velocity_x.dart';
 
-class AddUnitDialog extends StatelessWidget {
+class AddUnitDialog extends StatefulWidget {
   final TextEditingController chapterNameController;
   final TextEditingController chapterNumberController;
   final TextEditingController imageController;
@@ -14,17 +15,15 @@ class AddUnitDialog extends StatelessWidget {
   final bool isYear;
   final bool isTopicScreen;
 
-  const AddUnitDialog({
-    Key? key,
-    required this.chapterNameController,
-    required this.chapterNumberController,
-    required this.onTap,
-    required this.isYear,
-    required this.imageController,
-    this.pdfLinkController,
-    this.isTopicScreen = false,
-  }) : super(key: key);
+  final bool addingNotes;
 
+  const AddUnitDialog({Key? key, required this.chapterNameController, required this.chapterNumberController, required this.onTap, required this.isYear, required this.imageController, this.pdfLinkController, this.isTopicScreen = false, this.addingNotes = false}) : super(key: key);
+
+  @override
+  State<AddUnitDialog> createState() => _AddUnitDialogState();
+}
+
+class _AddUnitDialogState extends State<AddUnitDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -40,9 +39,9 @@ class AddUnitDialog extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                isTopicScreen
+                widget.isTopicScreen
                     ? 'Add Topic'
-                    : isYear
+                    : widget.isYear
                         ? 'Add Chapter'
                         : 'Add Unit',
                 style: const TextStyle(
@@ -58,7 +57,7 @@ class AddUnitDialog extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               TextField(
-                  controller: chapterNumberController,
+                  controller: widget.chapterNumberController,
                   buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
                   inputFormatters: [
                     FilteringTextInputFormatter.digitsOnly
@@ -66,60 +65,101 @@ class AddUnitDialog extends StatelessWidget {
                   keyboardType: TextInputType.number,
                   maxLength: 2,
                   decoration: InputDecoration(
-                      hintText: isTopicScreen
+                      hintText: widget.isTopicScreen
                           ? 'Topic No'
-                          : isYear
+                          : widget.isYear
                               ? 'Chapter No'
                               : 'Unit No')),
               const SizedBox(height: 10),
               TextField(
-                controller: chapterNameController,
+                controller: widget.chapterNameController,
                 textCapitalization: TextCapitalization.words,
                 decoration: InputDecoration(
-                    hintText: isTopicScreen
+                    hintText: widget.isTopicScreen
                         ? 'Topic Name'
-                        : isYear
+                        : widget.isYear
                             ? 'Chapter Name'
                             : 'Unit Name'),
               ),
               const SizedBox(height: 10),
-              TextField(
-                controller: imageController,
-                decoration: InputDecoration(
-                  hintText: isTopicScreen ? 'pdf url (optional)' : 'image URL',
-                  suffix: isTopicScreen
-                      ? null
-                      : IconButton(
-                          onPressed: () async {
-                            FocusScope.of(context).requestFocus(FocusNode());
-                            final String? imagePath = await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const ImageListScreen(),
-                              ),
-                            );
-                            if (imagePath != null) {
-                              imageController.text = imagePath;
-                            }
-
-                            // pushTo(context, const ImageListScreen());
-                          },
-                          icon: const Icon(Icons.search)),
-                ),
-              ),
-              const SizedBox(height: 10),
-              pdfLinkController != null
+              widget.isTopicScreen
                   ? TextField(
-                      controller: pdfLinkController,
-                      decoration: const InputDecoration(hintText: 'pdf url'),
+                      controller: widget.imageController,
+                      decoration: InputDecoration(
+                        hintText: widget.isTopicScreen ? 'pdf url (optional)' : 'image URL',
+                        suffix: widget.isTopicScreen
+                            ? null
+                            : IconButton(
+                                onPressed: () async {
+                                  FocusScope.of(context).requestFocus(FocusNode());
+                                  final String? imagePath = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const ImageListScreen(),
+                                    ),
+                                  );
+                                  if (imagePath != null) {
+                                    widget.imageController.text = imagePath;
+                                  }
+
+                                  // pushTo(context, const ImageListScreen());
+                                },
+                                icon: const Icon(Icons.search)),
+                      ),
                     )
                   : const SizedBox.shrink(),
-              isTopicScreen || pdfLinkController != null
-                  ? const Text(
-                      '*Please add only downlodable links for pdf',
-                      style: TextStyle(color: Colors.redAccent, fontSize: 12),
+              const SizedBox(height: 10),
+              widget.addingNotes
+                  ? InkWell(
+                      onTap: () async {
+                        final String? chapterNote = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => FlutterNotePad(
+                                initialText: widget.pdfLinkController!.text,
+                              ),
+                            ));
+
+                        if (chapterNote != null) {
+                          setState(() {
+                            widget.pdfLinkController!.text = chapterNote;
+                          });
+                        }
+                      },
+                      child: Container(
+                        height: 40,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
+                        child: Text(
+                          widget.pdfLinkController!.text.isEmpty ? 'Add note' : widget.pdfLinkController!.text,
+                          style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                     )
                   : const SizedBox.shrink(),
+              widget.addingNotes
+                  ? const SizedBox.shrink()
+                  : widget.pdfLinkController != null
+                      ? TextField(
+                          controller: widget.pdfLinkController,
+                          decoration: const InputDecoration(hintText: 'Pdf url'),
+                        )
+                      : const SizedBox.shrink(),
+              widget.addingNotes
+                  ? const SizedBox.shrink()
+                  : widget.isTopicScreen || widget.pdfLinkController != null
+                      ? const Text(
+                          '*Please add only downlodable links for pdf',
+                          style: TextStyle(color: Colors.redAccent, fontSize: 12),
+                        )
+                      : const SizedBox.shrink(),
               const SizedBox(height: 20),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -129,7 +169,7 @@ class AddUnitDialog extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                onPressed: onTap,
+                onPressed: widget.onTap,
                 child: const Text(
                   'Add',
                   style: TextStyle(

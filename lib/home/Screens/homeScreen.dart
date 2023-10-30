@@ -10,6 +10,7 @@ import 'package:shield_neet/Utils/images.dart';
 import 'package:shield_neet/helper/push_to.dart';
 import 'package:shield_neet/home/Screens/BookMarked%20Questions/bookmarked_questions.dart';
 import 'package:shield_neet/home/Screens/Subject%20Wise/subject_wise.dart';
+import 'package:shield_neet/home/Screens/home_card_widget.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'Subject Wise/chapters_screen.dart';
 
@@ -81,54 +82,77 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const HelloDoctorsCard(),
-            QuestionButtons(
-              onTap: () => pushTo(
-                  context,
-                  const SubjectWiseQuestScreen(
-                    fromNCERT: true,
-                  )),
-              title: 'Subject Wise Questions (NCERT BASED)',
-              color1: Colors.red.withOpacity(.4),
-              color2: Colors.red,
-              imageIcon: Images.ncertLogo,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  QuestionButtons(
+                    onTap: () => pushTo(
+                        context,
+                        const SubjectWiseQuestScreen(
+                          fromNCERT: true,
+                        )),
+                    title: 'Subject Wise Questions',
+                    color1: const Color.fromRGBO(255, 205, 205, 1),
+                    color2: const Color.fromRGBO(255, 81, 81, 1),
+                    imageIcon: Images.book1,
+                  ),
+                  QuestionButtons(
+                    onTap: () => pushTo(context, const SubjectWiseQuestScreen()),
+                    title: 'Previous year Questions',
+                    color1: const Color.fromRGBO(255, 250, 205, 1),
+                    color2: const Color.fromRGBO(231, 208, 0, 1),
+                    imageIcon: Images.book2,
+                  ),
+                ],
+              ),
             ),
-            Dimensions.PADDING_SIZE_DEFAULT.heightBox,
-            QuestionButtons(
-              onTap: () => pushTo(context, const SubjectWiseQuestScreen()),
-              title: 'Previous year Questions (Subject Wise)',
-              color1: Colors.teal.withOpacity(.4),
-              color2: Colors.teal,
-              imageIcon: Images.bookshelf,
+            // Dimensions.PADDING_SIZE_DEFAULT.heightBox,
+            // Dimensions.PADDING_SIZE_DEFAULT.heightBox,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  QuestionButtons(
+                    onTap: () => pushTo(
+                        context,
+                        const SubjectWiseQuestScreen(
+                          fromNotes: true,
+                          fromNCERT: true,
+                        )),
+                    title: 'Quick revision Notes',
+                    color1: const Color.fromRGBO(205, 243, 255, 1),
+                    color2: const Color.fromRGBO(81, 213, 255, 1),
+                    imageIcon: Images.book3,
+                  ),
+                  Dimensions.PADDING_SIZE_DEFAULT.heightBox,
+                  QuestionButtons(
+                    onTap: () => pushTo(context, const ChapterScreen(subjectName: FirestoreCollections.yearWise)),
+                    title: 'Previous Year Papers',
+                    color1: const Color.fromRGBO(205, 210, 255, 1),
+                    color2: const Color.fromRGBO(81, 98, 255, 1),
+                    imageIcon: Images.book4,
+                  ),
+                ],
+              ),
             ),
-            Dimensions.PADDING_SIZE_DEFAULT.heightBox,
-            QuestionButtons(
-              onTap: () => pushTo(
-                  context,
-                  const SubjectWiseQuestScreen(
-                    fromNotes: true,
-                    fromNCERT: true,
-                  )),
-              title: 'Quick revision Notes',
-              color1: const ui.Color.fromARGB(255, 255, 191, 40).withOpacity(.5),
-              color2: const ui.Color.fromARGB(255, 255, 191, 40),
-              imageIcon: Images.contract,
-            ),
-            Dimensions.PADDING_SIZE_DEFAULT.heightBox,
-            QuestionButtons(
-              onTap: () => pushTo(context, const ChapterScreen(subjectName: FirestoreCollections.yearWise)),
-              title: 'Previous Year Papers',
-              color1: const Color(0xFFE5B2CA),
-              color2: const Color(0xFF7028E4),
-              imageIcon: Images.priviousPaper,
-            ),
-            Dimensions.PADDING_SIZE_DEFAULT.heightBox,
-            QuestionButtons(
-              onTap: () => pushTo(context, const BookMarkedQuestScreen()),
-              title: 'Bookmarked Questions',
-              color1: const Color(0xFFFFB199),
-              color2: const Color(0xFFFF0844),
-              imageIcon: Images.bookmark,
-            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              child: Row(
+                children: [
+                  Dimensions.PADDING_SIZE_DEFAULT.heightBox,
+                  // QuestionButtons(
+                  //   onTap: () => pushTo(context, const BookMarkedQuestScreen()),
+                  //   title: 'Bookmarked Questions',
+                  //   color1: const Color.fromRGBO(255, 229, 205, 1),
+                  //   color2: const Color.fromRGBO(255, 129, 12, 1),
+                  //   imageIcon: Images.book5,
+                  // ),
+                ],
+              ),
+            )
           ],
         ),
       ),
@@ -170,54 +194,6 @@ class HelloDoctorsCard extends StatelessWidget {
               'Future Doctor',
               style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.w600),
               textAlign: TextAlign.start,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class QuestionButtons extends StatelessWidget {
-  const QuestionButtons({super.key, required this.title, required this.color1, required this.color2, required this.imageIcon, required this.onTap});
-  final String title, imageIcon;
-  final Color color1, color2;
-  final Function() onTap;
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 80,
-        width: MediaQuery.of(context).size.width * 0.8,
-        decoration: BoxDecoration(
-            borderRadius: const BorderRadius.only(
-              topRight: Radius.circular(50),
-              bottomRight: Radius.circular(50),
-            ),
-            gradient: LinearGradient(colors: [
-              color1,
-              color2
-            ])),
-        alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Flexible(
-              flex: 3,
-              child: Text(
-                title,
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: Colors.white),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: ImageIcon(
-                AssetImage(imageIcon),
-                size: 35,
-                color: Colors.white.withOpacity(0.60),
-              ),
             ),
           ],
         ),

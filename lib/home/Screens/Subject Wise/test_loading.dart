@@ -43,6 +43,8 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
           chapterId: widget.chapterId,
           subjectName: widget.subjectName,
           topicId: widget.topicId,
+          fromNCERT: widget.fromNCERT,
+          unitId: widget.unitId,
         ),
       ),
     );

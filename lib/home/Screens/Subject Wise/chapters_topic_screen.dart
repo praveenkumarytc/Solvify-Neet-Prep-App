@@ -6,6 +6,7 @@ import 'package:shield_neet/Utils/color_resources.dart';
 import 'package:shield_neet/components/solvify_appbar.dart';
 import 'package:shield_neet/helper/push_to.dart';
 import 'package:shield_neet/home/Screens/Subject%20Wise/chapters_screen.dart';
+import 'package:shield_neet/home/Screens/Subject%20Wise/subject_unit_screen.dart';
 import 'package:shield_neet/home/Screens/Subject%20Wise/test_loading.dart';
 import 'package:shield_neet/pdf%20viwer/attemp_mcq_pdf.dart';
 
@@ -55,99 +56,148 @@ class ChapterTopicsPage extends StatelessWidget {
             final documents = snapshot.data!.docs;
             documents.sort(numSortFunctionTopic);
 
-            return ListView(
-                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                children: documents.map((data) {
-                  return Card(
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Container(
-                      height: 120,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: Colors.grey.withOpacity(0.2),
-                          width: 1.0,
-                        ),
-                      ),
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(12),
-                        onTap: () {
-                          if (fromNCERT) {
-                            pushTo(
+            return ListView.builder(
+              itemCount: documents.length,
+              itemBuilder: (context, index) {
+                final color = index % 2 == 0 ? Colors.red : Colors.blue;
+                var data = documents[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                  child: NewChapterCard(
+                      onTap: () {
+                        if (fromNCERT) {
+                          pushTo(
                               context,
-                              PdfViewerPageMCQ(
-                                title: data[FirestoreCollections.topicName],
+                              LoadingScreen(
+                                subjectName: subjectname,
                                 chapterId: chapterId,
-                                chapterName: chapterName,
-                                subjectname: subjectname,
-                                fromNCERT: fromNCERT,
-                                unitId: unitId,
                                 topicId: data.id,
-                                url: data[FirestoreCollections.pdfUrl],
-                              ),
-                            );
-                          } else {
-                            pushTo(
-                                context,
-                                LoadingScreen(
-                                  subjectName: subjectname,
-                                  chapterId: chapterId,
-                                  topicId: data.id,
-                                ));
-                          }
-                        },
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: 60,
-                              height: double.infinity,
-                              decoration: const BoxDecoration(
-                                color: ColorResources.PRIMARY_MATERIAL,
-                                borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(12),
-                                  bottomLeft: Radius.circular(12),
-                                ),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  data[FirestoreCollections.topicNumber].toString(),
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 24,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Text(
-                                data[FirestoreCollections.topicName],
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                            const Opacity(
-                              opacity: 0.6,
-                              child: Icon(
-                                Icons.arrow_forward_ios,
-                                color: ColorResources.PRIMARY_MATERIAL,
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList());
+                                unitId: unitId,
+                                fromNCERT: fromNCERT,
+                              ));
+                          // pushTo(
+                          //   context,
+                          //   PdfViewerPageMCQ(
+                          //     title: data[FirestoreCollections.topicName],
+                          //     chapterId: chapterId,
+                          //     chapterName: chapterName,
+                          //     subjectname: subjectname,
+                          //     fromNCERT: fromNCERT,
+                          //     unitId: unitId,
+                          //     topicId: data.id,
+                          //     url: data[FirestoreCollections.pdfUrl],
+                          //   ),
+                          // );
+                        } else {
+                          pushTo(
+                              context,
+                              LoadingScreen(
+                                subjectName: subjectname,
+                                chapterId: chapterId,
+                                topicId: data.id,
+                              ));
+                        }
+                      },
+                      chapterName: data[FirestoreCollections.topicName].toString(),
+                      chapterNumber: data[FirestoreCollections.topicNumber].toString(),
+                      color: color),
+                );
+              },
+            );
+
+            // return ListView(
+            //     padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+            //     children: documents.map((data) {
+            //       return Card(
+            //         elevation: 4,
+            //         shape: RoundedRectangleBorder(
+            //           borderRadius: BorderRadius.circular(12),
+            //         ),
+            //         child: Container(
+            //           height: 120,
+            //           decoration: BoxDecoration(
+            //             borderRadius: BorderRadius.circular(12),
+            //             border: Border.all(
+            //               color: Colors.grey.withOpacity(0.2),
+            //               width: 1.0,
+            //             ),
+            //           ),
+            //           child: InkWell(
+            //             borderRadius: BorderRadius.circular(12),
+            //             onTap: () {
+            //               if (fromNCERT) {
+            //                 pushTo(
+            //                   context,
+            //                   PdfViewerPageMCQ(
+            //                     title: data[FirestoreCollections.topicName],
+            //                     chapterId: chapterId,
+            //                     chapterName: chapterName,
+            //                     subjectname: subjectname,
+            //                     fromNCERT: fromNCERT,
+            //                     unitId: unitId,
+            //                     topicId: data.id,
+            //                     url: data[FirestoreCollections.pdfUrl],
+            //                   ),
+            //                 );
+            //               } else {
+            //                 pushTo(
+            //                     context,
+            //                     LoadingScreen(
+            //                       subjectName: subjectname,
+            //                       chapterId: chapterId,
+            //                       topicId: data.id,
+            //                     ));
+            //               }
+            //             },
+            //             child: Row(
+            //               crossAxisAlignment: CrossAxisAlignment.center,
+            //               children: [
+            //                 Container(
+            //                   width: 60,
+            //                   height: double.infinity,
+            //                   decoration: const BoxDecoration(
+            //                     color: ColorResources.PRIMARY_MATERIAL,
+            //                     borderRadius: BorderRadius.only(
+            //                       topLeft: Radius.circular(12),
+            //                       bottomLeft: Radius.circular(12),
+            //                     ),
+            //                   ),
+            //                   child: Center(
+            //                     child: Text(
+            //                       data[FirestoreCollections.topicNumber].toString(),
+            //                       style: const TextStyle(
+            //                         fontWeight: FontWeight.bold,
+            //                         fontSize: 24,
+            //                         color: Colors.white,
+            //                       ),
+            //                     ),
+            //                   ),
+            //                 ),
+            //                 const SizedBox(width: 16),
+            //                 Expanded(
+            //                   child: Text(
+            //                     data[FirestoreCollections.topicName],
+            //                     style: const TextStyle(
+            //                       fontWeight: FontWeight.bold,
+            //                       fontSize: 18,
+            //                     ),
+            //                     textAlign: TextAlign.center,
+            //                   ),
+            //                 ),
+            //                 const Opacity(
+            //                   opacity: 0.6,
+            //                   child: Icon(
+            //                     Icons.arrow_forward_ios,
+            //                     color: ColorResources.PRIMARY_MATERIAL,
+            //                   ),
+            //                 ),
+            //                 const SizedBox(width: 16),
+            //               ],
+            //             ),
+            //           ),
+            //         ),
+            //       );
+            //     }).toList());
           },
         ),
       ),

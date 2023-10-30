@@ -1,7 +1,5 @@
 // ignore_for_file: avoid_print
 
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,12 +8,15 @@ import 'package:shield_neet/Utils/color_resources.dart';
 import 'package:shield_neet/custom%20%20widget/zoomable_image.dart';
 import 'package:shield_neet/helper/check_text_is_url.dart';
 import 'package:shield_neet/helper/push_to.dart';
+import 'package:shield_neet/helper/show_toast.dart';
 import 'package:shield_neet/home/Screens/Subject%20Wise/chapters_screen.dart';
 import 'package:shield_neet/home/Screens/Subject%20Wise/mcq_model.dart';
 import 'package:shield_neet/home/Screens/result/result_screen.dart';
 import 'package:shield_neet/providers/user_provider.dart';
 import 'package:velocity_x/velocity_x.dart';
+import 'package:vibration/vibration.dart';
 
+// import 'package:audioplayers/audioplayers.dart';
 class McqTestScreen extends StatefulWidget {
   const McqTestScreen({
     super.key,
@@ -48,6 +49,7 @@ class _McqTestScreenState extends State<McqTestScreen> {
     _isMcqLoading = true;
 
     if (widget.fromNCERT) {
+      debugPrint('from ncert page came');
       final QuerySnapshot<Object?> snapshot = await FirebaseFirestore.instance.collection(FirestoreCollections.subjectNCERT).doc(widget.subjectName).collection(FirestoreCollections.units).doc(widget.unitId).collection(FirestoreCollections.chapters).doc(widget.chapterId).collection(FirestoreCollections.chapterTopic).doc(widget.topicId).collection(FirestoreCollections.mcq).get();
 
       setState(() {
@@ -331,11 +333,21 @@ class _McqTestScreenState extends State<McqTestScreen> {
                                               crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
                                                 GestureDetector(
-                                                  onTap: () {
+                                                  onTap: () async {
                                                     setState(() {
-                                                      isAttempt = true;
                                                       mcqIs = mcqList[index].options[i].isCorrect.toString();
+
+                                                      if (!isAttempt) {
+                                                        if (mcqIs == "false") {
+                                                          Vibration.vibrate(duration: 100);
+                                                        } else {
+                                                          showErrorSnackBar(context, 'Correct', isError: false);
+                                                        }
+                                                      }
+                                                      isAttempt = true;
+
                                                       print(mcqIs);
+
                                                       selectedOption = mcqList[index].options[i].optionDetail;
                                                     });
                                                   },

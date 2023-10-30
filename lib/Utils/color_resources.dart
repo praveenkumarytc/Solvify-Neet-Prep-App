@@ -17,6 +17,10 @@ class ColorResources {
     return Provider.of<UserProvider>(context, listen: false).isDarkMode! ? Colors.grey.shade200 : Colors.black54;
   }
 
+  static Color getBlack87(BuildContext context) {
+    return Provider.of<UserProvider>(context, listen: false).isDarkMode! ? Colors.grey.shade200 : Colors.black87;
+  }
+
   static Color getWhite(BuildContext context) {
     return Provider.of<UserProvider>(context, listen: false).isDarkMode! ? Colors.black : Colors.white;
   }

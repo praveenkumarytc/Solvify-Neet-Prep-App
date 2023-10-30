@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shield_neet/Utils/color_resources.dart';
 import 'package:shield_neet/Utils/dimensions.dart';
+import 'package:shield_neet/Utils/images.dart';
 import 'package:shield_neet/Utils/textstyle.dart';
 import 'package:shield_neet/components/animated_button.dart';
 import 'package:shield_neet/helper/flutter_toast.dart';
+import 'package:shield_neet/on%20boarding/registration_page.dart';
 import 'package:shield_neet/providers/auth_providers.dart';
 import 'package:velocity_x/velocity_x.dart';
 
@@ -54,6 +56,10 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  Future<void> onGoogleAuthentication() async {
+    Provider.of<AuthProvider>(context, listen: false).signInWithGoogle();
+  }
+
   bool _isLoading = false;
   Column signupForm(BuildContext context) {
     return Column(
@@ -61,73 +67,74 @@ class _LoginPageState extends State<LoginPage> {
         const SizedBox(
           height: 30,
         ),
-        Container(
-          height: 55,
-          alignment: Alignment.center,
-          margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          child: TextFormField(
-            keyboardType: TextInputType.name,
-            textCapitalization: TextCapitalization.words,
-            style: const TextStyle(color: Colors.black),
-            decoration: InputDecoration(
-              hintText: 'Full Name',
-              hintStyle: TextStyle(fontWeight: FontWeight.normal, color: Colors.grey.shade500, fontSize: 14),
-              focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: ColorResources.COLOR_PRIMARY_blue, width: 1), borderRadius: BorderRadius.all(Radius.circular(10))),
-              filled: true,
-              fillColor: Colors.white,
-              enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.white), borderRadius: BorderRadius.all(Radius.circular(10))),
-              border: const OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.white),
-              ),
-            ),
-            onChanged: (String val) {
-              setState(() {
-                name = val;
-              });
-            },
-            textInputAction: TextInputAction.next,
-            focusNode: _userNameFocus,
-            onFieldSubmitted: (term) {
-              _userNameFocus.unfocus();
-              _userMobileFocus.requestFocus();
-            },
-          ),
-        ),
-        Dimensions.PADDING_SIZE_SMALL.heightBox,
-        Container(
-          height: 55,
-          alignment: Alignment.center,
-          margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          child: TextFormField(
-            keyboardType: TextInputType.number,
-            maxLength: 10,
-            style: const TextStyle(color: Colors.black),
-            buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
-            decoration: InputDecoration(
-              hintText: 'Mobile No.',
-              hintStyle: TextStyle(fontWeight: FontWeight.normal, color: Colors.grey.shade500, fontSize: 14),
-              focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: ColorResources.COLOR_PRIMARY_blue, width: 1), borderRadius: BorderRadius.all(Radius.circular(10))),
-              filled: true,
-              fillColor: Colors.white,
-              enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.white), borderRadius: BorderRadius.all(Radius.circular(10))),
-              border: const OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.white),
-              ),
-            ),
-            onChanged: (String val) {
-              setState(() {
-                phone = val;
-              });
-            },
-            textInputAction: TextInputAction.next,
-            focusNode: _userMobileFocus,
-            onFieldSubmitted: (term) {
-              _userMobileFocus.unfocus();
-              _userEmailFocus.requestFocus();
-            },
-          ),
-        ),
-        Dimensions.PADDING_SIZE_SMALL.heightBox,
+        // Container(
+        //   height: 55,
+        //   alignment: Alignment.center,
+        //   margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        //   child: TextFormField(
+        //     keyboardType: TextInputType.name,
+        //     textCapitalization: TextCapitalization.words,
+        //     style: const TextStyle(color: Colors.black),
+        //     decoration: InputDecoration(
+        //       hintText: 'Full Name',
+        //       hintStyle: TextStyle(fontWeight: FontWeight.normal, color: Colors.grey.shade500, fontSize: 14),
+        //       focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: ColorResources.COLOR_PRIMARY_blue, width: 1), borderRadius: BorderRadius.all(Radius.circular(10))),
+        //       filled: true,
+        //       fillColor: Colors.white,
+        //       enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.white), borderRadius: BorderRadius.all(Radius.circular(10))),
+        //       border: const OutlineInputBorder(
+        //         borderSide: BorderSide(color: Colors.white),
+        //       ),
+        //     ),
+        //     onChanged: (String val) {
+        //       setState(() {
+        //         name = val;
+        //       });
+        //     },
+        //     textInputAction: TextInputAction.next,
+        //     focusNode: _userNameFocus,
+        //     onFieldSubmitted: (term) {
+        //       _userNameFocus.unfocus();
+        //       _userMobileFocus.requestFocus();
+        //     },
+        //   ),
+        // ),
+        // Dimensions.PADDING_SIZE_SMALL.heightBox,
+        // Container(
+        //   height: 55,
+        //   alignment: Alignment.center,
+        //   margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        //   child: TextFormField(
+        //     keyboardType: TextInputType.number,
+        //     maxLength: 10,
+        //     style: const TextStyle(color: Colors.black),
+        //     buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
+        //     decoration: InputDecoration(
+        //       hintText: 'Mobile No.',
+        //       hintStyle: TextStyle(fontWeight: FontWeight.normal, color: Colors.grey.shade500, fontSize: 14),
+        //       focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: ColorResources.COLOR_PRIMARY_blue, width: 1), borderRadius: BorderRadius.all(Radius.circular(10))),
+        //       filled: true,
+        //       fillColor: Colors.white,
+        //       enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.white), borderRadius: BorderRadius.all(Radius.circular(10))),
+        //       border: const OutlineInputBorder(
+        //         borderSide: BorderSide(color: Colors.white),
+        //       ),
+        //     ),
+        //     onChanged: (String val) {
+        //       setState(() {
+        //         phone = val;
+        //       });
+        //     },
+        //     textInputAction: TextInputAction.next,
+        //     focusNode: _userMobileFocus,
+        //     onFieldSubmitted: (term) {
+        //       _userMobileFocus.unfocus();
+        //       _userEmailFocus.requestFocus();
+        //     },
+        //   ),
+        // ),
+        // Dimensions.PADDING_SIZE_SMALL.heightBox,
+
         Container(
           height: 55,
           alignment: Alignment.center,
@@ -204,21 +211,25 @@ class _LoginPageState extends State<LoginPage> {
           onTap: () async {
             String passwordPattern = r'^.{6,}$';
             String emailPattern = r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
-            String phonePattern = r'^\d{10}$';
 
-            if (name.isEmpty) {
-              showToast(message: 'Please enter your full name', isError: true);
-            } else if (!RegExp(emailPattern).hasMatch(email)) {
+            if (!RegExp(emailPattern).hasMatch(email)) {
               showToast(message: 'Please enter a valid email address', isError: true);
             } else if (!RegExp(passwordPattern).hasMatch(password)) {
               showToast(message: 'Please at least 6 digit strong password', isError: true);
-            } else if (!RegExp(phonePattern).hasMatch(phone)) {
-              showToast(message: 'Please enter a valid phone number', isError: true);
             } else {
               setState(() {
                 _isLoading = true;
               });
               await Provider.of<AuthProvider>(context, listen: false).signUp(context, name, email, password, phone).then((value) {
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => RegistrationPage(
+                              emailId: email,
+                              fullName: password,
+                              loginMethod: "email&pass",
+                            )),
+                    (route) => false);
                 setState(() {
                   _isLoading = false;
                 });
@@ -240,7 +251,31 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
         ),
-        20.heightBox,
+        AnimatedButton(
+            onTap: onGoogleAuthentication,
+            child: Container(
+              width: double.infinity,
+              margin: const EdgeInsets.all(8),
+              height: 55,
+              decoration: BoxDecoration(
+                color: ColorResources.WHITE,
+                borderRadius: const BorderRadius.all(Radius.circular(10)),
+                border: Border.all(color: ColorResources.COLOR_PRIMARY_blue),
+              ),
+              child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(Images.googlelogo2),
+                      10.widthBox,
+                      const Text(
+                        'Signup with google',
+                        style: TextStyle(color: ColorResources.COLOR_PRIMARY_blue, fontWeight: FontWeight.bold, fontSize: 18),
+                      )
+                    ],
+                  )),
+            )),
         Container(
           width: double.infinity,
           margin: const EdgeInsets.all(10),
@@ -418,6 +453,31 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
+        AnimatedButton(
+            onTap: onGoogleAuthentication,
+            child: Container(
+              width: double.infinity,
+              margin: const EdgeInsets.all(8),
+              height: 55,
+              decoration: BoxDecoration(
+                color: ColorResources.WHITE,
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+                border: Border.all(color: ColorResources.COLOR_PRIMARY_blue),
+              ),
+              child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(Images.googlelogo2),
+                      10.widthBox,
+                      const Text(
+                        'Login with google',
+                        style: TextStyle(color: ColorResources.COLOR_PRIMARY_blue, fontWeight: FontWeight.bold, fontSize: 18),
+                      )
+                    ],
+                  )),
+            )),
         20.heightBox,
         Container(
           width: double.infinity,
@@ -605,7 +665,7 @@ class HelloDoctorsHeading extends StatelessWidget {
         ),
         const SizedBox(height: 20),
         Image.asset(
-          'assets/images/15027.png',
+          Images.APP_LOGO_TRANS_BG,
           height: 100,
         ),
       ],

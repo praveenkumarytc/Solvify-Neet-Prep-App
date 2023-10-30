@@ -39,11 +39,13 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> fetchBookmarkedQuestions() async {
+  List<McqModel> fetchBookmarkedQuestions() {
     List<String>? bookmarkedQuestionStrings = sharedPreferences!.getStringList(FirestoreCollections.bookMarkedMcq);
     if (bookmarkedQuestionStrings != null) {
       bookmarkedQuestions = bookmarkedQuestionStrings.map((q) => McqModel.fromJson(json.decode(q))).toList();
     }
+
+    return bookmarkedQuestions;
   }
 
   bool isBookmarked(String question) {

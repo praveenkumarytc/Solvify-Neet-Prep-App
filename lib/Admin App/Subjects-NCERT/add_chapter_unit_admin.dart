@@ -9,7 +9,6 @@ import 'package:shield_neet/components/solvify_appbar.dart';
 import 'package:shield_neet/helper/flutter_toast.dart';
 import 'package:shield_neet/helper/push_to.dart';
 import 'package:shield_neet/pdf%20viwer/pdf_viewer.dart';
-
 import '../../helper/log_out_dialog.dart';
 import '../../providers/admin_provider.dart';
 
@@ -48,6 +47,7 @@ class AddUnitChapterScreenAdmin extends StatelessWidget {
         chapterNumberController: chapterNumberController,
         pdfLinkController: fromNote ? pdfLinkController : null,
         isYear: true,
+        addingNotes: fromNote,
         onTap: () async {
           if (chapterNumberController.text.isEmpty || chapterNameController.text.isEmpty) {
             showToast(message: 'Please enter a valid data', isError: true);
@@ -159,6 +159,7 @@ class AddUnitChapterScreenAdmin extends StatelessWidget {
                             chapterNumberController: chapterNumberController,
                             pdfLinkController: fromNote ? pdfLinkController : null,
                             isYear: subjectName == FirestoreCollections.yearWise,
+                            addingNotes: fromNote,
                             onTap: () async {
                               if (chapterNameController.text.isEmpty || chapterNumberController.text.isEmpty) {
                                 showToast(message: 'Please enter a chapter number and name', isError: true);

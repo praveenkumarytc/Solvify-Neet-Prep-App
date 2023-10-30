@@ -26,9 +26,17 @@ class SubjectUnitScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(50),
-        child: SolvifyAppbar(title: "$subjectName "),
+      appBar: AppBar(
+        toolbarHeight: 80,
+        elevation: 0,
+        centerTitle: true,
+        title: Text(
+          subjectName,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
+        ),
       ),
       body: ScrollConfiguration(
         behavior: NoGlowScroll(),
@@ -50,12 +58,12 @@ class SubjectUnitScreen extends StatelessWidget {
               itemCount: documents.length,
               itemBuilder: (context, index) {
                 final data = documents[index];
-                return CustomCard(
-                  unitImageUrl: data[FirestoreCollections.unitImageUrl],
-                  unitNumber: data[FirestoreCollections.unitNumber],
-                  unitName: data[FirestoreCollections.unitName],
-                  itemId: data.id,
-                  onTap: () async {
+                final color = index % 2 == 0 ? Colors.red : Colors.blue;
+                return NewChapterCard(
+                  color: color,
+                  chapterName: data[FirestoreCollections.unitName],
+                  chapterNumber: data[FirestoreCollections.unitNumber],
+                  onTap: () {
                     pushTo(
                       context,
                       ChapterScreen(
@@ -67,6 +75,24 @@ class SubjectUnitScreen extends StatelessWidget {
                     );
                   },
                 );
+
+                //   CustomCard(
+                //   unitImageUrl: data[FirestoreCollections.unitImageUrl],
+                //   unitNumber: data[FirestoreCollections.unitNumber],
+                //   unitName: data[FirestoreCollections.unitName],
+                //   itemId: data.id,
+                //   onTap: () async {
+                //     pushTo(
+                //       context,
+                //       ChapterScreen(
+                //         subjectName: subjectName,
+                //         fromNCERT: fromNCERT,
+                //         unitId: data.id,
+                //         fromNote: fromNote,
+                //       ),
+                //     );
+                //   },
+                // );
               },
               separatorBuilder: (context, index) {
                 return const SizedBox(height: 10);
@@ -181,6 +207,48 @@ class CustomCard extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class NewChapterCard extends StatelessWidget {
+  const NewChapterCard({
+    super.key,
+    required this.chapterName,
+    required this.chapterNumber,
+    this.onTap,
+    required this.color,
+  });
+  final String chapterName;
+  final String chapterNumber;
+  final Function()? onTap;
+  final Color color;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 80,
+      alignment: Alignment.center,
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      color: Colors.white,
+      child: ListTile(
+        onTap: onTap,
+        minLeadingWidth: 1,
+        leading: Container(
+          width: 3,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: const BorderRadius.only(
+              topRight: Radius.circular(10),
+              bottomRight: Radius.circular(10),
+            ),
+          ),
+        ),
+        trailing: const Icon(Icons.arrow_forward),
+        title: Text(
+          chapterName,
+          style: const TextStyle(color: Colors.black),
         ),
       ),
     );
